@@ -22,14 +22,46 @@
 }
 :root[data-theme="dark"]{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
-html{height:100%}
 body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:calc(18px * var(--scale))/1.5 var(--body)}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 [hidden]{display:none!important}
-.wrap{max-width:1040px;margin:0 auto;padding-block:20px 48px;padding-inline:20px}
+/* App shell: fixed dark sidebar on the left with every game and practice, main content on the right */
+:root{--side:#111111; --sidehover:#202020; --sidetext:#E9E9E9; --sidemuted:#8E8E8E; --sidechip:#2A2A2A}
+html,body{height:100%}
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100%}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);color:var(--sidetext);padding:24px 16px 20px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#333 transparent}
+.side .brandlink img{height:50px;width:auto;display:block;border-radius:3px}
+.side .sitename{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;margin:12px 0 10px 2px;color:#fff}
+.side nav{display:flex;flex-direction:column;gap:2px}
+.side .ng{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sidemuted);margin:18px 0 6px 10px}
+.side .nch{font-size:12px;font-weight:600;color:var(--sidemuted);margin:8px 0 2px 10px}
+.side nav a{display:flex;gap:10px;align-items:center;color:var(--sidetext);text-decoration:none;padding:7px 10px;border-radius:6px;font-weight:600;font-size:15px;line-height:1.25}
+.side nav a:hover{background:var(--sidehover)}
+.side nav a:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.side nav a[aria-current="page"]{background:var(--red);color:#fff}
+.side .ch{flex:0 0 auto;width:24px;height:24px;border-radius:4px;background:var(--sidechip);font-family:var(--display);font-weight:600;font-size:13px;display:grid;place-items:center}
+.side nav a[aria-current="page"] .ch{background:rgba(0,0,0,.28)}
+.side .home .ch{background:transparent;font-size:16px}
+.side .sidefoot{margin-top:auto;padding:18px 10px 0;font-size:12px;color:var(--sidemuted)}
+.mbar{display:none}
+.scrim{display:none}
+.main{min-width:0;padding-block:30px 60px;padding-inline:clamp(20px,4vw,52px)}
+.inner{max-width:1120px}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(300px,86vw);z-index:30;transform:translateX(-102%);transition:transform .22s ease;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+  .mbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--side);padding:10px 16px}
+  .mbar img{height:36px;width:auto;display:block;border-radius:3px}
+  .mbar button{background:transparent;color:#fff;border:2px solid #444;border-radius:8px;padding:6px 14px;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .main{padding-block:22px 48px}
+}
+@media (prefers-reduced-motion: reduce){.side{transition:none}}
+
+.inner{max-width:1080px}
 .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:15px;font-weight:600;color:var(--muted)}
-.top img{height:40px;width:auto;display:block;border-radius:3px}
 .top a{color:inherit}
 .top .sp{flex:1}
 .size{display:flex;gap:6px}
@@ -81,9 +113,32 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="shell">
+  <div class="mbar"><a href="/"><img src="logo-214.png" alt="High School District 214"></a><button id="menuBtn" aria-expanded="false" aria-controls="side">Menu</button></div>
+  <aside class="side" id="side">
+    <a class="brandlink" href="/"><img src="logo-214.png" alt="High School District 214"></a>
+    <div class="sitename">Accounting</div>
+    <nav aria-label="Site">
+      <a class="home" href="/"><span class="ch">⌂</span>Home</a>
+      <div class="ng">Review Games</div>
+      <a href="chapter-5.html"><span class="ch">5</span>Same Goods, Three Costs</a>
+      <a href="chapter-4.html"><span class="ch">4</span>Same Deal, Two Books</a>
+      <div class="ng">Interactive Practices</div>
+      <div class="nch">Chapter 5</div>
+      <a href="practice-ch5-set-1.html"><span class="ch">5</span>Practice Problem Set 1</a>
+      <a href="practice-ch5-weighted-average.html"><span class="ch">5</span>Weighted Average</a>
+      <div class="nch">Chapter 4</div>
+      <a href="practice-ch4-round-1.html"><span class="ch">4</span>Problem Set Round 1</a>
+      <a href="practice-ch4-round-2.html" aria-current="page"><span class="ch">4</span>Problem Set Round 2</a>
+      <div class="nch">Chapter 3</div>
+      <a href="practice-ch3-adjusting.html"><span class="ch">3</span>Adjusting Entries</a>
+      <a href="practice-ch3-depr-closing.html"><span class="ch">3</span>Depreciation and Closing Entries</a>
+    </nav>
+    <div class="sidefoot">High School District 214 | Accounting</div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main"><div class="inner">
   <div class="top">
-    <a href="/"><img src="logo-214.png" alt="High School District 214"></a>
     <span><a href="/#practices">Interactive Practices</a> / Chapter 4</span>
     <span class="sp"></span>
     <span class="size" aria-label="Text size"><button id="smaller" aria-label="Smaller text">A−</button><button id="bigger" aria-label="Bigger text">A+</button></span>
@@ -107,7 +162,15 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
     <button class="btn ghost" id="nextBtn">Next problem</button>
   </div>
   <p class="hint">Keys: <kbd>Space</kbd> or <kbd>→</kbd> reveals the next step, then moves on. <kbd>←</kbd> goes back a problem. <kbd>H</kbd> hides answers.</p>
+  </div></main>
 </div>
+<script>
+(function(){const s=document.getElementById("side"),b=document.getElementById("menuBtn"),c=document.getElementById("scrim");
+function set(o){s.classList.toggle("open",o);c.classList.toggle("on",o);b.setAttribute("aria-expanded",o);b.textContent=o?"Close":"Menu"}
+b.addEventListener("click",()=>set(!s.classList.contains("open")));c.addEventListener("click",()=>set(false));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")set(false)});
+const cur=s.querySelector('[aria-current="page"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest"});})();
+</script>
 <script>
 const DECK={"id": "ch4-round-2", "chapter": 4, "title": "Problem Set Round 2", "topic": "Merchandising transactions", "blurb": "Journalize 13 March purchase, sale, return, freight, and discount transactions for a retailer.", "problems": [{"label": "Transaction 1", "tag": "Purchase", "date": "March 1", "given": [{"p": "Purchased merchandise from Ridley Company for $5,600 under credit terms of 3/10, n/30, invoice dated March 1."}], "reveals": [{"entry": {"rows": [{"account": "Merchandise Inventory", "debit": "5,600"}, {"account": "Accounts Payable", "credit": "5,600"}]}}]}, {"label": "Transaction 2", "tag": "Sale", "date": "March 2", "given": [{"p": "Sold merchandise to Alden Co. for $1,400 under credit terms of 3/10, n/60, invoice dated March 2. The merchandise cost $820."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Accounts Receivable", "debit": "1,400"}, {"account": "Sales Revenue", "credit": "1,400"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "820"}, {"account": "Merchandise Inventory", "credit": "820"}]}]}]}, {"label": "Transaction 3", "tag": "Freight", "date": "March 4", "given": [{"p": "Paid $215 cash for freight charges on the purchase of March 1."}], "reveals": [{"entry": {"rows": [{"account": "Merchandise Inventory", "debit": "215"}, {"account": "Cash", "credit": "215"}]}}]}, {"label": "Transaction 4", "tag": "Sale", "date": "March 7", "given": [{"p": "Sold merchandise that cost $2,300 for $3,150 cash."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Cash", "debit": "3,150"}, {"account": "Sales Revenue", "credit": "3,150"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "2,300"}, {"account": "Merchandise Inventory", "credit": "2,300"}]}]}]}, {"label": "Transaction 5", "tag": "Purchase", "date": "March 9", "given": [{"p": "Purchased merchandise from Hollis Co. for $4,500 under credit terms of 3/10, n/60, invoice dated March 9."}], "reveals": [{"entry": {"rows": [{"account": "Merchandise Inventory", "debit": "4,500"}, {"account": "Accounts Payable", "credit": "4,500"}]}}]}, {"label": "Transaction 6", "tag": "Return", "date": "March 10", "given": [{"p": "Received a $600 credit memo from Hollis Co. for the return of part of the merchandise purchased on March 9."}], "reveals": [{"entry": {"rows": [{"account": "Accounts Payable", "debit": "600"}, {"account": "Merchandise Inventory", "credit": "600"}]}}]}, {"label": "Transaction 7", "tag": "Payment", "date": "March 11", "given": [{"p": "Paid the balance due to Ridley Company within the discount period."}], "reveals": [{"entry": {"rows": [{"account": "Accounts Payable", "debit": "5,600"}, {"account": "Merchandise Inventory", "credit": "168"}, {"account": "Cash", "credit": "5,432"}]}, "lines": ["$5,600 balance · 3% discount = $168"]}]}, {"label": "Transaction 8", "tag": "Collection", "date": "March 12", "given": [{"p": "Received the balance due from Alden Co. for the invoice dated March 2, net of the discount."}], "reveals": [{"entry": {"rows": [{"account": "Cash", "debit": "1,358"}, {"account": "Sales Discounts", "debit": "42"}, {"account": "Accounts Receivable", "credit": "1,400"}]}, "lines": ["$1,400 balance · 3% discount = $42"]}]}, {"label": "Transaction 9", "tag": "Sale", "date": "March 18", "given": [{"p": "Sold merchandise that cost $1,480 to Nyman Co. for $2,200 under credit terms of 3/10, n/60, invoice dated March 18."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Accounts Receivable", "debit": "2,200"}, {"account": "Sales Revenue", "credit": "2,200"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "1,480"}, {"account": "Merchandise Inventory", "credit": "1,480"}]}]}]}, {"label": "Transaction 10", "tag": "Payment", "date": "March 19", "given": [{"p": "Paid the balance due to Hollis Co. within the discount period."}], "reveals": [{"entry": {"rows": [{"account": "Accounts Payable", "debit": "3,900"}, {"account": "Merchandise Inventory", "credit": "117"}, {"account": "Cash", "credit": "3,783"}]}, "lines": ["$4,500 less the $600 return = $3,900 · 3% discount = $117"]}]}, {"label": "Transaction 11", "tag": "Allowance", "date": "March 20", "given": [{"p": "Issued a $300 credit memo to Nyman Co. for an allowance on the goods sold on March 18."}], "reveals": [{"entry": {"rows": [{"account": "Sales Returns and Allowances", "debit": "300"}, {"account": "Accounts Receivable", "credit": "300"}]}}]}, {"label": "Transaction 12", "tag": "Collection", "date": "March 28", "given": [{"p": "Received the balance due from Nyman Co. for the invoice dated March 18, net of the discount and the allowance."}], "reveals": [{"entry": {"rows": [{"account": "Cash", "debit": "1,843"}, {"account": "Sales Discounts", "debit": "57"}, {"account": "Accounts Receivable", "credit": "1,900"}]}, "lines": ["$2,200 less the $300 allowance = $1,900 · 3% discount = $57"]}]}, {"label": "Transaction 13", "tag": "Sale", "date": "March 31", "given": [{"p": "Sold merchandise that cost $4,900 to Alden Co. for $7,400 under credit terms of 3/10, n/60, invoice dated March 31."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Accounts Receivable", "debit": "7,400"}, {"account": "Sales Revenue", "credit": "7,400"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "4,900"}, {"account": "Merchandise Inventory", "credit": "4,900"}]}]}]}, {"label": "Summary", "heading": "Sale, Then Cost", "given": [{"p": "Every sale takes two entries."}], "reveals": []}]};
 (function(){

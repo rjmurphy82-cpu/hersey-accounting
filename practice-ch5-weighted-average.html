@@ -22,14 +22,46 @@
 }
 :root[data-theme="dark"]{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
-html{height:100%}
 body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:calc(18px * var(--scale))/1.5 var(--body)}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 [hidden]{display:none!important}
-.wrap{max-width:1040px;margin:0 auto;padding-block:20px 48px;padding-inline:20px}
+/* App shell: fixed dark sidebar on the left with every game and practice, main content on the right */
+:root{--side:#111111; --sidehover:#202020; --sidetext:#E9E9E9; --sidemuted:#8E8E8E; --sidechip:#2A2A2A}
+html,body{height:100%}
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100%}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);color:var(--sidetext);padding:24px 16px 20px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#333 transparent}
+.side .brandlink img{height:50px;width:auto;display:block;border-radius:3px}
+.side .sitename{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;margin:12px 0 10px 2px;color:#fff}
+.side nav{display:flex;flex-direction:column;gap:2px}
+.side .ng{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sidemuted);margin:18px 0 6px 10px}
+.side .nch{font-size:12px;font-weight:600;color:var(--sidemuted);margin:8px 0 2px 10px}
+.side nav a{display:flex;gap:10px;align-items:center;color:var(--sidetext);text-decoration:none;padding:7px 10px;border-radius:6px;font-weight:600;font-size:15px;line-height:1.25}
+.side nav a:hover{background:var(--sidehover)}
+.side nav a:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.side nav a[aria-current="page"]{background:var(--red);color:#fff}
+.side .ch{flex:0 0 auto;width:24px;height:24px;border-radius:4px;background:var(--sidechip);font-family:var(--display);font-weight:600;font-size:13px;display:grid;place-items:center}
+.side nav a[aria-current="page"] .ch{background:rgba(0,0,0,.28)}
+.side .home .ch{background:transparent;font-size:16px}
+.side .sidefoot{margin-top:auto;padding:18px 10px 0;font-size:12px;color:var(--sidemuted)}
+.mbar{display:none}
+.scrim{display:none}
+.main{min-width:0;padding-block:30px 60px;padding-inline:clamp(20px,4vw,52px)}
+.inner{max-width:1120px}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(300px,86vw);z-index:30;transform:translateX(-102%);transition:transform .22s ease;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+  .mbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--side);padding:10px 16px}
+  .mbar img{height:36px;width:auto;display:block;border-radius:3px}
+  .mbar button{background:transparent;color:#fff;border:2px solid #444;border-radius:8px;padding:6px 14px;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .main{padding-block:22px 48px}
+}
+@media (prefers-reduced-motion: reduce){.side{transition:none}}
+
+.inner{max-width:1080px}
 .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:15px;font-weight:600;color:var(--muted)}
-.top img{height:40px;width:auto;display:block;border-radius:3px}
 .top a{color:inherit}
 .top .sp{flex:1}
 .size{display:flex;gap:6px}
@@ -81,9 +113,32 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="shell">
+  <div class="mbar"><a href="/"><img src="logo-214.png" alt="High School District 214"></a><button id="menuBtn" aria-expanded="false" aria-controls="side">Menu</button></div>
+  <aside class="side" id="side">
+    <a class="brandlink" href="/"><img src="logo-214.png" alt="High School District 214"></a>
+    <div class="sitename">Accounting</div>
+    <nav aria-label="Site">
+      <a class="home" href="/"><span class="ch">⌂</span>Home</a>
+      <div class="ng">Review Games</div>
+      <a href="chapter-5.html"><span class="ch">5</span>Same Goods, Three Costs</a>
+      <a href="chapter-4.html"><span class="ch">4</span>Same Deal, Two Books</a>
+      <div class="ng">Interactive Practices</div>
+      <div class="nch">Chapter 5</div>
+      <a href="practice-ch5-set-1.html"><span class="ch">5</span>Practice Problem Set 1</a>
+      <a href="practice-ch5-weighted-average.html" aria-current="page"><span class="ch">5</span>Weighted Average</a>
+      <div class="nch">Chapter 4</div>
+      <a href="practice-ch4-round-1.html"><span class="ch">4</span>Problem Set Round 1</a>
+      <a href="practice-ch4-round-2.html"><span class="ch">4</span>Problem Set Round 2</a>
+      <div class="nch">Chapter 3</div>
+      <a href="practice-ch3-adjusting.html"><span class="ch">3</span>Adjusting Entries</a>
+      <a href="practice-ch3-depr-closing.html"><span class="ch">3</span>Depreciation and Closing Entries</a>
+    </nav>
+    <div class="sidefoot">High School District 214 | Accounting</div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main"><div class="inner">
   <div class="top">
-    <a href="/"><img src="logo-214.png" alt="High School District 214"></a>
     <span><a href="/#practices">Interactive Practices</a> / Chapter 5</span>
     <span class="sp"></span>
     <span class="size" aria-label="Text size"><button id="smaller" aria-label="Smaller text">A−</button><button id="bigger" aria-label="Bigger text">A+</button></span>
@@ -107,7 +162,15 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
     <button class="btn ghost" id="nextBtn">Next problem</button>
   </div>
   <p class="hint">Keys: <kbd>Space</kbd> or <kbd>→</kbd> reveals the next step, then moves on. <kbd>←</kbd> goes back a problem. <kbd>H</kbd> hides answers.</p>
+  </div></main>
 </div>
+<script>
+(function(){const s=document.getElementById("side"),b=document.getElementById("menuBtn"),c=document.getElementById("scrim");
+function set(o){s.classList.toggle("open",o);c.classList.toggle("on",o);b.setAttribute("aria-expanded",o);b.textContent=o?"Close":"Menu"}
+b.addEventListener("click",()=>set(!s.classList.contains("open")));c.addEventListener("click",()=>set(false));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")set(false)});
+const cur=s.querySelector('[aria-current="page"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest"});})();
+</script>
 <script>
 const DECK={"id": "ch5-weighted-average", "chapter": 5, "title": "Weighted Average", "topic": "Weighted average inventory costing", "blurb": "Cost sales at Northside Phone Cases with weighted average, from one-sale warm-ups to a full year compared against FIFO and LIFO.", "problems": [{"label": "The Method", "heading": "Every unit on hand costs the same: the average", "given": [{"list": ["1. Find the average: Total cost on hand ÷ units on hand. Round to the nearest cent.", "2. Cost the sale: Units sold × the current average = COGS for that sale.", "3. Carry it forward: Units left × the same average = inventory still on hand.", "4. New purchase? New average: Add the purchase to what is on hand, then divide again before the next sale."]}, {"p": "Average cost per unit = Total cost of units on hand ÷ Units on hand"}, {"p": "FIFO and LIFO pick which layer to sell. Weighted average blends every layer together, so the average only changes when you buy."}], "reveals": []}, {"label": "Problem 1", "tag": "Warm-Up", "heading": "One sale, two cost layers", "given": [{"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "5 units @ $4 / unit", ""], ["1/10", "Purchase", "15 units @ $6 / unit", ""], ["1/22", "Sale", "", "12 units @ $15 / unit"], ["", "Totals", "20 UNITS", "12 UNITS"]]}}, {"q": "Find the average cost per unit on the day of the sale, then use it for COGS and ending inventory."}], "reveals": [{"label": "Average Cost", "lines": ["1/1: 5 × $4 = $20", "1/10: 15 × $6 = $90", "$110 ÷ 20 units"], "answer": "$5.50"}, {"label": "COGS 1/22 Sale", "lines": ["12 units × $5.50"], "answer": "$66.00"}, {"label": "Ending Inventory", "lines": ["8 units × $5.50"], "answer": "$44.00"}, {"label": "Check Your Work", "lines": ["COGS + Ending Inv.", "$66.00 + $44.00", "= total cost of all units"], "answer": "$110"}]}, {"label": "Problem 2", "tag": "Warm-Up", "heading": "One sale, three cost layers", "given": [{"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "5 units @ $4 / unit", ""], ["2/3", "Purchase", "10 units @ $5 / unit", ""], ["2/17", "Purchase", "10 units @ $6 / unit", ""], ["2/24", "Sale", "", "18 units @ $15 / unit"], ["", "Totals", "25 UNITS", "18 UNITS"]]}}, {"q": "Two purchases before the sale. Pool all three layers into one average before costing the sale."}], "reveals": [{"label": "Average Cost", "lines": ["1/1: 5 × $4 = $20", "2/3: 10 × $5 = $50", "2/17: 10 × $6 = $60", "$130 ÷ 25 units"], "answer": "$5.20"}, {"label": "COGS 2/24 Sale", "lines": ["18 units × $5.20"], "answer": "$93.60"}, {"label": "Ending Inventory", "lines": ["7 units × $5.20"], "answer": "$36.40"}, {"label": "Gross Profit", "lines": ["Sales: 18 × $15 = $270", "$270.00 - $93.60"], "answer": "$176.40"}]}, {"label": "Problem 3", "tag": "Weighted Average", "heading": "Two sales, and the average moves", "given": [{"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "10 units @ $4 / unit", ""], ["3/5", "Purchase", "10 units @ $6 / unit", ""], ["3/12", "Sale", "", "12 units @ $15 / unit"], ["4/2", "Purchase", "12 units @ $7.50 / unit", ""], ["4/20", "Sale", "", "15 units @ $15 / unit"], ["", "Totals", "32 UNITS", "27 UNITS"]]}}, {"q": "Weighted average: find a new average after every purchase. The 4/20 sale starts with what was left after 3/12, blended with the 4/2 purchase."}], "reveals": [{"label": "3/12 Sale COGS", "lines": ["1/1: 10 × $4 = $40", "3/5: 10 × $6 = $60", "Avg: $100 ÷ 20 = $5.00", "12 × $5.00"], "answer": "$60.00"}, {"label": "4/20 Sale COGS", "lines": ["Left: 8 × $5.00 = $40", "4/2: 12 × $7.50 = $90", "Avg: $130 ÷ 20 = $6.50", "15 × $6.50"], "answer": "$97.50"}, {"label": "End Inventory", "lines": ["5 units × $6.50"], "answer": "$32.50"}, {"label": "Gross Profit", "lines": ["Sales: 27 × $15 = $405", "COGS: $60 + $97.50", "$405.00 - $157.50"], "answer": "$247.50"}]}, {"section": "Problem 4: The Full Year", "label": "Problem 4", "tag": "Sale 1 of 3", "heading": "Sale 1: the 3/14 sale", "given": [{"p": "3 sales and 5 purchases at Northside Phone Cases. Work weighted average one sale at a time, then see how it stacks up against FIFO and LIFO."}, {"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "12 units @ $4.00 / unit", ""], ["2/6", "Purchase", "18 units @ $5.00 / unit", ""], ["3/14", "Sale", "", "20 units @ $15 / unit"], ["5/2", "Purchase", "15 units @ $6.00 / unit", ""], ["6/10", "Purchase", "15 units @ $6.40 / unit", ""], ["7/22", "Sale", "", "30 units @ $15 / unit"], ["9/8", "Purchase", "20 units @ $7.00 / unit", ""], ["11/15", "Sale", "", "24 units @ $15 / unit"], ["", "Totals", "80 UNITS", "74 UNITS"]]}}], "reveals": [{"label": "What is the average cost per unit right before the 3/14 sale?", "lines": ["1/1: 12 × $4 = $48", "2/6: 18 × $5 = $90", "$138 ÷ 30 units"], "answer": "$4.60"}, {"label": "What is the COGS for the 3/14 sale?", "lines": ["20 units × $4.60"], "answer": "$92.00"}, {"label": "What is the inventory on hand after the 3/14 sale?", "lines": ["10 units × $4.60"], "answer": "$46.00"}]}, {"label": "Problem 4", "tag": "Sale 2 of 3", "heading": "Sale 2: two purchases, two new averages", "given": [{"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "12 units @ $4.00 / unit", ""], ["2/6", "Purchase", "18 units @ $5.00 / unit", ""], ["3/14", "Sale", "", "20 units @ $15 / unit"], ["3/14", "On hand after sale", "10 units @ $4.60 avg", ""], ["5/2", "Purchase", "15 units @ $6.00 / unit", ""], ["6/10", "Purchase", "15 units @ $6.40 / unit", ""], ["7/22", "Sale", "", "30 units @ $15 / unit"], ["9/8", "Purchase", "20 units @ $7.00 / unit", ""], ["11/15", "Sale", "", "24 units @ $15 / unit"], ["", "Totals", "80 UNITS", "74 UNITS"]], "strike": [[0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 1], [1, 2], [1, 3], [2, 0], [2, 1], [2, 2], [2, 3]], "note": "Struck rows were blended into the 3/14 balance. Start from the highlighted balance row."}}], "reveals": [{"label": "Average cost after the 5/2 purchase?", "lines": ["On hand: $46.00", "5/2: 15 × $6 = $90", "$136 ÷ 25 units"], "answer": "$5.44"}, {"label": "Average cost after the 6/10 purchase?", "lines": ["$136 + 15 × $6.40", "= $232", "$232 ÷ 40 units"], "answer": "$5.80"}, {"label": "What is the COGS for the 7/22 sale?", "lines": ["30 units × $5.80"], "answer": "$174.00"}, {"label": "Inventory on hand after the 7/22 sale?", "lines": ["10 units × $5.80"], "answer": "$58.00"}]}, {"label": "Problem 4", "tag": "Sale 3 of 3", "heading": "Sale 3: the 11/15 sale", "given": [{"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "12 units @ $4.00 / unit", ""], ["2/6", "Purchase", "18 units @ $5.00 / unit", ""], ["3/14", "Sale", "", "20 units @ $15 / unit"], ["5/2", "Purchase", "15 units @ $6.00 / unit", ""], ["6/10", "Purchase", "15 units @ $6.40 / unit", ""], ["7/22", "Sale", "", "30 units @ $15 / unit"], ["7/22", "On hand after sale", "10 units @ $5.80 avg", ""], ["9/8", "Purchase", "20 units @ $7.00 / unit", ""], ["11/15", "Sale", "", "24 units @ $15 / unit"], ["", "Totals", "80 UNITS", "74 UNITS"]], "strike": [[0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 1], [1, 2], [1, 3], [2, 0], [2, 1], [2, 2], [2, 3], [3, 0], [3, 1], [3, 2], [3, 3], [4, 0], [4, 1], [4, 2], [4, 3], [5, 0], [5, 1], [5, 2], [5, 3]], "note": "Struck rows were blended into the 7/22 balance. Start from the highlighted balance row."}}], "reveals": [{"label": "What is the average cost per unit after the 9/8 purchase?", "lines": ["On hand: 10 units = $58", "9/8: 20 × $7 = $140", "$198 ÷ 30 units"], "answer": "$6.60"}, {"label": "What is the COGS for the 11/15 sale?", "lines": ["24 units × $6.60"], "answer": "$158.40"}, {"label": "What is the ending inventory after the 11/15 sale?", "lines": ["6 units × $6.60"], "answer": "$39.60"}]}, {"label": "Problem 4", "tag": "The Whole Year", "heading": "Put the three sales together", "given": [{"table": {"head": ["Date", "Activity", "Acquired at Cost", "Sold at Retail"], "rows": [["1/1", "Beginning Inventory", "12 units @ $4.00 / unit", ""], ["2/6", "Purchase", "18 units @ $5.00 / unit", ""], ["3/14", "Sale", "", "20 units @ $15 / unit"], ["5/2", "Purchase", "15 units @ $6.00 / unit", ""], ["6/10", "Purchase", "15 units @ $6.40 / unit", ""], ["7/22", "Sale", "", "30 units @ $15 / unit"], ["9/8", "Purchase", "20 units @ $7.00 / unit", ""], ["11/15", "Sale", "", "24 units @ $15 / unit"], ["", "Totals", "80 UNITS", "74 UNITS"]]}}], "reveals": [{"label": "Total COGS", "lines": ["$92.00 + $174.00 + $158.40 = $424.40"]}, {"label": "Ending Inventory", "lines": ["6 units × $6.60 = $39.60"]}, {"label": "Sales Revenue", "lines": ["74 units × $15 = $1,110.00"]}, {"label": "What is gross profit?", "lines": ["$1,110.00 - $424.40 = $685.60", "Check: $424.40 + $39.60 = $464.00, the cost of all 80 units."]}]}, {"label": "Problem 4", "tag": "Side by Side", "heading": "FIFO vs. Average vs. LIFO", "given": [{"p": "Same year, same 80 units, same $464 of cost."}], "reveals": [{"label": "FIFO", "table": {"head": ["Measure", "Calculation"], "rows": [["Total COGS", "$464.00 - $42.00 = $422.00"], ["Ending Inventory", "Last 6 units: 6 × $7 = $42.00"], ["Gross Profit", "$1,110 - $422 = $688.00"], ["Gross Profit Ratio?", "$688 / $1,110 = 62.0%"]], "note": "Oldest units sold first"}}, {"label": "Weighted Avg", "table": {"head": ["Measure", "Calculation"], "rows": [["Total COGS", "$424.40"], ["Ending Inventory", "6 × $6.60 = $39.60"], ["Gross Profit", "$1,110 - $424.40 = $685.60"], ["Gross Profit Ratio?", "$685.60 / $1,110 = 61.8%"]], "note": "Every unit at the average"}}, {"label": "LIFO", "table": {"head": ["Measure", "Calculation"], "rows": [["Total COGS", "$98 + $186 + $156 = $440.00"], ["Ending Inventory", "6 units left from 1/1: 6 × $4 = $24.00"], ["Gross Profit", "$1,110 - $440 = $670.00"], ["Gross Profit Ratio?", "$670 / $1,110 = 60.4%"]], "note": "Newest units sold first"}}, {"label": "Takeaway", "list": ["Costs rose all year ($4 up to $7). FIFO leaves the newest, priciest units in inventory, so it reports the highest gross profit. LIFO sends the newest units to COGS, so it reports the lowest. Weighted average blends old and new costs, so it lands in the middle.", "All three: COGS + Ending Inventory = $464.00, the cost of every unit the company had."]}]}]};
 (function(){

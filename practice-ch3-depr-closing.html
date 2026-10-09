@@ -22,14 +22,46 @@
 }
 :root[data-theme="dark"]{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
-html{height:100%}
 body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:calc(18px * var(--scale))/1.5 var(--body)}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 [hidden]{display:none!important}
-.wrap{max-width:1040px;margin:0 auto;padding-block:20px 48px;padding-inline:20px}
+/* App shell: fixed dark sidebar on the left with every game and practice, main content on the right */
+:root{--side:#111111; --sidehover:#202020; --sidetext:#E9E9E9; --sidemuted:#8E8E8E; --sidechip:#2A2A2A}
+html,body{height:100%}
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100%}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);color:var(--sidetext);padding:24px 16px 20px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#333 transparent}
+.side .brandlink img{height:50px;width:auto;display:block;border-radius:3px}
+.side .sitename{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;margin:12px 0 10px 2px;color:#fff}
+.side nav{display:flex;flex-direction:column;gap:2px}
+.side .ng{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sidemuted);margin:18px 0 6px 10px}
+.side .nch{font-size:12px;font-weight:600;color:var(--sidemuted);margin:8px 0 2px 10px}
+.side nav a{display:flex;gap:10px;align-items:center;color:var(--sidetext);text-decoration:none;padding:7px 10px;border-radius:6px;font-weight:600;font-size:15px;line-height:1.25}
+.side nav a:hover{background:var(--sidehover)}
+.side nav a:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.side nav a[aria-current="page"]{background:var(--red);color:#fff}
+.side .ch{flex:0 0 auto;width:24px;height:24px;border-radius:4px;background:var(--sidechip);font-family:var(--display);font-weight:600;font-size:13px;display:grid;place-items:center}
+.side nav a[aria-current="page"] .ch{background:rgba(0,0,0,.28)}
+.side .home .ch{background:transparent;font-size:16px}
+.side .sidefoot{margin-top:auto;padding:18px 10px 0;font-size:12px;color:var(--sidemuted)}
+.mbar{display:none}
+.scrim{display:none}
+.main{min-width:0;padding-block:30px 60px;padding-inline:clamp(20px,4vw,52px)}
+.inner{max-width:1120px}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(300px,86vw);z-index:30;transform:translateX(-102%);transition:transform .22s ease;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+  .mbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--side);padding:10px 16px}
+  .mbar img{height:36px;width:auto;display:block;border-radius:3px}
+  .mbar button{background:transparent;color:#fff;border:2px solid #444;border-radius:8px;padding:6px 14px;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .main{padding-block:22px 48px}
+}
+@media (prefers-reduced-motion: reduce){.side{transition:none}}
+
+.inner{max-width:1080px}
 .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:15px;font-weight:600;color:var(--muted)}
-.top img{height:40px;width:auto;display:block;border-radius:3px}
 .top a{color:inherit}
 .top .sp{flex:1}
 .size{display:flex;gap:6px}
@@ -81,9 +113,32 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="shell">
+  <div class="mbar"><a href="/"><img src="logo-214.png" alt="High School District 214"></a><button id="menuBtn" aria-expanded="false" aria-controls="side">Menu</button></div>
+  <aside class="side" id="side">
+    <a class="brandlink" href="/"><img src="logo-214.png" alt="High School District 214"></a>
+    <div class="sitename">Accounting</div>
+    <nav aria-label="Site">
+      <a class="home" href="/"><span class="ch">⌂</span>Home</a>
+      <div class="ng">Review Games</div>
+      <a href="chapter-5.html"><span class="ch">5</span>Same Goods, Three Costs</a>
+      <a href="chapter-4.html"><span class="ch">4</span>Same Deal, Two Books</a>
+      <div class="ng">Interactive Practices</div>
+      <div class="nch">Chapter 5</div>
+      <a href="practice-ch5-set-1.html"><span class="ch">5</span>Practice Problem Set 1</a>
+      <a href="practice-ch5-weighted-average.html"><span class="ch">5</span>Weighted Average</a>
+      <div class="nch">Chapter 4</div>
+      <a href="practice-ch4-round-1.html"><span class="ch">4</span>Problem Set Round 1</a>
+      <a href="practice-ch4-round-2.html"><span class="ch">4</span>Problem Set Round 2</a>
+      <div class="nch">Chapter 3</div>
+      <a href="practice-ch3-adjusting.html"><span class="ch">3</span>Adjusting Entries</a>
+      <a href="practice-ch3-depr-closing.html" aria-current="page"><span class="ch">3</span>Depreciation and Closing Entries</a>
+    </nav>
+    <div class="sidefoot">High School District 214 | Accounting</div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main"><div class="inner">
   <div class="top">
-    <a href="/"><img src="logo-214.png" alt="High School District 214"></a>
     <span><a href="/#practices">Interactive Practices</a> / Chapter 3</span>
     <span class="sp"></span>
     <span class="size" aria-label="Text size"><button id="smaller" aria-label="Smaller text">A−</button><button id="bigger" aria-label="Bigger text">A+</button></span>
@@ -107,7 +162,15 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
     <button class="btn ghost" id="nextBtn">Next problem</button>
   </div>
   <p class="hint">Keys: <kbd>Space</kbd> or <kbd>→</kbd> reveals the next step, then moves on. <kbd>←</kbd> goes back a problem. <kbd>H</kbd> hides answers.</p>
+  </div></main>
 </div>
+<script>
+(function(){const s=document.getElementById("side"),b=document.getElementById("menuBtn"),c=document.getElementById("scrim");
+function set(o){s.classList.toggle("open",o);c.classList.toggle("on",o);b.setAttribute("aria-expanded",o);b.textContent=o?"Close":"Menu"}
+b.addEventListener("click",()=>set(!s.classList.contains("open")));c.addEventListener("click",()=>set(false));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")set(false)});
+const cur=s.querySelector('[aria-current="page"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest"});})();
+</script>
 <script>
 const DECK={"id": "ch3-depr-closing", "chapter": 3, "title": "Depreciation and Closing Entries", "topic": "Depreciation methods and closing entries", "blurb": "Record depreciation with straight-line, units of production, and double declining balance, then close the books for Turner Company.", "problems": [{"section": "Depreciation", "label": "Problem 1", "tag": "Adjusting Entry", "heading": "December 31", "given": [{"p": "Depreciation on the company's equipment for 2020 is $17,251. Record the adjusting entry for 12/31/20."}], "reveals": [{"label": "December 31", "entry": {"rows": [{"account": "Depreciation Expense", "debit": "17,251"}, {"account": "Accumulated Depreciation", "credit": "17,251"}], "title": "December 31"}}]}, {"label": "Problem 2", "tag": "Straight-Line", "given": [{"p": "On January 1, 2024, Company XYZ purchases equipment for $60,000. The equipment has a useful life of 6 years and a salvage value of $6,000. Calculate the annual depreciation using the straight-line method and prepare the journal entry for one year."}], "reveals": [{"label": "Step 1: Calculate depreciation per year", "list": ["Depreciation = (Cost - Salvage Value) / Useful Life", "Depreciation = ($60,000 - $6,000) / 6 years = $9,000 per year"]}, {"label": "Journal entry", "entry": {"rows": [{"account": "Depreciation Expense", "debit": "$9,000"}, {"account": "Accumulated Depreciation", "credit": "$9,000"}]}}]}, {"label": "Problem 3", "tag": "Units of Production", "given": [{"p": "Company DEF buys a machine on January 1, 2024, for $80,000. The machine has an estimated total production capacity of 100,000 units over its useful life, and a salvage value of $10,000. The company produces 25,000 units in 2024 and 30,000 units in 2025. Calculate the depreciation for 2024 and 2025 using the units of production method and prepare the journal entries."}], "reveals": [{"label": "Step 1: Calculate the depreciation rate per unit", "list": ["Depreciation per unit = (Cost - Salvage Value) / Total Estimated Production", "Depreciation per unit = ($80,000 - $10,000) / 100,000 units = $0.70 per unit"]}, {"label": "Step 2: Depreciation calculations", "list": ["2024 depreciation: 25,000 units × $0.70 = $17,500", "2025 depreciation: 30,000 units × $0.70 = $21,000"]}, {"label": "Year 1", "entry": {"rows": [{"account": "Depreciation Expense", "debit": "$17,500"}, {"account": "Accumulated Depreciation", "credit": "$17,500"}], "title": "Year 1"}}, {"label": "Year 2", "entry": {"rows": [{"account": "Depreciation Expense", "debit": "$21,000"}, {"account": "Accumulated Depreciation", "credit": "$21,000"}], "title": "Year 2"}}]}, {"label": "Problem 4", "tag": "Double Declining Balance", "given": [{"p": "On January 1, 2024, Company ABC purchases a machine for $50,000. The machine has an estimated useful life of 5 years and a salvage value of $5,000. Calculate the depreciation expense for the first two years using the double declining balance method and prepare the corresponding journal entries."}], "reveals": [{"label": "Step 1: Calculate the depreciation rate", "list": ["Straight-line rate = 100% / 5 years = 20%", "Double declining balance rate = 20% × 2 = 40%"]}, {"label": "Step 2: Depreciation calculations", "list": ["Year 1 depreciation: $50,000 × 40% = $20,000", "Year 2 depreciation: ($50,000 - $20,000) × 40% = $12,000"]}, {"label": "Year 1", "entry": {"rows": [{"account": "Depreciation Expense", "debit": "$20,000"}, {"account": "Accumulated Depreciation", "credit": "$20,000"}], "title": "Year 1"}}, {"label": "Year 2", "entry": {"rows": [{"account": "Depreciation Expense", "debit": "$12,000"}, {"account": "Accumulated Depreciation", "credit": "$12,000"}], "title": "Year 2"}}]}, {"section": "Closing Entries", "label": "Closing Entry 1", "tag": "Close Revenue", "heading": "Turner Company", "given": [{"p": "The ledger of Turner Company includes the following accounts with normal balances: Retained Earnings $24,000; Dividends $1,200; Services Revenue $40,000; Wages Expense $15,000; and Rent Expense $6,000. Prepare the necessary closing entries from the available information."}], "reveals": [{"label": "Close revenue", "entry": {"rows": [{"account": "Revenue", "debit": "40,000"}, {"account": "Income Summary", "credit": "40,000"}]}}, {"label": "T-account: Revenue", "table": {"head": ["Debit", "Credit"], "rows": [["40,000", "40,000"], ["", "0"]], "note": "Revenue (last row is the balance)"}}, {"label": "T-account: Income Summary", "table": {"head": ["Debit", "Credit"], "rows": [["", "40,000"], ["", "40,000"]], "note": "Income Summary (last row is the balance)"}}]}, {"label": "Closing Entry 2", "tag": "Close Expenses", "heading": "Turner Company", "given": [{"p": "The ledger of Turner Company includes the following accounts with normal balances: Retained Earnings $24,000; Dividends $1,200; Services Revenue $40,000; Wages Expense $15,000; and Rent Expense $6,000. Prepare the necessary closing entries from the available information."}], "reveals": [{"label": "Close expenses", "entry": {"rows": [{"account": "Income Summary", "debit": "21,000"}, {"account": "Wages Expense", "credit": "15,000"}, {"account": "Rent Expense", "credit": "6,000"}]}}, {"label": "T-account: Wages Expense", "table": {"head": ["Debit", "Credit"], "rows": [["15,000", "15.000"], ["0", ""]], "note": "Wages Expense (last row is the balance)"}}, {"label": "T-account: Rent Expense", "table": {"head": ["Debit", "Credit"], "rows": [["6,000", "6,000"], ["0", ""]], "note": "Rent Expense (last row is the balance)"}}, {"label": "T-account: Income Summary", "table": {"head": ["Debit", "Credit"], "rows": [["15,000", "40,000"], ["6,000", ""], ["", "19,000"]], "note": "Income Summary (last row is the balance)"}}]}, {"label": "Closing Entry 3", "tag": "Close Income Summary", "heading": "Turner Company", "given": [{"p": "The ledger of Turner Company includes the following accounts with normal balances: Retained Earnings $24,000; Dividends $1,200; Services Revenue $40,000; Wages Expense $15,000; and Rent Expense $6,000. Prepare the necessary closing entries from the available information."}], "reveals": [{"label": "Close Income Summary", "entry": {"rows": [{"account": "Income Summary", "debit": "19,000"}, {"account": "Retained Earnings", "credit": "19,000"}]}}, {"label": "T-account: Income Summary", "table": {"head": ["Debit", "Credit"], "rows": [["15,000", "40,000"], ["6,000", ""], ["19,000", ""], ["", "0"]], "note": "Income Summary (last row is the balance)"}}, {"label": "T-account: Retained Earnings", "table": {"head": ["Debit", "Credit"], "rows": [["", "24,000"], ["", "19,000"], ["", "43,000"]], "note": "Retained Earnings (last row is the balance)"}}]}, {"label": "Closing Entry 4", "tag": "Close Dividends", "heading": "Turner Company", "given": [{"p": "The ledger of Turner Company includes the following accounts with normal balances: Retained Earnings $24,000; Dividends $1,200; Services Revenue $40,000; Wages Expense $15,000; and Rent Expense $6,000. Prepare the necessary closing entries from the available information."}], "reveals": [{"label": "Close dividends", "entry": {"rows": [{"account": "Retained Earnings", "debit": "1,200"}, {"account": "Dividends", "credit": "1,200"}]}}, {"label": "T-account: Dividends", "table": {"head": ["Debit", "Credit"], "rows": [["1,200", "1,200"], ["0", ""]], "note": "Dividends (last row is the balance)"}}, {"label": "T-account: Retained Earnings", "table": {"head": ["Debit", "Credit"], "rows": [["1,200", "24,000"], ["", "19,000"], ["", "41,800"]], "note": "Retained Earnings (last row is the balance)"}}]}]};
 (function(){
