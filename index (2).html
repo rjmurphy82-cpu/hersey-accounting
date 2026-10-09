@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>District 214 Accounting Games</title>
+<meta name="description" content="Review games for Accounting in High School District 214, one for each chapter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: brand bar, short headline, then one ledger-style row per chapter */
+:root{
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C;
+  --brown:#111111; --orange:#C1102F; --cream:#FAFAFA; --line:rgba(17,17,17,.18);
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --brown:#2B2B2B; --line:rgba(242,242,242,.16); color-scheme:dark}
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 var(--body)}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 56px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px;font-weight:600}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(40px,7vw,68px);line-height:.98;margin:22px 0 12px;text-wrap:balance}
+h1 span{color:var(--orange)}
+.lede{max-width:60ch;margin:0 0 30px;color:var(--muted)}
+.chapters{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.ch{display:grid;grid-template-columns:96px 1fr;background:var(--paper);border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.num{background:var(--brown);color:var(--cream);font-family:var(--display);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px}
+.num small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.num b{font-size:44px;font-weight:600;line-height:1}
+.info{padding:16px 20px;min-width:0;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.topic{font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.info h2{font-family:var(--display);font-weight:600;font-size:26px;margin:0;line-height:1.1}
+.info p{margin:0;font-size:16px}
+.play{align-self:flex-start;margin-top:8px;background:var(--orange);color:#fff;text-decoration:none;font-family:var(--display);font-weight:600;font-size:19px;padding:8px 20px;border-radius:8px}
+.play:hover{background:#D9203F}
+.play:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.ch.soon{opacity:.6}
+.ch.soon .num{background:var(--line);color:var(--ink)}
+footer{margin-top:36px;color:var(--muted);font-size:14px}
+.d214{height:40px;width:auto;background:#fff;padding:3px 6px;border-radius:4px;display:block}
+@media (prefers-color-scheme: dark){h1 span{color:#FF4D63}}
+@media (max-width:520px){.ch{grid-template-columns:70px 1fr}.num b{font-size:34px}.info{padding:12px 14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="logo-214.png" alt="District 214" class="d214">District 214 Accounting</div>
+  <h1>Review games, <span>one per chapter.</span></h1>
+  <p class="lede">Pick your chapter and play solo in Blitz or Practice, or as a class in team mode. Calculator out.</p>
+
+  <ol class="chapters">
+    <li class="ch">
+      <div class="num"><small>Ch</small><b>6</b></div>
+      <div class="info">
+        <span class="topic">Cash and Internal Controls</span>
+        <h2>Make It Match</h2>
+        <p>Bank reconciliations: sort the reconciling items, book the adjusting entries, and find the adjusted balance.</p>
+        <a class="play" href="chapter-6.html">Play</a>
+      </div>
+    </li>
+    <li class="ch">
+      <div class="num"><small>Ch</small><b>5</b></div>
+      <div class="info">
+        <span class="topic">Inventory Costing</span>
+        <h2>Same Goods, Three Costs</h2>
+        <p>FIFO, LIFO, and weighted average on real inventory problems, plus gross profit and concept checks.</p>
+        <a class="play" href="chapter-5.html">Play</a>
+      </div>
+    </li>
+    <li class="ch">
+      <div class="num"><small>Ch</small><b>4</b></div>
+      <div class="info">
+        <span class="topic">Accounting for Retailers</span>
+        <h2>Same Deal, Two Books</h2>
+        <p>Record each deal on the buyer's books and the seller's books: freight and FOB, returns, discounts, sales and COGS.</p>
+        <a class="play" href="chapter-4.html">Play</a>
+      </div>
+    </li>
+    <li class="ch soon">
+      <div class="num"><small>Ch</small><b>3</b></div>
+      <div class="info"><span class="topic">Adjusting and Closing Entries</span><h2>Coming soon</h2></div>
+    </li>
+    <li class="ch soon">
+      <div class="num"><small>Ch</small><b>2</b></div>
+      <div class="info"><h2>Coming soon</h2></div>
+    </li>
+    <li class="ch soon">
+      <div class="num"><small>Ch</small><b>1</b></div>
+      <div class="info"><h2>Coming soon</h2></div>
+    </li>
+  </ol>
+
+  <footer>High School District 214 | Accounting</footer>
+</div>
+</body>
+</html>

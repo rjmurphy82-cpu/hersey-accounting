@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Make It Match</title>
+<meta name="description" content="Chapter 6 review game on bank reconciliations for District 214 Accounting: reconciling items, adjusting entries, and adjusted balances.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --dark:#111111;
+  --red:#C1102F; --red2:#D9203F; --accent:#C1102F; --line:rgba(17,17,17,.16);
+  --good:#1E7A3C; --bad:#C1102F; --soft:#F7F6F6;
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#121212;--paper:#1E1E1E;--ink:#F2F2F2;--muted:#A8A8A8;--dark:#2B2B2B;--accent:#FF4D63;--line:rgba(242,242,242,.16);--good:#3FB86A;--bad:#FF4D63;--soft:#262626;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#121212;--paper:#1E1E1E;--ink:#F2F2F2;--muted:#A8A8A8;--dark:#2B2B2B;--accent:#FF4D63;--line:rgba(242,242,242,.16);--good:#3FB86A;--bad:#FF4D63;--soft:#262626;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:18px/1.45 var(--body);min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px;font-weight:600}
+.brand a{color:inherit;text-decoration:none}
+.brand a:hover{text-decoration:underline}
+.d214{height:40px;width:auto;background:#fff;padding:3px 6px;border-radius:4px;display:block}
+.tools{margin-left:auto;display:flex;gap:8px}
+.icon{background:var(--paper);border:2px solid var(--line);border-radius:8px;padding:4px 12px;font-size:15px;font-weight:600}
+[hidden]{display:none!important}
+
+/* Setup */
+.title{font-family:var(--display);font-weight:700;font-size:clamp(40px,6.5vw,72px);line-height:.98;margin:22px 0 8px}
+.title span{color:var(--accent)}
+.lede{max-width:64ch;color:var(--muted);margin:0 0 22px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.mode{text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:14px 16px}
+.mode b{display:block;font-family:var(--display);font-weight:600;font-size:24px}
+.mode span{color:var(--muted);font-size:15px}
+.mode[aria-pressed="true"]{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--red)}
+.panel{background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:18px}
+.row{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+.row>label,.row>.lab{font-family:var(--display);font-weight:600;font-size:20px;padding-top:6px}
+.lab small{display:block;font-family:var(--body);font-weight:500;font-size:14px;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{background:var(--soft);border:2px solid var(--line);border-radius:8px;padding:6px 14px;font-weight:600;min-width:52px}
+.seg button[aria-pressed="true"]{background:var(--dark);color:#fff;border-color:var(--dark)}
+.seg button:disabled{opacity:.35;cursor:not-allowed}
+.rec{font-size:15px;color:var(--muted);margin-top:8px}
+.rec table{border-collapse:collapse;margin-top:6px}
+.rec td{padding:2px 14px 2px 0}
+.rec td:last-child{font-weight:700;color:var(--ink)}
+.rec .star{color:var(--accent);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.go{justify-self:start;background:var(--red);color:#fff;border:0;border-radius:10px;font-family:var(--display);font-weight:600;font-size:26px;padding:10px 34px}
+.go:hover{background:var(--red2)}
+.note{font-size:15px;color:var(--muted)}
+
+/* Board */
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:14px 0}
+.team{position:relative;border-radius:10px;padding:6px 10px 8px;color:#fff;background:var(--c);transition:transform .15s,opacity .2s,box-shadow .15s}
+.team .n{font-size:14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.9}
+.team .s{font-family:var(--display);font-weight:600;font-size:clamp(26px,3vw,38px);line-height:1}
+.team.on{transform:translateY(-3px);box-shadow:0 0 0 4px var(--paper),0 0 0 7px var(--c)}
+.team.out{opacity:.35}
+.team .adj{position:absolute;top:4px;right:4px;display:none;gap:4px}
+.editing .team .adj{display:flex}
+.adj button{background:rgba(255,255,255,.25);border:0;border-radius:6px;color:#fff;font-weight:700;padding:0 8px;font-size:15px}
+.turn{display:flex;align-items:center;gap:12px;min-height:64px;border-radius:12px;padding:8px 16px;background:var(--c,var(--dark));color:#fff;font-family:var(--display);font-weight:600;font-size:clamp(22px,2.8vw,32px)}
+.turn .msg{flex:1}
+.clock{min-width:2.4em;text-align:center;background:rgba(0,0,0,.25);border-radius:10px;padding:2px 14px;font-size:clamp(30px,4.4vw,46px);line-height:1.15;font-variant-numeric:tabular-nums}
+.clock.steal{background:#fff;color:var(--c)}
+.clock.urgent{background:#fff;color:var(--bad);animation:pulse .5s ease-in-out infinite alternate}
+.clock.paused{opacity:.5}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.1)}}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0 8px;color:var(--muted);font-weight:600;font-size:16px;flex-wrap:wrap}
+.tag{background:var(--dark);color:#fff;border-radius:6px;padding:2px 10px;font-family:var(--display);letter-spacing:.04em;font-size:17px}
+.tag.pts{background:var(--red)}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:clamp(16px,2.4vw,28px)}
+.prompt{font-size:clamp(22px,2.6vw,32px);font-weight:600;line-height:1.3;margin:0}
+.data{margin:16px 0 0;border-collapse:collapse;font-size:clamp(18px,2vw,24px);min-width:min(520px,100%)}
+.data td{padding:5px 0;border-bottom:1px solid var(--line)}
+.data td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;padding-left:30px}
+.data tr.k td{color:var(--muted)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;background:var(--soft);border:2px solid var(--line);border-radius:12px;padding:12px 16px;font-size:clamp(18px,2vw,24px);font-weight:600;min-height:72px}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt .k{flex:none;width:38px;height:38px;border-radius:8px;background:var(--dark);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:20px}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--good);border-color:var(--good);color:#fff}
+.opt.right .k{background:rgba(0,0,0,.25)}
+.opt.wrong{background:transparent;border-color:var(--bad);color:var(--bad);text-decoration:line-through;opacity:.75}
+.opt.dim{opacity:.4}
+.je{display:grid;grid-template-columns:1fr auto;column-gap:18px;width:100%;font-size:.92em}
+.je .cr{padding-left:1.6em}
+.je .amt{text-align:right;font-variant-numeric:tabular-nums}
+.explain{margin-top:16px;border-left:6px solid var(--good);background:var(--soft);border-radius:8px;padding:12px 16px;font-size:clamp(17px,1.8vw,21px)}
+.explain.miss{border-color:var(--bad)}
+.explain b{font-family:var(--display);font-weight:600;font-size:1.1em;display:block}
+.bar2{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.btn{background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:8px 18px;font-weight:700}
+.btn.main{background:var(--red);border-color:var(--red);color:#fff;font-family:var(--display);font-weight:600;font-size:22px;padding:8px 28px}
+.hint{color:var(--muted);font-size:14px;text-align:right;margin-top:8px}
+
+/* Round intro and end */
+.intro{text-align:center;padding:clamp(30px,6vw,70px) 20px}
+.intro .r{font-family:var(--display);color:var(--accent);font-size:24px;letter-spacing:.1em;text-transform:uppercase}
+.intro h2{font-family:var(--display);font-weight:700;font-size:clamp(48px,8vw,96px);line-height:1;margin:6px 0 10px}
+.intro p{color:var(--muted);font-size:clamp(18px,2vw,24px);max-width:46ch;margin:0 auto 10px}
+.intro .facts{display:flex;justify-content:center;gap:10px;margin:18px 0 26px;flex-wrap:wrap}
+.stand{list-style:none;padding:0;margin:20px auto;max-width:640px;display:grid;gap:10px}
+.stand li{display:flex;align-items:center;gap:14px;background:var(--c);color:#fff;border-radius:12px;padding:10px 18px;font-family:var(--display);font-size:26px}
+.stand li .p{width:2em;opacity:.8}
+.stand li .v{margin-left:auto}
+.stand li:first-child{font-size:34px;padding:16px 20px}
+.solo{display:flex;gap:16px;align-items:center;margin:14px 0;font-family:var(--display);font-weight:600;font-size:24px}
+.solo .clock{background:var(--dark);color:#fff}
+@media (max-width:760px){.modes{grid-template-columns:1fr}.row{grid-template-columns:1fr}.opts{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><img src="logo-214.png" alt="District 214" class="d214"><a href="/">District 214 Accounting</a> | Chapter 6: Cash and Internal Controls</div>
+    <div class="tools">
+      <button class="icon" id="sound" aria-pressed="true">Sound on</button>
+      <button class="icon" id="home" hidden>Setup</button>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <h1 class="title">Make It <span>Match.</span></h1>
+    <p class="lede">Bank reconciliation review. Sort the reconciling items, book the adjusting entries, and get both sides to the same adjusted balance.</p>
+    <div class="modes" role="group" aria-label="Game mode">
+      <button class="mode" data-mode="teams" aria-pressed="true"><b>Class Teams</b><span>A random team gets each question. Miss it and another team has 5 seconds to steal.</span></button>
+      <button class="mode" data-mode="practice" aria-pressed="false"><b>Practice</b><span>Solo, no clock. Every question with a full explanation.</span></button>
+      <button class="mode" data-mode="blitz" aria-pressed="false"><b>Blitz</b><span>Solo, 3 minutes. Answer as many as you can.</span></button>
+    </div>
+    <div class="panel" id="teamOpts">
+      <div class="row"><div class="lab">Number of teams</div>
+        <div><div class="seg" id="segTeams"></div><div class="chips" id="teamChips" style="margin-top:10px"></div></div></div>
+      <div class="row"><div class="lab">Team pick<small>Who answers each question</small></div>
+        <div><div class="seg" id="segPick">
+          <button data-v="random" aria-pressed="true">Random (spin)</button>
+          <button data-v="order" aria-pressed="false">In order</button></div>
+          <div class="note" style="margin-top:6px">Random still gives every team exactly one question per round, just in a shuffled order. Steal teams are always picked at random.</div></div></div>
+      <div class="row"><div class="lab">Seconds to answer<small>Steals are always 5 seconds</small></div>
+        <div><div class="seg" id="segTime">
+          <button data-v="auto" aria-pressed="true">Auto (recommended)</button>
+          <button data-v="15" aria-pressed="false">15</button>
+          <button data-v="20" aria-pressed="false">20</button>
+          <button data-v="30" aria-pressed="false">30</button>
+          <button data-v="45" aria-pressed="false">45</button>
+          <button data-v="60" aria-pressed="false">60</button>
+          <button data-v="90" aria-pressed="false">90</button>
+          <button data-v="0" aria-pressed="false">No clock</button></div>
+          <div class="rec">Recommended times by round (Auto uses these):
+            <table>
+              <tr><td>Round 1: Sort It (add or deduct, which side)</td><td>15 sec</td></tr>
+              <tr><td>Round 2: Why It Works (concepts)</td><td>20 sec</td></tr>
+              <tr><td>Round 3: Book It (adjusting entries)</td><td>30 sec</td></tr>
+              <tr><td>Round 4: Do the Math (adjusted balances)</td><td>45 sec</td></tr>
+            </table>
+            <div style="margin-top:6px">Pick one number to use the same clock for every question. <span class="star">60 or 90</span> works for a class seeing reconciliations for the first time.</div>
+          </div></div></div>
+      <div class="row"><div class="lab">Game length</div>
+        <div><div class="seg" id="segLen">
+          <button data-v="4" aria-pressed="true">Full: 4 rounds</button>
+          <button data-v="2" aria-pressed="false">Quick: Rounds 1 and 4</button></div>
+          <div class="seg" id="segPer" style="margin-top:10px">
+            <button data-v="1" aria-pressed="true">1 question per team per round</button>
+            <button data-v="2" aria-pressed="false">2 per team per round</button></div>
+          <div class="note" style="margin-top:6px" id="lenNote"></div></div></div>
+      <div class="row"><div class="lab">Scoring</div>
+        <div class="note" style="padding-top:6px">Rounds 1 and 2: 100 points. Rounds 3 and 4: 200 points. A correct steal earns the full value. A missed steal (wrong answer or time runs out) costs 100. No penalty for the first team missing.</div></div>
+      <button class="go" id="start">Start game</button>
+    </div>
+    <div class="panel" id="soloOpts" hidden>
+      <div class="note" id="soloNote"></div>
+      <button class="go" id="startSolo">Start</button>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden>
+    <div class="board" id="board"></div>
+    <div class="solo" id="soloBar" hidden><span id="soloScore">0 pts</span><span id="soloProg" style="color:var(--muted);font-size:20px"></span><span class="clock" id="blitzClock" hidden style="margin-left:auto">3:00</span></div>
+    <div id="introBox" class="card intro" hidden></div>
+    <div id="qBox" hidden>
+      <div class="turn" id="turn"><span class="msg" id="turnMsg"></span><span class="clock" id="clock" hidden></span></div>
+      <div class="meta"><span><span class="tag" id="qTag"></span> <span class="tag pts" id="qPts"></span></span><span id="qCount"></span></div>
+      <div class="card">
+        <p class="prompt" id="prompt"></p>
+        <table class="data" id="data" hidden></table>
+        <div class="opts" id="opts"></div>
+        <div class="explain" id="explain" hidden></div>
+        <div class="bar2">
+          <button class="btn" id="pauseBtn" hidden>Pause (P)</button>
+          <button class="btn" id="passBtn" hidden>No answer</button>
+          <button class="btn" id="editBtn" hidden>Adjust scores</button>
+          <button class="btn main" id="nextBtn" hidden>Next</button>
+        </div>
+        <div class="hint" id="hint"></div>
+      </div>
+    </div>
+    <div id="endBox" class="card intro" hidden></div>
+  </section>
+</div>
+
+<script>
+"use strict";
+/* ---------- Question bank ---------- */
+const SORT_OPTS=["Add to bank balance","Deduct from bank balance","Add to book balance","Deduct from book balance"];
+const AB=0,DB=1,AK=2,DK=3;
+const J=(dr,cr,a)=>({je:[[dr,a],[cr,a]]});
+const NOE="No entry needed";
+const BANK=[
+ // Round 1: Sort It
+ {t:"sort",p:"A $1,200 deposit made on the last day of the month does not appear on the bank statement.",a:AB,x:"Deposit in transit. The company already recorded it, the bank just hasn't processed it yet. Add it to the bank balance."},
+ {t:"sort",p:"Checks #412 and #415, totaling $860, have not cleared the bank.",a:DB,x:"Outstanding checks. The books already show the money as gone, but the bank hasn't paid them yet. Deduct from the bank balance."},
+ {t:"sort",p:"The bank statement shows a customer's $310 check was returned marked NSF.",a:DK,x:"The company recorded that cash when it deposited the check, but it was never collected. Deduct from the book balance."},
+ {t:"sort",p:"The bank charged an $18 monthly service fee.",a:DK,x:"The bank already took the fee out. The company learns about it from the statement, so deduct it from the book balance."},
+ {t:"sort",p:"The bank statement shows $22 of interest earned on the checking account.",a:AK,x:"The bank already added the interest. The company hasn't recorded it yet, so add it to the book balance."},
+ {t:"sort",p:"The bank collected a $2,000 note receivable for the company and deposited it in the account.",a:AK,x:"The bank already has the money. The books don't know about it yet, so add it to the book balance."},
+ {t:"sort",p:"Check #530 for $450 cleared the bank correctly but was recorded in the books as $540.",a:AK,x:"The books took out $90 too much. Add $90 back to the book balance."},
+ {t:"sort",p:"Check #618 for $380 cleared the bank correctly but was recorded in the books as $308.",a:DK,x:"The books took out $72 too little. Deduct $72 from the book balance."},
+ {t:"sort",p:"The bank mistakenly deducted another company's $200 check from our account.",a:AB,x:"Bank error that lowered the bank balance. Add $200 back to the bank balance and notify the bank."},
+ {t:"sort",p:"The bank mistakenly credited our account for a $486 deposit made by a different company.",a:DB,x:"Bank error that raised the bank balance. Deduct $486 from the bank balance and notify the bank."},
+ {t:"sort",p:"A $630 customer payment was deposited correctly but recorded in the books as $360.",a:AK,x:"The books show $270 less cash than was actually deposited. Add $270 to the book balance."},
+ {t:"sort",p:"The bank paid the $145 electric bill by automatic EFT. The company has not recorded it.",a:DK,x:"The money already left the bank account. Deduct it from the book balance."},
+ {t:"sort",p:"The bank charged $35 for a new box of printed checks.",a:DK,x:"A bank charge the company finds out about on the statement. Deduct it from the book balance."},
+ // Round 2: Why It Works
+ {t:"concept",p:"What is the purpose of a bank reconciliation?",o:["To explain the difference between the bank statement balance and the book balance of cash","To prove the bank never makes mistakes","To calculate how much interest the company owes the bank","To replace the Cash account in the ledger"],a:0,x:"A reconciliation explains why the bank's number and the company's number are different, and finds the true cash balance."},
+ {t:"concept",p:"After a reconciliation, which items require a journal entry in the company's books?",o:["Only the items in the book section","Only the items in the bank section","Every reconciling item","None of them"],a:0,x:"Only book-side items need entries. Bank-side items are timing differences or bank errors the bank will fix."},
+ {t:"concept",p:"Why doesn't a deposit in transit need a journal entry?",o:["The company already recorded it; the bank just hasn't processed it yet","It will be returned by the bank","Deposits are never recorded in the books","The bank records the entry for the company"],a:0,x:"It's already in the books. It shows up on next month's bank statement, so there's nothing to fix."},
+ {t:"concept",p:"What is an outstanding check?",o:["A check the company wrote and recorded that has not cleared the bank yet","A check a customer still owes the company","A check returned for nonsufficient funds","A check the bank paid twice"],a:0,x:"The company already subtracted it in the books. The bank hasn't paid it yet, so it's deducted from the bank balance."},
+ {t:"concept",p:"On a bank statement, NSF stands for:",o:["Nonsufficient funds","Net settlement fee","No signature found","Non-standard financial"],a:0,x:"An NSF check bounced: the customer's account didn't have enough money to cover it."},
+ {t:"concept",p:"The adjusted bank balance and the adjusted book balance don't match. What does that tell you?",o:["An error or a missing reconciling item still exists","Use the bank balance, since the bank is always right","Report the larger of the two balances","Put the difference in Cash Over and Short"],a:0,x:"The adjusted balances must be equal. If they aren't, something was missed or miscalculated. Go find it."},
+ {t:"concept",p:"Which employee should prepare the bank reconciliation?",o:["Someone who does not handle cash or write checks","The cashier who makes the deposits","The person who signs the checks","Whoever opens the mail"],a:0,x:"Separation of duties. The person checking the cash records shouldn't be the person who can touch the cash."},
+ {t:"concept",p:"A bank error turns up during the reconciliation. What does the company do?",o:["Notify the bank; no journal entry is needed","Record a journal entry to fix it","Ignore it until the end of the year","Close the account"],a:0,x:"Bank errors are the bank's to correct. They go in the bank section, and the company's books stay as they are."},
+ {t:"concept",p:"One employee opens the mail and lists the checks received. A different employee records them. Which cash control does this show?",o:["Separating cash handling from recordkeeping","Promptly depositing cash receipts","Making disbursements by check","Using a petty cash fund"],a:0,x:"The person with the money and the person with the records are different people, so theft would need two people working together."},
+ {t:"concept",p:"After the adjusting entries are posted, which amount is reported as Cash on the balance sheet?",o:["The adjusted balance","The bank statement balance","The unadjusted book balance","The average of the bank and book balances"],a:0,x:"After posting the book-side entries, the Cash account equals the adjusted balance. That's the real cash the company has."},
+ {t:"concept",p:"Which of these is included in Cash?",o:["A money order received from a customer","Office supplies","A 2-year certificate of deposit","An account receivable"],a:0,x:"Cash includes currency, coins, bank deposits, customer checks, cashier's checks, certified checks, and money orders."},
+ // Round 3: Book It
+ {t:"entry",p:"The bank returned a customer's $310 check marked NSF. Record the adjusting entry.",o:[J("Accounts Receivable","Cash",310),J("Cash","Accounts Receivable",310),J("Miscellaneous Expense","Cash",310),NOE],a:0,x:"The customer still owes the money, so Accounts Receivable goes back up and Cash goes down."},
+ {t:"entry",p:"The bank charged an $18 service fee. Record the adjusting entry.",o:[J("Bank Service Charge Expense","Cash",18),J("Cash","Service Revenue",18),J("Cash","Bank Service Charge Expense",18),NOE],a:0,x:"An expense goes up (debit) and Cash goes down (credit)."},
+ {t:"entry",p:"The bank statement shows $22 of interest earned. Record the adjusting entry.",o:[J("Cash","Interest Revenue",22),J("Interest Revenue","Cash",22),J("Interest Expense","Cash",22),NOE],a:0,x:"Cash goes up (debit) and the company earned revenue (credit Interest Revenue)."},
+ {t:"entry",p:"The bank collected a $2,000 note receivable for the company. Record the adjusting entry.",o:[J("Cash","Notes Receivable",2000),J("Notes Receivable","Cash",2000),J("Cash","Notes Payable",2000),J("Cash","Service Revenue",2000)],a:0,x:"Cash goes up and the note is no longer owed to the company, so Notes Receivable goes down."},
+ {t:"entry",p:"Check #781 for supplies cleared the bank for $268 but was recorded in the books as $240. Record the adjusting entry.",o:[J("Supplies Expense","Cash",28),J("Cash","Supplies Expense",28),J("Supplies Expense","Cash",268),NOE],a:0,x:"The books recorded $28 too little. Record the extra $28 of expense and take $28 more out of Cash."},
+ {t:"entry",p:"A $1,450 rent check cleared the bank correctly but was recorded in the books as $1,540. Record the adjusting entry.",o:[J("Cash","Rent Expense",90),J("Rent Expense","Cash",90),J("Cash","Rent Expense",1450),NOE],a:0,x:"The books took out $90 too much. Put $90 back in Cash and lower Rent Expense by $90."},
+ {t:"entry",p:"A $900 deposit in transit appears on the reconciliation. Record the adjusting entry.",o:[NOE,J("Cash","Accounts Receivable",900),J("Accounts Receivable","Cash",900),J("Cash","Deposits in Transit",900)],a:0,x:"Deposits in transit are on the bank side. The books are already correct, so no entry."},
+ {t:"entry",p:"The bank paid the $145 electric bill by EFT. The company hasn't recorded it. Record the adjusting entry.",o:[J("Utilities Expense","Cash",145),J("Cash","Utilities Expense",145),J("Utilities Expense","Accounts Payable",145),NOE],a:0,x:"The bill is paid and the money is gone. Debit the expense, credit Cash."},
+ {t:"entry",p:"A $630 customer payment on account was deposited correctly but recorded in the books as $360. Record the adjusting entry.",o:[J("Cash","Accounts Receivable",270),J("Accounts Receivable","Cash",270),J("Cash","Service Revenue",270),J("Cash","Accounts Receivable",630)],a:0,x:"The books are $270 short. Increase Cash and lower Accounts Receivable by the $270 difference."},
+ // Round 4: Do the Math
+ {t:"calc",p:"What is the adjusted bank balance?",d:[["Bank statement balance",5000],["Deposit in transit",800],["Outstanding checks",1300]],o:[4500,5500,7100,2900],a:0,x:"$5,000 + $800 deposit in transit − $1,300 outstanding checks = $4,500."},
+ {t:"calc",p:"What is the adjusted book balance?",d:[["Cash balance per books",4620],["Interest earned",25],["Bank service charge",15],["NSF check",130]],o:[4500,4450,4790,4740],a:0,x:"$4,620 + $25 interest − $15 service charge − $130 NSF = $4,500."},
+ {t:"calc",p:"What is the adjusted bank balance?",d:[["Bank statement balance",8250],["Deposit in transit",1100],["Outstanding checks",1940],["Bank credited us for another company's deposit",300]],o:[7110,7710,6310,9050],a:0,x:"$8,250 + $1,100 − $1,940 − $300 bank error = $7,110."},
+ {t:"calc",p:"What is the adjusted book balance?",d:[["Cash balance per books",6900],["Note collected by the bank",400],["Bank service charge",40],["NSF check",150]],o:[7110,6310,7490,7190],a:0,x:"$6,900 + $400 note − $40 service charge − $150 NSF = $7,110."},
+ {t:"calc",p:"The adjusted book balance is $3,200. The only book-side items were $20 of interest and a $180 NSF check. What was the unadjusted book balance?",o:[3360,3040,3400,3000],a:0,x:"Work backward: unadjusted + $20 − $180 = $3,200, so unadjusted = $3,200 − $20 + $180 = $3,360."},
+ {t:"calc",p:"The adjusted bank balance is $7,207. What did the bank statement show?",d:[["Deposit in transit",500],["Outstanding checks",2417]],o:[9124,5290,10124,4290],a:0,x:"Statement + $500 − $2,417 = $7,207, so statement = $7,207 − $500 + $2,417 = $9,124."},
+ {t:"calc",p:"A company's book-side items were $30 of interest, a $28 recording error that understated an expense, and a $225 NSF check. What is the net effect on Cash after posting the adjusting entries?",o:["Decrease of $223","Decrease of $283","Increase of $223","Decrease of $253"],a:0,raw:true,x:"+$30 − $28 − $225 = −$223. Cash goes down by $223."},
+ {t:"calc",p:"What is the adjusted bank balance?",d:[["Bank statement balance",3480],["Outstanding check #201",615],["Outstanding check #204",240],["Deposit in transit",1050]],o:[3675,2625,4530,5385],a:0,x:"$3,480 + $1,050 − ($615 + $240) = $3,675."}
+];
+const ROUNDS={
+ sort:{n:1,name:"Sort It",pts:100,secs:15,desc:"Read the item. Does it go on the bank side or the book side, and is it added or deducted?",tag:"Sort It"},
+ concept:{n:2,name:"Why It Works",pts:100,secs:20,desc:"Concepts behind cash controls and the reconciliation.",tag:"Why It Works"},
+ entry:{n:3,name:"Book It",pts:200,secs:30,desc:"Pick the adjusting entry the company records after the reconciliation.",tag:"Book It"},
+ calc:{n:4,name:"Do the Math",pts:200,secs:45,desc:"Find the adjusted balance. Calculators out.",tag:"Do the Math"}
+};
+const TEAMS=[["Red","#C1102F"],["Blue","#1F5FAD"],["Green","#23763A"],["Gold","#9A6B00"],["Purple","#6A3FA0"],["Teal","#00737D"],["Orange","#C2531A"],["Slate","#46505C"]];
+const STEAL=5,PENALTY=100,BLITZ=180;
+
+/* ---------- Helpers ---------- */
+const $=id=>document.getElementById(id);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const money=n=>"$"+n.toLocaleString("en-US");
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const count=t=>BANK.filter(q=>q.t===t).length;
+
+let soundOn=true,actx=null;
+function beep(f,d,type="sine",v=.08){if(!soundOn)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(actx.destination);const t=actx.currentTime;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d)}catch(e){}}
+const sGood=()=>{beep(660,.12);setTimeout(()=>beep(990,.18),110)};
+const sBad=()=>beep(180,.35,"square",.05);
+const sTick=()=>beep(880,.06,"sine",.05);
+const sTick2=()=>beep(520,.05,"sine",.04);
+
+// Build a playable copy of a question with options in display order
+function inst(q){
+  const c={...q};
+  if(q.t==="sort"){c.opts=SORT_OPTS.map((o,i)=>({v:o,ok:i===q.a}));}
+  else{c.opts=shuffle(q.o.map((o,i)=>({v:o,ok:i===q.a})));}
+  return c;
+}
+function optHTML(v,raw){
+  if(v&&v.je)return `<span class="je"><span>${esc(v.je[0][0])}</span><span class="amt">${money(v.je[0][1])}</span><span class="cr">${esc(v.je[1][0])}</span><span class="amt">${money(v.je[1][1])}</span></span>`;
+  if(typeof v==="number")return money(v);
+  return esc(v);
+}
+function optText(v){if(v&&v.je)return `Dr ${v.je[0][0]} ${money(v.je[0][1])}, Cr ${v.je[1][0]} ${money(v.je[1][1])}`;if(typeof v==="number")return money(v);return v}
+
+/* ---------- Setup ---------- */
+const cfg={mode:"teams",n:6,pick:"random",time:"auto",len:4,per:1};
+function segInit(id,key,parse){
+  $(id).addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;cfg[key]=parse(b.dataset.v);[...$(id).children].forEach(x=>x.setAttribute("aria-pressed",x===b));refreshSetup()});
+}
+(function(){
+  const s=$("segTeams");for(let i=2;i<=8;i++){const b=document.createElement("button");b.dataset.v=i;b.textContent=i;b.setAttribute("aria-pressed",i===cfg.n);s.appendChild(b)}
+  segInit("segTeams","n",Number);segInit("segPick","pick",String);segInit("segTime","time",v=>v==="auto"?"auto":Number(v));
+  segInit("segLen","len",Number);segInit("segPer","per",Number);
+  document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>{cfg.mode=b.dataset.mode;document.querySelectorAll(".mode").forEach(x=>x.setAttribute("aria-pressed",x===b));refreshSetup()}));
+  refreshSetup();
+})();
+function roundTypes(){return cfg.len===4?["sort","concept","entry","calc"]:["sort","calc"]}
+function maxPer(){const lim=Math.min(...roundTypes().map(count));return Math.floor(lim/cfg.n)}
+function refreshSetup(){
+  const team=cfg.mode==="teams";$("teamOpts").hidden=!team;$("soloOpts").hidden=team;
+  $("teamChips").innerHTML=TEAMS.slice(0,cfg.n).map(([n,c])=>`<span class="chip" style="background:${c}">${n}</span>`).join("");
+  const two=$("segPer").children[1];two.disabled=maxPer()<2;
+  if(two.disabled&&cfg.per===2){cfg.per=1;[...$("segPer").children].forEach((x,i)=>x.setAttribute("aria-pressed",i===0))}
+  const qs=cfg.n*cfg.per*roundTypes().length;
+  $("lenNote").textContent=`${qs} questions total (${cfg.per*roundTypes().length} per team).`+(two.disabled?" 2 per team is available with 4 or fewer teams.":"");
+  $("soloNote").textContent=cfg.mode==="practice"?`All ${BANK.length} questions, mixed from every round. No clock. Read the explanation after each one.`:`3 minutes on the clock. Rounds 1 and 2 questions are worth 100, Rounds 3 and 4 are worth 200. Wrong answers cost nothing but time.`;
+}
+$("sound").addEventListener("click",()=>{soundOn=!soundOn;$("sound").setAttribute("aria-pressed",soundOn);$("sound").textContent=soundOn?"Sound on":"Sound off"});
+
+/* ---------- Clock ---------- */
+const CK={id:null,end:0,left:0,paused:false,el:null,cb:null,last:-1};
+function stopClock(){clearInterval(CK.id);CK.id=null;CK.paused=false;if(CK.el){CK.el.classList.remove("paused")}}
+function startClock(secs,el,cls,cb){
+  stopClock();CK.el=el;CK.cb=cb;CK.end=performance.now()+secs*1000;CK.last=-1;
+  el.hidden=false;el.className="clock"+(cls?" "+cls:"");
+  const draw=()=>{const left=Math.max(0,(CK.end-performance.now())/1000);CK.left=left;const c=Math.ceil(left);
+    el.textContent=c;el.classList.toggle("urgent",left<=3&&left>0);
+    if(c!==CK.last){if(c<=3&&c>0)sTick();CK.last=c}return left};
+  draw();
+  CK.id=setInterval(()=>{if(CK.paused)return;if(draw()<=0){stopClock();cb()}},100);
+}
+function togglePause(){
+  if(!CK.id)return;CK.paused=!CK.paused;
+  if(CK.paused){CK.left=Math.max(0,(CK.end-performance.now())/1000);CK.el.classList.add("paused");$("pauseBtn").textContent="Resume (P)"}
+  else{CK.end=performance.now()+CK.left*1000;CK.el.classList.remove("paused");$("pauseBtn").textContent="Pause (P)"}
+}
+
+/* ---------- Game state ---------- */
+let S={};
+function show(which){["introBox","qBox","endBox"].forEach(k=>$(k).hidden=k!==which)}
+$("start").addEventListener("click",startTeams);
+$("startSolo").addEventListener("click",startSolo);
+$("home").addEventListener("click",()=>{if(S.mode&&S.phase!=="end"&&!confirm("Leave this game and go back to setup?"))return;toSetup()});
+function toSetup(){stopClock();clearInterval(S.blitzId);S.gen=(S.gen||0)+1;S={};$("play").hidden=true;$("setup").hidden=false;$("home").hidden=true;window.scrollTo(0,0)}
+
+function startTeams(){
+  const types=roundTypes();
+  S={mode:"teams",gen:0,teams:TEAMS.slice(0,cfg.n).map(([name,color])=>({name,color,score:0})),rounds:[],ri:0,qi:0};
+  for(const t of types){
+    const n=cfg.n*cfg.per;
+    const qs=shuffle(BANK.filter(q=>q.t===t)).slice(0,n).map(inst);
+    let order=[];for(let k=0;k<cfg.per;k++){const base=[...Array(cfg.n).keys()];order.push(...(cfg.pick==="random"?shuffle(base):base))}
+    S.rounds.push({type:t,qs,order});
+  }
+  $("setup").hidden=true;$("play").hidden=false;$("home").hidden=false;$("board").hidden=false;$("soloBar").hidden=true;
+  $("editBtn").hidden=false;
+  renderBoard();roundIntro();
+}
+function renderBoard(hi){
+  const b=$("board");
+  b.innerHTML=S.teams.map((t,i)=>{let c="team";
+    const lit=hi!==undefined?hi===i:(S.phase==="steal"?S.stealer===i:(S.phase==="turn"&&S.turn===i));
+    if(lit)c+=" on";
+    if(S.phase==="steal"&&i===S.turn)c+=" out";
+    return `<div class="${c}" style="--c:${t.color}"><div class="n">${t.name}</div><div class="s">${t.score}</div><div class="adj"><button data-i="${i}" data-d="-100" aria-label="Minus 100 for ${t.name}">−</button><button data-i="${i}" data-d="100" aria-label="Plus 100 for ${t.name}">+</button></div></div>`}).join("");
+}
+$("board").addEventListener("click",e=>{const b=e.target.closest("button[data-d]");if(!b)return;S.teams[+b.dataset.i].score+=+b.dataset.d;renderBoard()});
+$("editBtn").addEventListener("click",()=>{const on=$("board").classList.toggle("editing");$("editBtn").textContent=on?"Done adjusting":"Adjust scores"});
+
+function secsFor(type){return cfg.time==="auto"?ROUNDS[type].secs:cfg.time}
+function roundIntro(){
+  stopClock();S.phase="intro";renderBoard();
+  const r=S.rounds[S.ri],R=ROUNDS[r.type],secs=secsFor(r.type);
+  $("introBox").innerHTML=`<div class="r">Round ${S.ri+1} of ${S.rounds.length}</div><h2>${R.name}</h2><p>${R.desc}</p>
+   <div class="facts"><span class="tag pts">${R.pts} points</span><span class="tag">${secs?secs+" seconds":"No clock"}</span><span class="tag">5-second steals</span><span class="tag">${r.qs.length} questions</span></div>
+   <button class="btn main" id="goRound">Start round</button><div class="hint" style="text-align:center">Space to start</div>`;
+  show("introBox");$("goRound").focus({preventScroll:true});
+  $("goRound").addEventListener("click",()=>{S.qi=0;nextQuestion()});
+}
+function nextQuestion(){
+  const r=S.rounds[S.ri];
+  if(S.qi>=r.qs.length){S.ri++;if(S.ri>=S.rounds.length)return endTeams();return roundIntro()}
+  S.q=r.qs[S.qi];S.turn=r.order[S.qi];S.stealer=-1;S.wrong=-1;
+  renderQuestion();
+  const t=S.teams[S.turn],gen=++S.gen;
+  if(cfg.pick==="random"){
+    S.phase="picking";lockOpts(true);setTurn("Picking a team...",t.color);
+    spin([...Array(S.teams.length).keys()],S.turn,gen,()=>beginTurn());
+  }else beginTurn();
+}
+function beginTurn(){
+  const t=S.teams[S.turn];S.phase="turn";renderBoard();lockOpts(false);sTick2();
+  setTurn(`${t.name}, your question`,t.color);
+  const secs=secsFor(S.q.t);
+  $("passBtn").hidden=false;$("pauseBtn").hidden=!secs;$("pauseBtn").textContent="Pause (P)";
+  if(secs)startClock(secs,$("clock"),"",()=>{if(S.phase==="turn"){sBad();firstMiss(-1,true)}});
+  else $("clock").hidden=true;
+}
+function setTurn(msg,color){$("turn").style.setProperty("--c",color);$("turnMsg").textContent=msg}
+function spin(cands,pick,gen,done){
+  const seq=[];const n=reduce||cands.length<2?0:16;
+  for(let k=0;k<n;k++){let r;do{r=cands[Math.floor(Math.random()*cands.length)]}while(seq.length&&r===seq[seq.length-1]);seq.push(r)}
+  if(seq.length&&seq[seq.length-1]===pick)seq.pop();seq.push(pick);let k=0;
+  (function step(){
+    if(gen!==S.gen)return;
+    renderBoard(seq[k]);sTick2();
+    if(k===seq.length-1){setTimeout(()=>{if(gen===S.gen)done()},reduce?0:420);return}
+    const d=55+Math.pow(k/seq.length,2.2)*280;k++;setTimeout(step,d);
+  })();
+}
+function renderQuestion(){
+  const q=S.q,R=ROUNDS[q.t];
+  show("qBox");
+  $("qTag").textContent=S.mode==="teams"?`Round ${S.ri+1}: ${R.tag}`:R.tag;
+  $("qPts").textContent=R.pts+" pts";
+  $("qCount").textContent=S.mode==="teams"?`Question ${S.qi+1} of ${S.rounds[S.ri].qs.length}`:"";
+  $("prompt").textContent=q.p;
+  const d=$("data");
+  if(q.d){d.hidden=false;d.innerHTML=q.d.map(([l,v])=>`<tr><td>${esc(l)}</td><td>${money(v)}</td></tr>`).join("")}else{d.hidden=true;d.innerHTML=""}
+  $("opts").innerHTML=q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${"ABCD"[i]}</span><span>${optHTML(o.v)}</span></button>`).join("");
+  $("explain").hidden=true;$("nextBtn").hidden=true;$("passBtn").hidden=true;$("pauseBtn").hidden=true;$("clock").hidden=true;
+  $("turn").hidden=S.mode!=="teams";
+  $("hint").textContent=S.mode==="teams"?"Click the answer the team gives (or press A to D). P pauses the clock.":"Press A to D to answer.";
+}
+function optBtns(){return [...$("opts").querySelectorAll(".opt")]}
+function lockOpts(l){optBtns().forEach(b=>{if(!b.classList.contains("wrong"))b.disabled=l})}
+$("opts").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b||b.disabled)return;choose(+b.dataset.i)});
+function choose(i){
+  if(S.mode==="teams"){
+    if(S.phase==="turn"){
+      stopClock();
+      if(S.q.opts[i].ok){award(S.turn,ROUNDS[S.q.t].pts);finishQ(i,true,`${S.teams[S.turn].name} +${ROUNDS[S.q.t].pts}`)}
+      else{sBad();firstMiss(i,false)}
+    }else if(S.phase==="steal"){
+      stopClock();const t=S.teams[S.stealer];
+      if(S.q.opts[i].ok){award(S.stealer,ROUNDS[S.q.t].pts);finishQ(i,true,`Stolen! ${t.name} +${ROUNDS[S.q.t].pts}`)}
+      else{sBad();award(S.stealer,-PENALTY);optBtns()[i].classList.add("wrong");finishQ(-1,false,`No steal. ${t.name} −${PENALTY}`)}
+    }
+  }else soloChoose(i);
+}
+function award(i,pts){S.teams[i].score+=pts;if(pts>0)sGood();renderBoard()}
+function firstMiss(i,timeout){
+  $("passBtn").hidden=true;$("pauseBtn").hidden=true;
+  if(i>=0){optBtns()[i].classList.add("wrong");optBtns()[i].disabled=true;S.wrong=i}
+  lockOpts(true);
+  S.phase="rolling";renderBoard();
+  const others=[...Array(S.teams.length).keys()].filter(x=>x!==S.turn);
+  const pick=others[Math.floor(Math.random()*others.length)];
+  setTurn(`${timeout?"Time's up":i<0?"No answer":"Missed"}. Picking a team to steal...`,S.teams[S.turn].color);
+  $("clock").hidden=true;const gen=++S.gen;
+  spin(others,pick,gen,()=>{
+    S.stealer=pick;S.phase="steal";renderBoard();lockOpts(false);
+    const t=S.teams[pick];setTurn(`${t.name}, steal it!`,t.color);$("passBtn").hidden=false;
+    startClock(STEAL,$("clock"),"steal",()=>{if(S.phase==="steal"){sBad();award(S.stealer,-PENALTY);finishQ(-1,false,`Time's up, no steal. ${t.name} −${PENALTY}`)}});
+  });
+}
+$("passBtn").addEventListener("click",()=>{
+  if(S.phase==="turn"){stopClock();sBad();firstMiss(-1,false)}
+  else if(S.phase==="steal"){stopClock();sBad();const t=S.teams[S.stealer];award(S.stealer,-PENALTY);finishQ(-1,false,`No steal. ${t.name} −${PENALTY}`)}
+});
+$("pauseBtn").addEventListener("click",togglePause);
+function finishQ(picked,ok,msg){
+  stopClock();S.phase="done";$("passBtn").hidden=true;$("pauseBtn").hidden=true;$("clock").hidden=true;
+  const btns=optBtns();btns.forEach((b,k)=>{b.disabled=true;if(S.q.opts[k].ok)b.classList.add("right");else if(!b.classList.contains("wrong"))b.classList.add("dim")});
+  const who=S.phase==="done"&&S.stealer>=0?S.teams[S.stealer]:S.teams[S.turn];
+  setTurn(msg,ok?who.color:"#5C5C5C");renderBoard();
+  const ans=S.q.opts.find(o=>o.ok).v;
+  const e=$("explain");e.hidden=false;e.className="explain"+(ok?"":" miss");
+  e.innerHTML=`<b>${ok?"Correct":"Answer: "+esc(optText(ans))}</b>${esc(S.q.x)}`;
+  const last=S.qi===S.rounds[S.ri].qs.length-1;
+  $("nextBtn").hidden=false;$("nextBtn").textContent=last?(S.ri===S.rounds.length-1?"Final standings":"Next round"):"Next question";
+  $("nextBtn").focus({preventScroll:true});
+}
+$("nextBtn").addEventListener("click",()=>{
+  if(S.mode==="teams"){if(S.phase!=="done")return;S.qi++;nextQuestion()}
+  else if(S.mode==="practice"){S.idx++;soloNext()}
+});
+function endTeams(){
+  stopClock();S.phase="end";S.gen++;renderBoard();
+  const ranked=S.teams.map((t,i)=>({...t,i})).sort((a,b)=>b.score-a.score);
+  const top=ranked.filter(t=>t.score===ranked[0].score);
+  $("endBox").innerHTML=`<div class="r">Final standings</div><h2>${top.length>1?"It's a tie!":top[0].name+" wins!"}</h2>
+   <ol class="stand">${ranked.map((t,k)=>`<li style="--c:${t.color}"><span class="p">${ranked.findIndex(x=>x.score===t.score)+1}</span>${t.name}<span class="v">${t.score}</span></li>`).join("")}</ol>
+   <div class="bar2" style="justify-content:center"><button class="btn main" id="again">Play again</button><button class="btn" id="toSet">Back to setup</button></div>`;
+  show("endBox");sGood();
+  $("again").addEventListener("click",startTeams);$("toSet").addEventListener("click",toSetup);
+}
+
+/* ---------- Solo: Practice and Blitz ---------- */
+function startSolo(){
+  S={mode:cfg.mode,gen:0,deck:shuffle(BANK.map(inst)),idx:0,score:0,right:0,seen:0};
+  $("setup").hidden=true;$("play").hidden=false;$("home").hidden=false;$("board").hidden=true;$("soloBar").hidden=false;$("editBtn").hidden=true;
+  $("blitzClock").hidden=S.mode!=="blitz";
+  if(S.mode==="blitz"){S.end=performance.now()+BLITZ*1000;S.blitzId=setInterval(blitzTick,200);blitzTick()}
+  soloNext();
+}
+function blitzTick(){const left=Math.max(0,(S.end-performance.now())/1000);const m=Math.floor(Math.ceil(left)/60),s=Math.ceil(left)%60;
+  $("blitzClock").textContent=`${m}:${String(s).padStart(2,"0")}`;$("blitzClock").classList.toggle("urgent",left<=10&&left>0);
+  if(left<=0){clearInterval(S.blitzId);endSolo()}}
+function soloBar(){$("soloScore").textContent=`${S.score} pts`;$("soloProg").textContent=`${S.right} of ${S.seen} correct`+(S.mode==="practice"?` | Question ${Math.min(S.idx+1,S.deck.length)} of ${S.deck.length}`:"")}
+function soloNext(){
+  if(S.idx>=S.deck.length){if(S.mode==="blitz"){S.deck=shuffle(BANK.map(inst));S.idx=0}else return endSolo()}
+  S.q=S.deck[S.idx];S.phase="turn";renderQuestion();soloBar();
+}
+function soloChoose(i){
+  if(S.phase!=="turn")return;S.phase="done";S.seen++;
+  const ok=S.q.opts[i].ok,btns=optBtns();
+  btns.forEach((b,k)=>{b.disabled=true;if(S.q.opts[k].ok)b.classList.add("right");else if(k===i)b.classList.add("wrong");else b.classList.add("dim")});
+  if(ok){S.right++;S.score+=ROUNDS[S.q.t].pts;sGood()}else sBad();
+  soloBar();
+  if(S.mode==="practice"){
+    const ans=S.q.opts.find(o=>o.ok).v;const e=$("explain");e.hidden=false;e.className="explain"+(ok?"":" miss");
+    e.innerHTML=`<b>${ok?"Correct":"Answer: "+esc(optText(ans))}</b>${esc(S.q.x)}`;
+    $("nextBtn").hidden=false;$("nextBtn").textContent=S.idx===S.deck.length-1?"Finish":"Next question";$("nextBtn").focus({preventScroll:true});
+  }else{const gen=++S.gen;setTimeout(()=>{if(gen!==S.gen||S.mode!=="blitz")return;S.idx++;soloNext()},ok?700:1500)}
+}
+function endSolo(){
+  S.phase="end";S.gen++;clearInterval(S.blitzId);
+  const pct=S.seen?Math.round(S.right/S.seen*100):0;
+  $("endBox").innerHTML=`<div class="r">${S.mode==="blitz"?"Time!":"Practice complete"}</div><h2>${S.score} points</h2><p>${S.right} of ${S.seen} correct (${pct}%).</p>
+   <div class="bar2" style="justify-content:center"><button class="btn main" id="again">Play again</button><button class="btn" id="toSet">Back to setup</button></div>`;
+  show("endBox");$("again").addEventListener("click",startSolo);$("toSet").addEventListener("click",toSetup);
+}
+
+/* ---------- Keyboard ---------- */
+document.addEventListener("keydown",e=>{
+  if($("play").hidden||e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  if(k===" "||k==="enter"){
+    if(e.target.tagName==="BUTTON"&&k==="enter")return;
+    e.preventDefault();
+    if(!$("introBox").hidden&&S.phase==="intro"){S.qi=0;nextQuestion();return}
+    if(!$("nextBtn").hidden)$("nextBtn").click();
+    return;
+  }
+  if(k==="p"){togglePause();return}
+  const idx="abcd".indexOf(k)>=0?"abcd".indexOf(k):"1234".indexOf(k);
+  if(idx>=0&&!$("qBox").hidden){const b=optBtns()[idx];if(b&&!b.disabled){e.preventDefault();choose(idx)}}
+});
+</script>
+</body>
+</html>
