@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Same Goods, Three Costs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F5EDE0; --paper:#FFFBF4; --ink:#2A1810; --muted:#6E5847;
+  --brown:#3F2417; --orange:#E76728; --cream:#FBF3E6; --tan:#D8B48C;
+  --line:rgba(63,36,23,.18); --good:#2E7D4F; --bad:#B3261E;
+  --goodbg:#E3F1E7; --badbg:#F8E1DE; --shadow:0 2px 0 rgba(63,36,23,.25);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B110B; --paper:#2A1B12; --ink:#F4E9DA; --muted:#BFA994;
+    --brown:#5B3624; --tan:#B8916A; --line:rgba(244,233,218,.16); --good:#5DBE85; --bad:#F07A6E;
+    --goodbg:#1E3A28; --badbg:#44201B; --shadow:0 2px 0 rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B110B; --paper:#2A1B12; --ink:#F4E9DA; --muted:#BFA994;
+  --brown:#5B3624; --tan:#B8916A; --line:rgba(244,233,218,.16); --good:#5DBE85; --bad:#F07A6E;
+  --goodbg:#1E3A28; --badbg:#44201B; --shadow:0 2px 0 rgba(0,0,0,.5);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:18px;line-height:1.45}
+h1,h2,h3{font-family:"Oswald","Arial Narrow",Impact,sans-serif;font-weight:600;letter-spacing:.01em}
+button,select{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.chip:focus-within{outline:3px solid var(--orange);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 20px 40px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px;font-weight:600}
+.brand .bar{display:inline-block;width:28px;height:6px;background:var(--orange);border-top:2px solid var(--brown);border-bottom:2px solid var(--brown);box-sizing:content-box}
+[hidden]{display:none!important}
+
+/* start */
+.title{font-size:clamp(40px,7vw,76px);line-height:.95;margin:26px 0 14px;font-weight:700}
+.title span{color:var(--orange)}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);margin:0 0 26px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.hero .m{padding:22px 22px 20px;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end}
+.hero .f{background:var(--brown);color:var(--cream)} .hero .l{background:var(--orange);color:#2A1810} .hero .w{background:var(--tan);color:#2A1810}
+.hero h3{margin:0;font-size:clamp(28px,4vw,42px);line-height:1}
+.hero p{margin:8px 0 0;font-size:15px;line-height:1.35}
+.lede{max-width:66ch;font-size:19px;margin:0 0 26px}
+.setup{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.setup h2{font-size:22px;margin:0 0 10px}
+.modes{display:grid;gap:10px}
+.mode{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:14px 16px}
+.mode strong{font-family:"Oswald",sans-serif;font-weight:600;font-size:22px;display:block}
+.mode span{color:var(--muted);font-size:15px}
+.mode[aria-pressed="true"]{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%,var(--paper))}
+.mode .best{font-family:"Oswald",sans-serif;font-size:15px;color:var(--muted);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-size:16px;font-weight:600;cursor:pointer;user-select:none}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip .tick{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted)}
+.chip:has(input:checked){border-color:var(--brown)}
+.chip:has(input:checked) .tick{background:var(--orange);border-color:var(--orange)}
+.go{margin-top:28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.btn{background:var(--brown);color:var(--cream);border:0;border-radius:10px;padding:14px 26px;font-family:"Oswald",sans-serif;font-size:22px;font-weight:600;box-shadow:var(--shadow)}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.hint{color:var(--muted);font-size:15px}
+kbd{font-family:"Oswald",sans-serif;font-size:13px;border:1.5px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:0 6px;background:var(--paper)}
+
+/* play */
+.hud{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;margin:16px 0 14px}
+.stat{font-family:"Oswald",sans-serif;line-height:1}
+.stat b{font-size:34px;font-weight:600;display:block}
+.stat small{font-family:"Barlow",sans-serif;color:var(--muted);font-size:14px;font-weight:600}
+.meter{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.meter i{display:block;height:100%;width:100%;background:var(--orange);transform-origin:left;transition:transform .1s linear}
+.meter.low i{background:var(--bad)}
+.streak{text-align:right}
+.mult{display:inline-block;margin-left:6px;background:var(--orange);color:var(--brown);border-radius:6px;padding:2px 7px;font-size:18px;vertical-align:4px}
+
+.table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:56px auto 26px}
+.lane{grid-row:1 / 4;padding:12px 18px;transition:opacity .2s,filter .2s;display:flex;flex-direction:column}
+.lane h3{margin:0;font-size:26px;line-height:1.1}
+.lane .tag{font-size:13px;font-weight:700;opacity:0;transition:opacity .2s}
+.lane.F{grid-column:1;background:var(--brown);color:var(--cream);border-radius:14px 0 0 14px}
+.lane.L{grid-column:2;background:var(--orange);color:#2A1810;align-items:center}
+.lane.W{grid-column:3;background:var(--tan);color:#2A1810;border-radius:0 14px 14px 0;align-items:flex-end}
+.table.on-F .lane:not(.F),.table.on-L .lane:not(.L),.table.on-W .lane:not(.W){opacity:.25;filter:saturate(.4)}
+.table.on-F .F .tag,.table.on-L .L .tag,.table.on-W .W .tag{opacity:1}
+.table.on-N .lane{opacity:.55}
+.event{grid-column:1 / 4;grid-row:2;margin:0 4%;background:var(--paper);color:var(--ink);border-radius:10px;padding:16px 22px 18px;box-shadow:0 10px 30px rgba(42,24,16,.28);z-index:1;border:1px solid var(--line)}
+.event .meta{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.event .part{background:var(--line);color:var(--ink);border-radius:999px;padding:1px 10px}
+.event p{margin:0;font-size:clamp(19px,2.3vw,23px);font-weight:500;line-height:1.35}
+.fig{margin-top:12px;overflow-x:auto}
+.fig table{border-collapse:collapse;width:100%;font-size:17px;font-variant-numeric:tabular-nums}
+.fig th,.fig td{border:1px solid var(--line);padding:5px 10px;text-align:left}
+.fig th{font-family:"Oswald",sans-serif;font-weight:500;background:var(--brown);color:var(--cream)}
+.fig tr.sale td{font-weight:600}
+.fig tr.hl td{background:color-mix(in srgb,var(--orange) 22%,transparent)}
+.fig td.r{text-align:right}
+.prompt{font-family:"Oswald",sans-serif;font-size:clamp(21px,2.8vw,28px);font-weight:500;margin:18px 0 14px;text-align:center}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.answers.two{grid-template-columns:1fr 1fr;max-width:640px;margin:0 auto}
+.answers.txt{grid-template-columns:1fr 1fr}
+.ans{position:relative;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:16px 12px 14px;min-height:74px;font-weight:600;font-size:17px;line-height:1.25;box-shadow:var(--shadow);text-align:center;display:flex;align-items:center;justify-content:center}
+.answers.four .ans{font-family:"Oswald",sans-serif;font-size:28px}
+.answers.two .ans{font-family:"Oswald",sans-serif;font-size:30px;min-height:90px}
+.answers.txt .ans{font-size:19px;text-align:left;justify-content:flex-start;padding-left:40px}
+.ans kbd{position:absolute;top:5px;left:6px}
+.ans:hover:not(:disabled){border-color:var(--orange)}
+.ans:disabled{cursor:default}
+.ans.right{background:var(--goodbg);border-color:var(--good);color:var(--good)}
+.ans.wrong{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.rule{margin:16px auto 0;max-width:820px;background:var(--paper);border:2px solid var(--bad);border-left-width:10px;border-radius:10px;padding:16px 20px}
+.rule h3{margin:0 0 6px;font-size:24px;color:var(--bad)}
+.rule .lbl{display:block;font-family:"Oswald",sans-serif;font-weight:500;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rule p{margin:0 0 12px;font-size:19px}
+.rule .whyno{border-left:4px solid var(--bad);padding-left:12px}
+.rule .btn{font-size:18px;padding:10px 20px}
+.rule.ok{border-color:var(--good)} .rule.ok h3{color:var(--good)}
+.rule.judge{border-color:var(--orange)} .rule.judge h3{color:var(--ink)}
+.judgebtns{display:flex;gap:10px;flex-wrap:wrap}
+.pop{position:fixed;pointer-events:none;font-family:"Oswald",sans-serif;font-weight:700;font-size:26px;color:var(--good);animation:pop .7s ease-out forwards;z-index:5}
+.pop.neg{color:var(--bad)}
+@keyframes pop{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-46px)}}
+.quit{background:none;border:0;color:var(--muted);font-size:15px;font-weight:600;text-decoration:underline;margin-top:22px}
+
+/* end */
+.result{display:grid;grid-template-columns:1fr 1fr;border-radius:14px;overflow:hidden;margin:26px 0;box-shadow:var(--shadow)}
+.result>div{padding:26px 28px}
+.result .l{background:var(--brown);color:var(--cream)}
+.result .r{background:var(--orange);color:var(--brown)}
+.result .big{font-family:"Oswald",sans-serif;font-size:clamp(54px,9vw,96px);font-weight:700;line-height:1}
+.result .sub{font-size:17px;font-weight:600;margin-top:4px}
+.cols{display:grid;grid-template-columns:1fr 1.3fr;gap:30px}
+.cols h2{font-size:24px;margin:0 0 12px}
+.trow{display:grid;grid-template-columns:1fr 64px;gap:4px 10px;margin-bottom:12px;font-weight:600;font-size:16px}
+.trow .bar{grid-column:1 / 3;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.trow .bar i{display:block;height:100%;background:var(--good)}
+.trow .bar i.mid{background:var(--orange)} .trow .bar i.lo{background:var(--bad)}
+.trow span:last-of-type{text-align:right;color:var(--muted)}
+.review{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.review li{background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:8px;padding:10px 14px;font-size:16px}
+.review li b{display:block;font-size:15px;color:var(--muted)}
+.empty{color:var(--muted)}
+.endbtns{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+
+/* teams */
+.teamsetup{margin-top:24px}
+.teamsetup h2{font-size:22px;margin:0 0 10px}
+.tnames{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tname{display:flex;align-items:center;gap:8px;background:var(--paper);border:2px solid var(--line);border-left:8px solid var(--c);border-radius:8px;padding:6px 10px}
+.tname input{border:0;background:transparent;color:var(--ink);font:600 17px "Barlow",sans-serif;width:100%;min-width:0}
+.tname input:focus{outline:none}
+.rounds{margin-top:14px;display:flex;align-items:center;gap:10px;font-weight:600;flex-wrap:wrap}
+.rounds select{font:600 17px "Barlow",sans-serif;padding:6px 10px;border-radius:8px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.board{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:14px}
+.team{background:var(--paper);border:2px solid var(--line);border-top:7px solid var(--c);border-radius:10px;padding:7px 10px 8px;transition:background .12s,color .12s,opacity .2s;min-width:0}
+.team .n{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team b{font-family:"Oswald",sans-serif;font-size:26px;font-weight:600;line-height:1.1}
+.team.turn{border-color:var(--c);box-shadow:0 0 0 3px var(--c)}
+.team.roll,.team.steal{background:var(--c);color:#fff;border-color:var(--c)}
+.team.out{opacity:.35}
+.sclock{margin-left:auto;margin-right:12px;min-width:2.4em;text-align:center;background:var(--c);color:#fff;border-radius:10px;padding:2px 14px;font-size:clamp(30px,4.4vw,44px);line-height:1.15}
+.sclock.urgent{background:var(--bad);animation:pulse .5s ease-in-out infinite alternate}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+.teams .stat{display:none}
+.teams .hud{grid-template-columns:1fr;margin-top:10px}
+.turnbar{display:flex;align-items:center;gap:12px;font-family:"Oswald",sans-serif;font-size:clamp(24px,3vw,32px);font-weight:600;margin:0 0 12px;padding:6px 0 6px 14px;border-left:10px solid var(--c)}
+.turnbar.stealing{background:color-mix(in srgb,var(--c) 16%,transparent);border-radius:0 10px 10px 0}
+.standings{list-style:none;padding:0;margin:0 0 30px;display:grid;gap:8px}
+.standings li{display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-left:10px solid var(--c);border-radius:8px;padding:8px 16px;font-weight:600}
+.standings .rk{font-family:"Oswald",sans-serif;font-size:24px;color:var(--muted)}
+.standings .pts{font-family:"Oswald",sans-serif;font-size:28px}
+.standings .st{color:var(--muted);font-size:15px}
+.standings li:first-child{padding:14px 16px}
+.standings li:first-child .pts{font-size:38px}
+@media (max-width:760px){
+  body{font-size:17px}
+  .setup,.cols,.result,.hero{grid-template-columns:1fr}
+  .hero .m{min-height:0;padding:16px 18px}
+  .tnames{grid-template-columns:1fr 1fr}
+  .board{grid-template-columns:repeat(4,1fr)}
+  .answers,.answers.txt{grid-template-columns:1fr 1fr}
+  .answers.txt{grid-template-columns:1fr}
+  .ans{min-height:58px}
+  .answers.four .ans{font-size:22px}
+  .table{grid-template-rows:46px auto 14px}
+  .lane{padding:8px 10px}.lane h3{font-size:16px}.lane .tag{display:none}
+  .event{margin:0 2%;padding:12px 12px}
+  .fig table{font-size:14px}.fig th,.fig td{padding:4px 6px}
+  .hud{gap:12px}.stat b{font-size:26px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="bar"></span><a href="/" style="color:inherit">Hersey Accounting</a> | Chapter 5: Inventory Costing</div>
+
+  <section id="start">
+    <h1 class="title">Same goods, <span>three costs.</span></h1>
+    <div class="hero">
+      <div class="m f"><h3>FIFO</h3><p>Oldest units go out first. Sales pull from the top of the list; the newest costs stay on hand.</p></div>
+      <div class="m l"><h3>LIFO</h3><p>Newest units on hand go out first. Only layers already bought on the sale date count.</p></div>
+      <div class="m w"><h3>Weighted Avg</h3><p>One pool. Recompute the average after every purchase; sales come out at the current average.</p></div>
+    </div>
+    <p class="lede">Every card is a real inventory problem like Homework 2. Read the transactions, check which method is lit up, and answer. Calculator out. Right or wrong, you'll see why before the next card: miss one and you'll see exactly what your answer did wrong, plus the right work.</p>
+    <div class="setup">
+      <div>
+        <h2>Mode</h2>
+        <div class="modes">
+          <button class="mode" data-mode="blitz" aria-pressed="true"><div><strong>Blitz</strong><span>3 minutes. Streaks multiply your points.</span></div><span class="best" id="best-blitz"></span></button>
+          <button class="mode" data-mode="practice" aria-pressed="false"><div><strong>Practice</strong><span>No clock. One pass through every card.</span></div><span class="best" id="best-practice"></span></button>
+          <button class="mode" data-mode="teams" aria-pressed="false"><div><strong>8 teams</strong><span>A random team gets each card. Miss it and a random team has 5 seconds to steal.</span></div></button>
+        </div>
+      </div>
+      <div>
+        <h2>Topics to drill</h2>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+    <div class="teamsetup" id="teamSetup" hidden>
+      <h2>Team names</h2>
+      <div class="tnames" id="teamNames"></div>
+      <label class="rounds">Cards per team
+        <select id="rounds"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+        <span class="hint" id="capNote"></span>
+      </label>
+    </div>
+    <div class="go">
+      <button class="btn" id="startBtn">Start</button>
+      <span class="hint">Keys: <kbd>1</kbd> to <kbd>4</kbd> pick an answer, <kbd>T</kbd>/<kbd>F</kbd> for true or false, <kbd>Enter</kbd> to continue.</span>
+    </div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="board" id="board" hidden></div>
+    <div class="hud">
+      <div class="stat"><b id="score">0</b><small>points</small></div>
+      <div><div class="meter" id="meter"><i id="meterFill"></i></div><div class="hint" id="meterLabel" style="margin-top:4px"></div></div>
+      <div class="stat streak"><b><span id="streak">0</span><span class="mult" id="mult" hidden>x2</span></b><small>streak</small></div>
+    </div>
+    <div class="turnbar" id="turn" hidden></div>
+    <div class="table on-F" id="table">
+      <div class="lane F"><h3>FIFO</h3><span class="tag">Use this method</span></div>
+      <div class="lane L"><h3>LIFO</h3><span class="tag">Use this method</span></div>
+      <div class="lane W"><h3>Weighted Avg</h3><span class="tag">Use this method</span></div>
+      <div class="event"><div class="meta"><span id="topicTag"></span><span class="part" id="partTag" hidden></span></div><p id="eventText"></p><div class="fig" id="fig" hidden></div></div>
+    </div>
+    <div class="prompt" id="prompt"></div>
+    <div class="answers" id="answers"></div>
+    <div class="rule" id="rule" hidden>
+      <h3 id="ruleHead"></h3>
+      <p class="whyno" id="whyNo" hidden></p>
+      <span class="lbl" id="ruleLbl">Why</span>
+      <p id="ruleText"></p>
+      <button class="btn" id="contBtn">Next</button>
+    </div>
+    <div class="rule judge" id="judge" hidden>
+      <h3 id="judgeHead"></h3>
+      <p id="judgeText"></p>
+      <div class="judgebtns"><button class="btn" id="judgeYes">They got it</button><button class="btn alt" id="judgeNo">Missed</button></div>
+    </div>
+    <button class="quit" id="quitBtn">End game</button>
+  </section>
+
+  <section id="end" hidden>
+    <div class="result">
+      <div class="l"><div class="big" id="endScore">0</div><div class="sub" id="endScoreSub">points</div></div>
+      <div class="r"><div class="big" id="endAcc">0%</div><div class="sub" id="endAccSub"></div></div>
+    </div>
+    <ol class="standings" id="standings" hidden></ol>
+    <div class="cols">
+      <div><h2>By topic</h2><div id="topicRows"></div></div>
+      <div><h2>What you missed</h2><ul class="review" id="review"></ul></div>
+    </div>
+    <div class="endbtns">
+      <button class="btn" id="againBtn">Play again</button>
+      <button class="btn alt" id="setupBtn">Change mode or topics</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const DATA={"cards": [{"t": "FI", "sc": "grip", "ev": "Court Side Grips sells overgrip packs for $12 each.", "parts": [{"type": "txt", "side": "F", "q": "FIFO: which layers does the 3/20 sale of 90 units come from?", "opts": ["40 @ $5 + 50 @ $6", "50 @ $7 + 40 @ $6", "90 @ $6", "90 @ $5"], "ans": 0, "why": [null, "That's the LIFO pull. FIFO takes the oldest units first.", "Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", "Beginning inventory only has 40 units. Once a layer runs out, the sale moves to the next one."], "rule": "FIFO pulls from the top of the list (oldest) down, using only layers on hand on 3/20: 40 @ $5 + 50 @ $6. Cross off each layer as it's used up.", "hl": ["3/20"]}], "id": 0}, {"t": "FI", "sc": "grip", "ev": "Court Side Grips sells overgrip packs for $12 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 3/20 sale of 90 units?", "opts": ["$450", "$540", "$590", "$500"], "ans": 3, "why": ["That prices all 90 units at $5. That layer doesn't have enough units, so the sale crosses into the next layer.", "That prices all 90 units at $6. The sale crosses more than one layer, so each layer gets its own cost.", "That's the LIFO COGS. FIFO takes the oldest units on hand first.", null], "rule": "40 \u00d7 $5 = $200 + 50 \u00d7 $6 = $300. COGS = $500.", "hl": ["3/20"]}, {"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 7/18 sale of 100 units? (The first sale already used some units.)", "opts": ["$560", "$600", "$800", "$730"], "ans": 3, "why": ["That ignores the 3/20 sale. Those units were already crossed off, so start from what's left.", "That prices all 100 units at $6. That layer doesn't have enough units, so the sale crosses into the next layer.", "That prices all 100 units at $8. The sale crosses more than one layer, so each layer gets its own cost.", null], "rule": "10 \u00d7 $6 = $60 + 50 \u00d7 $7 = $350 + 40 \u00d7 $8 = $320. COGS = $730.", "hl": ["7/18"]}], "id": 1}, {"t": "FI", "sc": "grip", "ev": "Court Side Grips: all transactions for the year. Unit check: 220 available \u2212 190 sold = 30 left.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is ending inventory after both sales?", "opts": ["$213.30", "$240", "$150", "$1,230"], "ans": 1, "why": ["That's the weighted average ending inventory, not FIFO.", null, "That's LIFO ending inventory. Under FIFO the units left are the newest ones.", "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand."], "rule": "Layers not crossed out: 30 \u00d7 $8 = $240. Ending inventory = $240.", "hl": []}], "id": 2}, {"t": "LI", "sc": "grip", "ev": "Court Side Grips sells overgrip packs for $12 each.", "parts": [{"type": "txt", "side": "L", "q": "LIFO: which layers does the 3/20 sale of 90 units come from?", "opts": ["40 @ $5 + 50 @ $6", "50 @ $7 + 40 @ $6", "70 @ $8 + 20 @ $7", "90 @ $6"], "ans": 1, "why": ["That's the FIFO pull. LIFO takes the newest units first.", null, "That uses purchases dated after 3/20. Those units weren't on the shelf yet, so the sale can't use them.", "Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers."], "rule": "LIFO pulls from the bottom of what's on hand (newest) up, using only layers on hand on 3/20: 50 @ $7 + 40 @ $6. Cross off each layer as it's used up.", "hl": ["3/20"]}], "id": 3}, {"t": "LI", "sc": "grip", "ev": "Court Side Grips sells overgrip packs for $12 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 3/20 sale of 90 units?", "opts": ["$630", "$700", "$590", "$500"], "ans": 2, "why": ["That prices all 90 units at $7. That layer doesn't have enough units, so the sale crosses into the next layer.", "That pulls from purchases made after 3/20. A sale can only use layers already on hand.", null, "That's the FIFO COGS. LIFO takes the newest units on hand first."], "rule": "50 \u00d7 $7 = $350 + 40 \u00d7 $6 = $240. COGS = $590.", "hl": ["3/20"]}, {"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 7/18 sale of 100 units? (The first sale already used some units.)", "opts": ["$800", "$730", "$770", "$500"], "ans": 1, "why": ["That prices all 100 units at $8. That layer doesn't have enough units, so the sale crosses into the next layer.", null, "That ignores the 3/20 sale. Those units were already crossed off, so start from what's left.", "That prices all 100 units at $5. The sale crosses more than one layer, so each layer gets its own cost."], "rule": "70 \u00d7 $8 = $560 + 20 \u00d7 $6 = $120 + 10 \u00d7 $5 = $50. COGS = $730.", "hl": ["7/18"]}], "id": 4}, {"t": "LI", "sc": "grip", "ev": "Court Side Grips: all transactions for the year. Unit check: 220 available \u2212 190 sold = 30 left.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is ending inventory after both sales?", "opts": ["$240", "$1,320", "$150", "$213.30"], "ans": 2, "why": ["That's FIFO ending inventory. Under LIFO the units left are the oldest ones.", "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", null, "That's the weighted average ending inventory, not LIFO."], "rule": "Layers not crossed out: 30 \u00d7 $5 = $150. Ending inventory = $150.", "hl": []}], "id": 5}, {"t": "WA", "sc": "grip", "ev": "Court Side Grips sells overgrip packs for $12 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 3/2 purchase?", "opts": ["$6.07", "$7.00", "$5.60", "$6.30"], "ans": 0, "why": [null, "That's just the new purchase's cost. Combine it with the units already in the pool.", "That's the average before this purchase. A new purchase changes the average.", "That averages the two unit costs ($5.60 and $7) without weighting by units. Use total cost \u00f7 total units."], "rule": "Pool before: 100 units = $560.00. Add 50 \u00d7 $7 = $350.00. New pool: $910.00 \u00f7 150 units = $6.07.", "hl": ["3/2"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 6/5 purchase?", "opts": ["$8.00", "$6.07", "$7.11", "$7.04"], "ans": 2, "why": ["That's just the new purchase's cost. Combine it with the units already in the pool.", "That's the average before this purchase. A new purchase changes the average.", null, "That averages the two unit costs ($6.07 and $8) without weighting by units. Use total cost \u00f7 total units."], "rule": "Pool before: 60 units = $364.20. Add 70 \u00d7 $8 = $560.00. New pool: $924.20 \u00f7 130 units = $7.11.", "hl": ["6/5"]}], "id": 6}, {"t": "WA", "sc": "grip", "ev": "Court Side Grips sells overgrip packs for $12 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 3/20 sale of 90 units?", "opts": ["$500.00", "$590.00", "$1,080.00", "$546.30"], "ans": 3, "why": ["That's FIFO COGS. Weighted average prices every unit sold at the current average.", "That's LIFO COGS. Weighted average prices every unit sold at the current average.", "That's sales revenue. COGS uses the average cost, not the selling price.", null], "rule": "Sales come out at the current average: 90 \u00d7 $6.07 = $546.30. Pool left: 60 units @ $6.07 = $364.20.", "hl": ["3/20"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 7/18 sale of 100 units?", "opts": ["$1,200.00", "$607.00", "$711.00", "$730.00"], "ans": 2, "why": ["That's sales revenue. COGS uses the average cost, not the selling price.", "That uses the wrong average. Use the average in effect on the sale date.", null, "That's FIFO COGS. Weighted average prices every unit sold at the current average."], "rule": "Sales come out at the current average: 100 \u00d7 $7.11 = $711.00. Pool left: 30 units @ $7.11 = $213.30.", "hl": ["7/18"]}], "id": 7}, {"t": "WA", "sc": "grip", "ev": "Court Side Grips: all transactions for the year. Unit check: 220 available \u2212 190 sold = 30 left.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is ending inventory?", "opts": ["$240.00", "$1,257.30", "$213.30", "$150.00"], "ans": 2, "why": ["That's FIFO ending inventory.", "That's total COGS. Ending inventory is what's still on hand.", null, "That's LIFO ending inventory."], "rule": "Units left \u00d7 final average: 30 \u00d7 $7.11 = $213.30.", "hl": []}], "id": 8}, {"t": "GP", "sc": "grip", "ev": "Court Side Grips sold 190 overgrip packs at $12 each this year.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is gross profit for the year?", "opts": ["$2,280", "$1,050", "$2,040", "$960"], "ans": 1, "why": ["That's sales revenue. Subtract COGS to get gross profit.", null, "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", "That's the LIFO gross profit."], "rule": "Sales revenue: 190 \u00d7 $12 = $2,280. FIFO COGS: $1,230. Gross profit = $2,280 \u2212 $1,230 = $1,050.", "hl": ["3/20", "7/18"]}, {"type": "calc", "side": "L", "q": "LIFO: what is gross profit for the year?", "opts": ["$2,130", "$960", "$1,050", "$2,280"], "ans": 1, "why": ["That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", null, "That's the FIFO gross profit.", "That's sales revenue. Subtract COGS to get gross profit."], "rule": "Sales revenue: 190 \u00d7 $12 = $2,280. LIFO COGS: $1,320. Gross profit = $2,280 \u2212 $1,320 = $960.", "hl": ["3/20", "7/18"]}], "id": 9}, {"t": "GP", "sc": "grip", "ev": "Court Side Grips sold 190 overgrip packs at $12 each this year.", "parts": [{"type": "txt", "side": "N", "q": "Which method reports the highest gross profit?", "opts": ["FIFO", "Weighted average", "LIFO"], "ans": 0, "why": [null, "Weighted average gross profit is $1,022.70, lower than FIFO's $1,050. Lowest COGS wins.", "LIFO gross profit is $960, lower than FIFO's $1,050. Lowest COGS wins."], "rule": "Unit costs rose this year ($5 to $8). FIFO sent the older, cheaper costs to COGS, so it shows the highest gross profit: FIFO $1,050, LIFO $960, weighted average $1,022.70.", "hl": []}], "id": 10}, {"t": "GP", "sc": "grip", "ev": "Court Side Grips: all transactions for the year.", "parts": [{"type": "calc", "side": "N", "q": "Unit check: how many units are in ending inventory under every method?", "opts": ["190 units", "120 units", "30 units", "220 units"], "ans": 2, "why": ["That's units sold.", "That only subtracts the last sale. Subtract both sales.", null, "That's units available. Subtract units sold."], "rule": "Units available \u2212 units sold: 220 \u2212 190 = 30. The method changes the dollar amount, never the unit count.", "hl": []}], "id": 11}, {"t": "FI", "sc": "hood", "ev": "Husky Hoodies sells hoodies for $45 each.", "parts": [{"type": "txt", "side": "F", "q": "FIFO: which layers does the 4/22 sale of 75 units come from?", "opts": ["75 @ $20", "75 @ $22", "40 @ $18 + 35 @ $20", "30 @ $22 + 45 @ $20"], "ans": 3, "why": ["Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", "Beginning inventory only has 30 units. Once a layer runs out, the sale moves to the next one.", "That's the LIFO pull. FIFO takes the oldest units first.", null], "rule": "FIFO pulls from the top of the list (oldest) down, using only layers on hand on 4/22: 30 @ $22 + 45 @ $20. Cross off each layer as it's used up.", "hl": ["4/22"]}], "id": 12}, {"t": "FI", "sc": "hood", "ev": "Husky Hoodies sells hoodies for $45 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 4/22 sale of 75 units?", "opts": ["$1,500", "$1,420", "$1,650", "$1,560"], "ans": 3, "why": ["That prices all 75 units at $20. The sale crosses more than one layer, so each layer gets its own cost.", "That's the LIFO COGS. FIFO takes the oldest units on hand first.", "That prices all 75 units at $22. That layer doesn't have enough units, so the sale crosses into the next layer.", null], "rule": "30 \u00d7 $22 = $660 + 45 \u00d7 $20 = $900. COGS = $1,560.", "hl": ["4/22"]}, {"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 9/12 sale of 80 units? (The first sale already used some units.)", "opts": ["$1,600", "$1,660", "$1,550", "$1,485"], "ans": 3, "why": ["That prices all 80 units at $20. That layer doesn't have enough units, so the sale crosses into the next layer.", "That ignores the 4/22 sale. Those units were already crossed off, so start from what's left.", "That's the LIFO COGS. FIFO takes the oldest units on hand first.", null], "rule": "5 \u00d7 $20 = $100 + 40 \u00d7 $18 = $720 + 35 \u00d7 $19 = $665. COGS = $1,485.", "hl": ["9/12"]}], "id": 13}, {"t": "FI", "sc": "hood", "ev": "Husky Hoodies: all transactions for the year. Unit check: 180 available \u2212 155 sold = 25 left.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is ending inventory after both sales?", "opts": ["$475", "$484", "$550", "$3,045"], "ans": 0, "why": [null, "That's the weighted average ending inventory, not FIFO.", "That's LIFO ending inventory. Under FIFO the units left are the newest ones.", "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand."], "rule": "Layers not crossed out: 25 \u00d7 $19 = $475. Ending inventory = $475.", "hl": []}], "id": 14}, {"t": "LI", "sc": "hood", "ev": "Husky Hoodies sells hoodies for $45 each.", "parts": [{"type": "txt", "side": "L", "q": "LIFO: which layers does the 4/22 sale of 75 units come from?", "opts": ["40 @ $18 + 35 @ $20", "60 @ $19 + 15 @ $18", "75 @ $20", "30 @ $22 + 45 @ $20"], "ans": 0, "why": [null, "That uses purchases dated after 4/22. Those units weren't on the shelf yet, so the sale can't use them.", "Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", "That's the FIFO pull. LIFO takes the newest units first."], "rule": "LIFO pulls from the bottom of what's on hand (newest) up, using only layers on hand on 4/22: 40 @ $18 + 35 @ $20. Cross off each layer as it's used up.", "hl": ["4/22"]}], "id": 15}, {"t": "LI", "sc": "hood", "ev": "Husky Hoodies sells hoodies for $45 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 4/22 sale of 75 units?", "opts": ["$1,410", "$1,350", "$1,420", "$1,560"], "ans": 2, "why": ["That pulls from purchases made after 4/22. A sale can only use layers already on hand.", "That prices all 75 units at $18. That layer doesn't have enough units, so the sale crosses into the next layer.", null, "That's the FIFO COGS. LIFO takes the newest units on hand first."], "rule": "40 \u00d7 $18 = $720 + 35 \u00d7 $20 = $700. COGS = $1,420.", "hl": ["4/22"]}, {"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 9/12 sale of 80 units? (The first sale already used some units.)", "opts": ["$1,520", "$1,485", "$1,500", "$1,550"], "ans": 3, "why": ["That prices all 80 units at $19. That layer doesn't have enough units, so the sale crosses into the next layer.", "That's the FIFO COGS. LIFO takes the newest units on hand first.", "That ignores the 4/22 sale. Those units were already crossed off, so start from what's left.", null], "rule": "60 \u00d7 $19 = $1,140 + 15 \u00d7 $20 = $300 + 5 \u00d7 $22 = $110. COGS = $1,550.", "hl": ["9/12"]}], "id": 16}, {"t": "LI", "sc": "hood", "ev": "Husky Hoodies: all transactions for the year. Unit check: 180 available \u2212 155 sold = 25 left.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is ending inventory after both sales?", "opts": ["$2,970", "$475", "$550", "$484"], "ans": 2, "why": ["That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", "That's FIFO ending inventory. Under LIFO the units left are the oldest ones.", null, "That's the weighted average ending inventory, not LIFO."], "rule": "Layers not crossed out: 25 \u00d7 $22 = $550. Ending inventory = $550.", "hl": []}], "id": 17}, {"t": "WA", "sc": "hood", "ev": "Husky Hoodies sells hoodies for $45 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 4/1 purchase?", "opts": ["$18.00", "$19.83", "$19.38", "$20.75"], "ans": 1, "why": ["That's just the new purchase's cost. Combine it with the units already in the pool.", null, "That averages the two unit costs ($20.75 and $18) without weighting by units. Use total cost \u00f7 total units.", "That's the average before this purchase. A new purchase changes the average."], "rule": "Pool before: 80 units = $1,660.00. Add 40 \u00d7 $18 = $720.00. New pool: $2,380.00 \u00f7 120 units = $19.83.", "hl": ["4/1"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 8/10 purchase?", "opts": ["$19.42", "$19.83", "$19.36", "$19.00"], "ans": 2, "why": ["That averages the two unit costs ($19.83 and $19) without weighting by units. Use total cost \u00f7 total units.", "That's the average before this purchase. A new purchase changes the average.", null, "That's just the new purchase's cost. Combine it with the units already in the pool."], "rule": "Pool before: 45 units = $892.35. Add 60 \u00d7 $19 = $1,140.00. New pool: $2,032.35 \u00f7 105 units = $19.36.", "hl": ["8/10"]}], "id": 18}, {"t": "WA", "sc": "hood", "ev": "Husky Hoodies sells hoodies for $45 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 4/22 sale of 75 units?", "opts": ["$3,375.00", "$1,420.00", "$1,487.25", "$1,560.00"], "ans": 2, "why": ["That's sales revenue. COGS uses the average cost, not the selling price.", "That's LIFO COGS. Weighted average prices every unit sold at the current average.", null, "That's FIFO COGS. Weighted average prices every unit sold at the current average."], "rule": "Sales come out at the current average: 75 \u00d7 $19.83 = $1,487.25. Pool left: 45 units @ $19.83 = $892.35.", "hl": ["4/22"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 9/12 sale of 80 units?", "opts": ["$1,548.80", "$1,550.00", "$1,485.00", "$3,600.00"], "ans": 0, "why": [null, "That's LIFO COGS. Weighted average prices every unit sold at the current average.", "That's FIFO COGS. Weighted average prices every unit sold at the current average.", "That's sales revenue. COGS uses the average cost, not the selling price."], "rule": "Sales come out at the current average: 80 \u00d7 $19.36 = $1,548.80. Pool left: 25 units @ $19.36 = $484.00.", "hl": ["9/12"]}], "id": 19}, {"t": "WA", "sc": "hood", "ev": "Husky Hoodies: all transactions for the year. Unit check: 180 available \u2212 155 sold = 25 left.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is ending inventory?", "opts": ["$3,036.05", "$484.00", "$475.00", "$550.00"], "ans": 1, "why": ["That's total COGS. Ending inventory is what's still on hand.", null, "That's FIFO ending inventory.", "That's LIFO ending inventory."], "rule": "Units left \u00d7 final average: 25 \u00d7 $19.36 = $484.00.", "hl": []}], "id": 20}, {"t": "GP", "sc": "hood", "ev": "Husky Hoodies sold 155 hoodies at $45 each this year.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is gross profit for the year?", "opts": ["$6,975", "$3,930", "$4,005", "$6,500"], "ans": 1, "why": ["That's sales revenue. Subtract COGS to get gross profit.", null, "That's the LIFO gross profit.", "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS."], "rule": "Sales revenue: 155 \u00d7 $45 = $6,975. FIFO COGS: $3,045. Gross profit = $6,975 \u2212 $3,045 = $3,930.", "hl": ["4/22", "9/12"]}, {"type": "calc", "side": "L", "q": "LIFO: what is gross profit for the year?", "opts": ["$3,930", "$6,425", "$4,005", "$6,975"], "ans": 2, "why": ["That's the FIFO gross profit.", "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", null, "That's sales revenue. Subtract COGS to get gross profit."], "rule": "Sales revenue: 155 \u00d7 $45 = $6,975. LIFO COGS: $2,970. Gross profit = $6,975 \u2212 $2,970 = $4,005.", "hl": ["4/22", "9/12"]}], "id": 21}, {"t": "GP", "sc": "hood", "ev": "Husky Hoodies sold 155 hoodies at $45 each this year.", "parts": [{"type": "txt", "side": "N", "q": "Which method reports the highest gross profit?", "opts": ["FIFO", "Weighted average", "LIFO"], "ans": 2, "why": ["FIFO gross profit is $3,930, lower than LIFO's $4,005. Lowest COGS wins.", "Weighted average gross profit is $3,938.95, lower than LIFO's $4,005. Lowest COGS wins.", null], "rule": "Unit costs fell this year ($22 to $19). LIFO sent the newer, cheaper costs to COGS, so it shows the highest gross profit: FIFO $3,930, LIFO $4,005, weighted average $3,938.95.", "hl": []}], "id": 22}, {"t": "GP", "sc": "hood", "ev": "Husky Hoodies: all transactions for the year.", "parts": [{"type": "calc", "side": "N", "q": "Unit check: how many units are in ending inventory under every method?", "opts": ["25 units", "155 units", "100 units", "180 units"], "ans": 0, "why": [null, "That's units sold.", "That only subtracts the last sale. Subtract both sales.", "That's units available. Subtract units sold."], "rule": "Units available \u2212 units sold: 180 \u2212 155 = 25. The method changes the dollar amount, never the unit count.", "hl": []}], "id": 23}, {"t": "FI", "sc": "bottle", "ev": "Bottle Up sells water bottles for $25 each.", "parts": [{"type": "txt", "side": "F", "q": "FIFO: which layers does the 3/28 sale of 150 units come from?", "opts": ["150 @ $12", "150 @ $10", "120 @ $12 + 30 @ $10", "80 @ $10 + 70 @ $12"], "ans": 3, "why": ["Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", "Beginning inventory only has 80 units. Once a layer runs out, the sale moves to the next one.", "That's the LIFO pull. FIFO takes the oldest units first.", null], "rule": "FIFO pulls from the top of the list (oldest) down, using only layers on hand on 3/28: 80 @ $10 + 70 @ $12. Cross off each layer as it's used up.", "hl": ["3/28"]}], "id": 24}, {"t": "FI", "sc": "bottle", "ev": "Bottle Up sells water bottles for $25 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 3/28 sale of 150 units?", "opts": ["$1,740", "$1,800", "$1,640", "$1,500"], "ans": 2, "why": ["That's the LIFO COGS. FIFO takes the oldest units on hand first.", "That prices all 150 units at $12. The sale crosses more than one layer, so each layer gets its own cost.", null, "That prices all 150 units at $10. That layer doesn't have enough units, so the sale crosses into the next layer."], "rule": "80 \u00d7 $10 = $800 + 70 \u00d7 $12 = $840. COGS = $1,640.", "hl": ["3/28"]}, {"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 6/30 sale of 170 units? (The first sale already used some units.)", "opts": ["$2,200", "$2,040", "$1,880", "$2,300"], "ans": 0, "why": [null, "That prices all 170 units at $12. That layer doesn't have enough units, so the sale crosses into the next layer.", "That ignores the 3/28 sale. Those units were already crossed off, so start from what's left.", "That's the LIFO COGS. FIFO takes the oldest units on hand first."], "rule": "50 \u00d7 $12 = $600 + 100 \u00d7 $13 = $1,300 + 20 \u00d7 $15 = $300. COGS = $2,200.", "hl": ["6/30"]}], "id": 25}, {"t": "FI", "sc": "bottle", "ev": "Bottle Up: all transactions for the year. Unit check: 360 available \u2212 320 sold = 40 left.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is ending inventory after both sales?", "opts": ["$400", "$3,840", "$600", "$525.60"], "ans": 2, "why": ["That's LIFO ending inventory. Under FIFO the units left are the newest ones.", "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", null, "That's the weighted average ending inventory, not FIFO."], "rule": "Layers not crossed out: 40 \u00d7 $15 = $600. Ending inventory = $600.", "hl": []}], "id": 26}, {"t": "LI", "sc": "bottle", "ev": "Bottle Up sells water bottles for $25 each.", "parts": [{"type": "txt", "side": "L", "q": "LIFO: which layers does the 3/28 sale of 150 units come from?", "opts": ["150 @ $10", "80 @ $10 + 70 @ $12", "60 @ $15 + 90 @ $13", "120 @ $12 + 30 @ $10"], "ans": 3, "why": ["Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", "That's the FIFO pull. LIFO takes the newest units first.", "That uses purchases dated after 3/28. Those units weren't on the shelf yet, so the sale can't use them.", null], "rule": "LIFO pulls from the bottom of what's on hand (newest) up, using only layers on hand on 3/28: 120 @ $12 + 30 @ $10. Cross off each layer as it's used up.", "hl": ["3/28"]}], "id": 27}, {"t": "LI", "sc": "bottle", "ev": "Bottle Up sells water bottles for $25 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 3/28 sale of 150 units?", "opts": ["$2,070", "$1,640", "$1,800", "$1,740"], "ans": 3, "why": ["That pulls from purchases made after 3/28. A sale can only use layers already on hand.", "That's the FIFO COGS. LIFO takes the newest units on hand first.", "That prices all 150 units at $12. That layer doesn't have enough units, so the sale crosses into the next layer.", null], "rule": "120 \u00d7 $12 = $1,440 + 30 \u00d7 $10 = $300. COGS = $1,740.", "hl": ["3/28"]}, {"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 6/30 sale of 170 units? (The first sale already used some units.)", "opts": ["$2,300", "$2,550", "$2,200", "$2,320"], "ans": 0, "why": [null, "That prices all 170 units at $15. That layer doesn't have enough units, so the sale crosses into the next layer.", "That's the FIFO COGS. LIFO takes the newest units on hand first.", "That ignores the 3/28 sale. Those units were already crossed off, so start from what's left."], "rule": "60 \u00d7 $15 = $900 + 100 \u00d7 $13 = $1,300 + 10 \u00d7 $10 = $100. COGS = $2,300.", "hl": ["6/30"]}], "id": 28}, {"t": "LI", "sc": "bottle", "ev": "Bottle Up: all transactions for the year. Unit check: 360 available \u2212 320 sold = 40 left.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is ending inventory after both sales?", "opts": ["$525.60", "$4,040", "$400", "$600"], "ans": 2, "why": ["That's the weighted average ending inventory, not LIFO.", "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", null, "That's FIFO ending inventory. Under LIFO the units left are the oldest ones."], "rule": "Layers not crossed out: 40 \u00d7 $10 = $400. Ending inventory = $400.", "hl": []}], "id": 29}, {"t": "WA", "sc": "bottle", "ev": "Bottle Up sells water bottles for $25 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 5/9 purchase?", "opts": ["$11.20", "$12.40", "$12.10", "$13.00"], "ans": 1, "why": ["That's the average before this purchase. A new purchase changes the average.", null, "That averages the two unit costs ($11.20 and $13) without weighting by units. Use total cost \u00f7 total units.", "That's just the new purchase's cost. Combine it with the units already in the pool."], "rule": "Pool before: 50 units = $560.00. Add 100 \u00d7 $13 = $1,300.00. New pool: $1,860.00 \u00f7 150 units = $12.40.", "hl": ["5/9"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 6/1 purchase?", "opts": ["$15.00", "$13.14", "$12.40", "$13.70"], "ans": 1, "why": ["That's just the new purchase's cost. Combine it with the units already in the pool.", null, "That's the average before this purchase. A new purchase changes the average.", "That averages the two unit costs ($12.40 and $15) without weighting by units. Use total cost \u00f7 total units."], "rule": "Pool before: 150 units = $1,860.00. Add 60 \u00d7 $15 = $900.00. New pool: $2,760.00 \u00f7 210 units = $13.14.", "hl": ["6/1"]}], "id": 30}, {"t": "WA", "sc": "bottle", "ev": "Bottle Up sells water bottles for $25 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 3/28 sale of 150 units?", "opts": ["$1,640.00", "$1,740.00", "$1,680.00", "$3,750.00"], "ans": 2, "why": ["That's FIFO COGS. Weighted average prices every unit sold at the current average.", "That's LIFO COGS. Weighted average prices every unit sold at the current average.", null, "That's sales revenue. COGS uses the average cost, not the selling price."], "rule": "Sales come out at the current average: 150 \u00d7 $11.20 = $1,680.00. Pool left: 50 units @ $11.20 = $560.00.", "hl": ["3/28"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 6/30 sale of 170 units?", "opts": ["$2,300.00", "$2,233.80", "$2,200.00", "$4,250.00"], "ans": 1, "why": ["That's LIFO COGS. Weighted average prices every unit sold at the current average.", null, "That's FIFO COGS. Weighted average prices every unit sold at the current average.", "That's sales revenue. COGS uses the average cost, not the selling price."], "rule": "Sales come out at the current average: 170 \u00d7 $13.14 = $2,233.80. Pool left: 40 units @ $13.14 = $525.60.", "hl": ["6/30"]}], "id": 31}, {"t": "WA", "sc": "bottle", "ev": "Bottle Up: all transactions for the year. Unit check: 360 available \u2212 320 sold = 40 left.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is ending inventory?", "opts": ["$3,913.80", "$400.00", "$600.00", "$525.60"], "ans": 3, "why": ["That's total COGS. Ending inventory is what's still on hand.", "That's LIFO ending inventory.", "That's FIFO ending inventory.", null], "rule": "Units left \u00d7 final average: 40 \u00d7 $13.14 = $525.60.", "hl": []}], "id": 32}, {"t": "GP", "sc": "bottle", "ev": "Bottle Up sold 320 water bottles at $25 each this year.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is gross profit for the year?", "opts": ["$7,400", "$4,160", "$8,000", "$3,960"], "ans": 1, "why": ["That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", null, "That's sales revenue. Subtract COGS to get gross profit.", "That's the LIFO gross profit."], "rule": "Sales revenue: 320 \u00d7 $25 = $8,000. FIFO COGS: $3,840. Gross profit = $8,000 \u2212 $3,840 = $4,160.", "hl": ["3/28", "6/30"]}, {"type": "calc", "side": "L", "q": "LIFO: what is gross profit for the year?", "opts": ["$3,960", "$7,600", "$4,160", "$8,000"], "ans": 0, "why": [null, "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", "That's the FIFO gross profit.", "That's sales revenue. Subtract COGS to get gross profit."], "rule": "Sales revenue: 320 \u00d7 $25 = $8,000. LIFO COGS: $4,040. Gross profit = $8,000 \u2212 $4,040 = $3,960.", "hl": ["3/28", "6/30"]}], "id": 33}, {"t": "GP", "sc": "bottle", "ev": "Bottle Up sold 320 water bottles at $25 each this year.", "parts": [{"type": "txt", "side": "N", "q": "Which method reports the highest gross profit?", "opts": ["FIFO", "Weighted average", "LIFO"], "ans": 0, "why": [null, "Weighted average gross profit is $4,086.20, lower than FIFO's $4,160. Lowest COGS wins.", "LIFO gross profit is $3,960, lower than FIFO's $4,160. Lowest COGS wins."], "rule": "Unit costs rose this year ($10 to $15). FIFO sent the older, cheaper costs to COGS, so it shows the highest gross profit: FIFO $4,160, LIFO $3,960, weighted average $4,086.20.", "hl": []}], "id": 34}, {"t": "GP", "sc": "bottle", "ev": "Bottle Up: all transactions for the year.", "parts": [{"type": "calc", "side": "N", "q": "Unit check: how many units are in ending inventory under every method?", "opts": ["40 units", "190 units", "360 units", "320 units"], "ans": 0, "why": [null, "That only subtracts the last sale. Subtract both sales.", "That's units available. Subtract units sold.", "That's units sold."], "rule": "Units available \u2212 units sold: 360 \u2212 320 = 40. The method changes the dollar amount, never the unit count.", "hl": []}], "id": 35}, {"t": "FI", "sc": "glow", "ev": "Glow Co. sells candles for $20 each.", "parts": [{"type": "txt", "side": "F", "q": "FIFO: which layers does the 2/20 sale of 70 units come from?", "opts": ["70 @ $9", "70 @ $8", "50 @ $9 + 20 @ $8", "40 @ $8 + 30 @ $9"], "ans": 2, "why": ["Beginning inventory only has 50 units. Once a layer runs out, the sale moves to the next one.", "Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", null, "That's the LIFO pull. FIFO takes the oldest units first."], "rule": "FIFO pulls from the top of the list (oldest) down, using only layers on hand on 2/20: 50 @ $9 + 20 @ $8. Cross off each layer as it's used up.", "hl": ["2/20"]}], "id": 36}, {"t": "FI", "sc": "glow", "ev": "Glow Co. sells candles for $20 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 2/20 sale of 70 units?", "opts": ["$610", "$560", "$630", "$590"], "ans": 0, "why": [null, "That prices all 70 units at $8. The sale crosses more than one layer, so each layer gets its own cost.", "That prices all 70 units at $9. That layer doesn't have enough units, so the sale crosses into the next layer.", "That's the LIFO COGS. FIFO takes the oldest units on hand first."], "rule": "50 \u00d7 $9 = $450 + 20 \u00d7 $8 = $160. COGS = $610.", "hl": ["2/20"]}, {"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 6/2 sale of 85 units? (The first sale already used some units.)", "opts": ["$540", "$680", "$555", "$730"], "ans": 2, "why": ["That's the LIFO COGS. FIFO takes the oldest units on hand first.", "That prices all 85 units at $8. That layer doesn't have enough units, so the sale crosses into the next layer.", null, "That ignores the 2/20 sale. Those units were already crossed off, so start from what's left."], "rule": "20 \u00d7 $8 = $160 + 60 \u00d7 $6 = $360 + 5 \u00d7 $7 = $35. COGS = $555.", "hl": ["6/2"]}], "id": 37}, {"t": "FI", "sc": "glow", "ev": "Glow Co.: all transactions for the year. Unit check: 180 available \u2212 155 sold = 25 left.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is ending inventory after both sales?", "opts": ["$175", "$1,165", "$210", "$225"], "ans": 0, "why": [null, "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", "That's LIFO ending inventory. Under FIFO the units left are the newest ones.", "That prices the 25 units left at $9. FIFO leaves the newest layers on hand."], "rule": "Layers not crossed out: 25 \u00d7 $7 = $175. Ending inventory = $175.", "hl": []}], "id": 38}, {"t": "LI", "sc": "glow", "ev": "Glow Co. sells candles for $20 each.", "parts": [{"type": "txt", "side": "L", "q": "LIFO: which layers does the 2/20 sale of 70 units come from?", "opts": ["30 @ $7 + 40 @ $6", "70 @ $9", "50 @ $9 + 20 @ $8", "40 @ $8 + 30 @ $9"], "ans": 3, "why": ["That uses purchases dated after 2/20. Those units weren't on the shelf yet, so the sale can't use them.", "Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", "That's the FIFO pull. LIFO takes the newest units first.", null], "rule": "LIFO pulls from the bottom of what's on hand (newest) up, using only layers on hand on 2/20: 40 @ $8 + 30 @ $9. Cross off each layer as it's used up.", "hl": ["2/20"]}], "id": 39}, {"t": "LI", "sc": "glow", "ev": "Glow Co. sells candles for $20 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 2/20 sale of 70 units?", "opts": ["$590", "$560", "$610", "$450"], "ans": 0, "why": [null, "That prices all 70 units at $8. That layer doesn't have enough units, so the sale crosses into the next layer.", "That's the FIFO COGS. LIFO takes the newest units on hand first.", "That pulls from purchases made after 2/20. A sale can only use layers already on hand."], "rule": "40 \u00d7 $8 = $320 + 30 \u00d7 $9 = $270. COGS = $590.", "hl": ["2/20"]}, {"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 6/2 sale of 85 units? (The first sale already used some units.)", "opts": ["$540", "$595", "$555", "$510"], "ans": 0, "why": [null, "That prices all 85 units at $7. That layer doesn't have enough units, so the sale crosses into the next layer.", "That's the FIFO COGS. LIFO takes the newest units on hand first.", "That prices all 85 units at $6. The sale crosses more than one layer, so each layer gets its own cost."], "rule": "30 \u00d7 $7 = $210 + 55 \u00d7 $6 = $330. COGS = $540.", "hl": ["6/2"]}], "id": 40}, {"t": "LI", "sc": "glow", "ev": "Glow Co.: all transactions for the year. Unit check: 180 available \u2212 155 sold = 25 left.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is ending inventory after both sales?", "opts": ["$175", "$210", "$168.50", "$1,130"], "ans": 1, "why": ["That's FIFO ending inventory. Under LIFO the units left are the oldest ones.", null, "That's the weighted average ending inventory, not LIFO.", "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand."], "rule": "Layers not crossed out: 20 \u00d7 $9 = $180 + 5 \u00d7 $6 = $30. Ending inventory = $210.", "hl": []}], "id": 41}, {"t": "WA", "sc": "glow", "ev": "Glow Co. sells candles for $20 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 4/4 purchase?", "opts": ["$6.00", "$8.56", "$7.28", "$6.64"], "ans": 3, "why": ["That's just the new purchase's cost. Combine it with the units already in the pool.", "That's the average before this purchase. A new purchase changes the average.", "That averages the two unit costs ($8.56 and $6) without weighting by units. Use total cost \u00f7 total units.", null], "rule": "Pool before: 20 units = $171.20. Add 60 \u00d7 $6 = $360.00. New pool: $531.20 \u00f7 80 units = $6.64.", "hl": ["4/4"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 5/15 purchase?", "opts": ["$6.74", "$6.82", "$7.00", "$6.64"], "ans": 0, "why": [null, "That averages the two unit costs ($6.64 and $7) without weighting by units. Use total cost \u00f7 total units.", "That's just the new purchase's cost. Combine it with the units already in the pool.", "That's the average before this purchase. A new purchase changes the average."], "rule": "Pool before: 80 units = $531.20. Add 30 \u00d7 $7 = $210.00. New pool: $741.20 \u00f7 110 units = $6.74.", "hl": ["5/15"]}], "id": 42}, {"t": "WA", "sc": "glow", "ev": "Glow Co. sells candles for $20 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 2/20 sale of 70 units?", "opts": ["$599.20", "$590.00", "$610.00", "$1,400.00"], "ans": 0, "why": [null, "That's LIFO COGS. Weighted average prices every unit sold at the current average.", "That's FIFO COGS. Weighted average prices every unit sold at the current average.", "That's sales revenue. COGS uses the average cost, not the selling price."], "rule": "Sales come out at the current average: 70 \u00d7 $8.56 = $599.20. Pool left: 20 units @ $8.56 = $171.20.", "hl": ["2/20"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 6/2 sale of 85 units?", "opts": ["$572.90", "$1,700.00", "$555.00", "$540.00"], "ans": 0, "why": [null, "That's sales revenue. COGS uses the average cost, not the selling price.", "That's FIFO COGS. Weighted average prices every unit sold at the current average.", "That's LIFO COGS. Weighted average prices every unit sold at the current average."], "rule": "Sales come out at the current average: 85 \u00d7 $6.74 = $572.90. Pool left: 25 units @ $6.74 = $168.50.", "hl": ["6/2"]}], "id": 43}, {"t": "WA", "sc": "glow", "ev": "Glow Co.: all transactions for the year. Unit check: 180 available \u2212 155 sold = 25 left.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is ending inventory?", "opts": ["$210.00", "$168.50", "$175.00", "$1,172.10"], "ans": 1, "why": ["That's LIFO ending inventory.", null, "That's FIFO ending inventory.", "That's total COGS. Ending inventory is what's still on hand."], "rule": "Units left \u00d7 final average: 25 \u00d7 $6.74 = $168.50.", "hl": []}], "id": 44}, {"t": "GP", "sc": "glow", "ev": "Glow Co. sold 155 candles at $20 each this year.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is gross profit for the year?", "opts": ["$1,935", "$2,925", "$1,970", "$3,100"], "ans": 0, "why": [null, "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", "That's the LIFO gross profit.", "That's sales revenue. Subtract COGS to get gross profit."], "rule": "Sales revenue: 155 \u00d7 $20 = $3,100. FIFO COGS: $1,165. Gross profit = $3,100 \u2212 $1,165 = $1,935.", "hl": ["2/20", "6/2"]}, {"type": "calc", "side": "L", "q": "LIFO: what is gross profit for the year?", "opts": ["$3,100", "$1,970", "$2,890", "$1,935"], "ans": 1, "why": ["That's sales revenue. Subtract COGS to get gross profit.", null, "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS.", "That's the FIFO gross profit."], "rule": "Sales revenue: 155 \u00d7 $20 = $3,100. LIFO COGS: $1,130. Gross profit = $3,100 \u2212 $1,130 = $1,970.", "hl": ["2/20", "6/2"]}], "id": 45}, {"t": "GP", "sc": "glow", "ev": "Glow Co. sold 155 candles at $20 each this year.", "parts": [{"type": "txt", "side": "N", "q": "Which method reports the highest gross profit?", "opts": ["Weighted average", "LIFO", "FIFO"], "ans": 1, "why": ["Weighted average gross profit is $1,927.90, lower than LIFO's $1,970. Lowest COGS wins.", null, "FIFO gross profit is $1,935, lower than LIFO's $1,970. Lowest COGS wins."], "rule": "Unit costs fell this year ($9 to $7). LIFO sent the newer, cheaper costs to COGS, so it shows the highest gross profit: FIFO $1,935, LIFO $1,970, weighted average $1,927.90.", "hl": []}], "id": 46}, {"t": "GP", "sc": "glow", "ev": "Glow Co.: all transactions for the year.", "parts": [{"type": "calc", "side": "N", "q": "Unit check: how many units are in ending inventory under every method?", "opts": ["155 units", "25 units", "180 units", "95 units"], "ans": 1, "why": ["That's units sold.", null, "That's units available. Subtract units sold.", "That only subtracts the last sale. Subtract both sales."], "rule": "Units available \u2212 units sold: 180 \u2212 155 = 25. The method changes the dollar amount, never the unit count.", "hl": []}], "id": 47}, {"t": "FI", "sc": "buzz", "ev": "Buzz Audio sells earbuds for $60 each.", "parts": [{"type": "txt", "side": "F", "q": "FIFO: which layers does the 2/25 sale of 70 units come from?", "opts": ["70 @ $30", "40 @ $35 + 30 @ $32", "25 @ $30 + 35 @ $32 + 10 @ $35", "70 @ $35"], "ans": 2, "why": ["Beginning inventory only has 25 units. Once a layer runs out, the sale moves to the next one.", "That's the LIFO pull. FIFO takes the oldest units first.", null, "Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers."], "rule": "FIFO pulls from the top of the list (oldest) down, using only layers on hand on 2/25: 25 @ $30 + 35 @ $32 + 10 @ $35. Cross off each layer as it's used up.", "hl": ["2/25"]}], "id": 48}, {"t": "FI", "sc": "buzz", "ev": "Buzz Audio sells earbuds for $60 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 2/25 sale of 70 units?", "opts": ["$2,220", "$2,360", "$2,450", "$2,100"], "ans": 0, "why": [null, "That's the LIFO COGS. FIFO takes the oldest units on hand first.", "That prices all 70 units at $35. The sale crosses more than one layer, so each layer gets its own cost.", "That prices all 70 units at $30. That layer doesn't have enough units, so the sale crosses into the next layer."], "rule": "25 \u00d7 $30 = $750 + 35 \u00d7 $32 = $1,120 + 10 \u00d7 $35 = $350. COGS = $2,220.", "hl": ["2/25"]}, {"type": "calc", "side": "F", "q": "FIFO: what is COGS for the 6/20 sale of 60 units? (The first sale already used some units.)", "opts": ["$1,960", "$1,870", "$2,100", "$2,040"], "ans": 3, "why": ["That's the LIFO COGS. FIFO takes the oldest units on hand first.", "That ignores the 2/25 sale. Those units were already crossed off, so start from what's left.", "That prices all 60 units at $35. That layer doesn't have enough units, so the sale crosses into the next layer.", null], "rule": "30 \u00d7 $35 = $1,050 + 30 \u00d7 $33 = $990. COGS = $2,040.", "hl": ["6/20"]}], "id": 49}, {"t": "FI", "sc": "buzz", "ev": "Buzz Audio: all transactions for the year. Unit check: 150 available \u2212 130 sold = 20 left.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is ending inventory after both sales?", "opts": ["$600", "$660", "$4,260", "$657.80"], "ans": 1, "why": ["That's LIFO ending inventory. Under FIFO the units left are the newest ones.", null, "That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", "That's the weighted average ending inventory, not FIFO."], "rule": "Layers not crossed out: 20 \u00d7 $33 = $660. Ending inventory = $660.", "hl": []}], "id": 50}, {"t": "LI", "sc": "buzz", "ev": "Buzz Audio sells earbuds for $60 each.", "parts": [{"type": "txt", "side": "L", "q": "LIFO: which layers does the 2/25 sale of 70 units come from?", "opts": ["70 @ $32", "40 @ $35 + 30 @ $32", "50 @ $33 + 20 @ $35", "25 @ $30 + 35 @ $32 + 10 @ $35"], "ans": 1, "why": ["Every unit priced at one cost. The sale is bigger than one layer, so it crosses layers.", null, "That uses purchases dated after 2/25. Those units weren't on the shelf yet, so the sale can't use them.", "That's the FIFO pull. LIFO takes the newest units first."], "rule": "LIFO pulls from the bottom of what's on hand (newest) up, using only layers on hand on 2/25: 40 @ $35 + 30 @ $32. Cross off each layer as it's used up.", "hl": ["2/25"]}], "id": 51}, {"t": "LI", "sc": "buzz", "ev": "Buzz Audio sells earbuds for $60 each. Work the sales in date order.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 2/25 sale of 70 units?", "opts": ["$2,350", "$2,450", "$2,220", "$2,360"], "ans": 3, "why": ["That pulls from purchases made after 2/25. A sale can only use layers already on hand.", "That prices all 70 units at $35. That layer doesn't have enough units, so the sale crosses into the next layer.", "That's the FIFO COGS. LIFO takes the newest units on hand first.", null], "rule": "40 \u00d7 $35 = $1,400 + 30 \u00d7 $32 = $960. COGS = $2,360.", "hl": ["2/25"]}, {"type": "calc", "side": "L", "q": "LIFO: what is COGS for the 6/20 sale of 60 units? (The first sale already used some units.)", "opts": ["$1,980", "$2,000", "$1,960", "$2,040"], "ans": 2, "why": ["That prices all 60 units at $33. That layer doesn't have enough units, so the sale crosses into the next layer.", "That ignores the 2/25 sale. Those units were already crossed off, so start from what's left.", null, "That's the FIFO COGS. LIFO takes the newest units on hand first."], "rule": "50 \u00d7 $33 = $1,650 + 5 \u00d7 $32 = $160 + 5 \u00d7 $30 = $150. COGS = $1,960.", "hl": ["6/20"]}], "id": 52}, {"t": "LI", "sc": "buzz", "ev": "Buzz Audio: all transactions for the year. Unit check: 150 available \u2212 130 sold = 20 left.", "parts": [{"type": "calc", "side": "L", "q": "LIFO: what is ending inventory after both sales?", "opts": ["$4,320", "$657.80", "$660", "$600"], "ans": 3, "why": ["That's total COGS, the cost of what was sold. Ending inventory is the cost of what's still on hand.", "That's the weighted average ending inventory, not LIFO.", "That's FIFO ending inventory. Under LIFO the units left are the oldest ones.", null], "rule": "Layers not crossed out: 20 \u00d7 $30 = $600. Ending inventory = $600.", "hl": []}], "id": 53}, {"t": "WA", "sc": "buzz", "ev": "Buzz Audio sells earbuds for $60 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 2/10 purchase?", "opts": ["$33.09", "$31.17", "$32.70", "$35.00"], "ans": 2, "why": ["That averages the two unit costs ($31.17 and $35) without weighting by units. Use total cost \u00f7 total units.", "That's the average before this purchase. A new purchase changes the average.", null, "That's just the new purchase's cost. Combine it with the units already in the pool."], "rule": "Pool before: 60 units = $1,870.00. Add 40 \u00d7 $35 = $1,400.00. New pool: $3,270.00 \u00f7 100 units = $32.70.", "hl": ["2/10"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is the new average unit cost after the 5/5 purchase?", "opts": ["$32.89", "$32.70", "$32.85", "$33.00"], "ans": 0, "why": [null, "That's the average before this purchase. A new purchase changes the average.", "That averages the two unit costs ($32.70 and $33) without weighting by units. Use total cost \u00f7 total units.", "That's just the new purchase's cost. Combine it with the units already in the pool."], "rule": "Pool before: 30 units = $981.00. Add 50 \u00d7 $33 = $1,650.00. New pool: $2,631.00 \u00f7 80 units = $32.89.", "hl": ["5/5"]}], "id": 54}, {"t": "WA", "sc": "buzz", "ev": "Buzz Audio sells earbuds for $60 each. Recompute the average after every purchase. Round to cents.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 2/25 sale of 70 units?", "opts": ["$2,220.00", "$2,289.00", "$2,360.00", "$4,200.00"], "ans": 1, "why": ["That's FIFO COGS. Weighted average prices every unit sold at the current average.", null, "That's LIFO COGS. Weighted average prices every unit sold at the current average.", "That's sales revenue. COGS uses the average cost, not the selling price."], "rule": "Sales come out at the current average: 70 \u00d7 $32.70 = $2,289.00. Pool left: 30 units @ $32.70 = $981.00.", "hl": ["2/25"]}, {"type": "calc", "side": "W", "q": "Weighted average: what is COGS for the 6/20 sale of 60 units?", "opts": ["$1,960.00", "$3,600.00", "$1,973.40", "$2,040.00"], "ans": 2, "why": ["That's LIFO COGS. Weighted average prices every unit sold at the current average.", "That's sales revenue. COGS uses the average cost, not the selling price.", null, "That's FIFO COGS. Weighted average prices every unit sold at the current average."], "rule": "Sales come out at the current average: 60 \u00d7 $32.89 = $1,973.40. Pool left: 20 units @ $32.89 = $657.80.", "hl": ["6/20"]}], "id": 55}, {"t": "WA", "sc": "buzz", "ev": "Buzz Audio: all transactions for the year. Unit check: 150 available \u2212 130 sold = 20 left.", "parts": [{"type": "calc", "side": "W", "q": "Weighted average: what is ending inventory?", "opts": ["$4,262.40", "$600.00", "$660.00", "$657.80"], "ans": 3, "why": ["That's total COGS. Ending inventory is what's still on hand.", "That's LIFO ending inventory.", "That's FIFO ending inventory.", null], "rule": "Units left \u00d7 final average: 20 \u00d7 $32.89 = $657.80.", "hl": []}], "id": 56}, {"t": "GP", "sc": "buzz", "ev": "Buzz Audio sold 130 earbuds at $60 each this year.", "parts": [{"type": "calc", "side": "F", "q": "FIFO: what is gross profit for the year?", "opts": ["$7,800", "$3,540", "$3,480", "$7,140"], "ans": 1, "why": ["That's sales revenue. Subtract COGS to get gross profit.", null, "That's the LIFO gross profit.", "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS."], "rule": "Sales revenue: 130 \u00d7 $60 = $7,800. FIFO COGS: $4,260. Gross profit = $7,800 \u2212 $4,260 = $3,540.", "hl": ["2/25", "6/20"]}, {"type": "calc", "side": "L", "q": "LIFO: what is gross profit for the year?", "opts": ["$7,800", "$3,540", "$3,480", "$7,200"], "ans": 2, "why": ["That's sales revenue. Subtract COGS to get gross profit.", "That's the FIFO gross profit.", null, "That subtracts ending inventory. Gross profit = sales revenue \u2212 COGS."], "rule": "Sales revenue: 130 \u00d7 $60 = $7,800. LIFO COGS: $4,320. Gross profit = $7,800 \u2212 $4,320 = $3,480.", "hl": ["2/25", "6/20"]}], "id": 57}, {"t": "GP", "sc": "buzz", "ev": "Buzz Audio sold 130 earbuds at $60 each this year.", "parts": [{"type": "txt", "side": "N", "q": "Which method reports the highest gross profit?", "opts": ["Weighted average", "LIFO", "FIFO"], "ans": 2, "why": ["Weighted average gross profit is $3,537.60, lower than FIFO's $3,540. Lowest COGS wins.", "LIFO gross profit is $3,480, lower than FIFO's $3,540. Lowest COGS wins.", null], "rule": "Unit costs rose this year ($30 to $33). FIFO sent the older, cheaper costs to COGS, so it shows the highest gross profit: FIFO $3,540, LIFO $3,480, weighted average $3,537.60.", "hl": []}], "id": 58}, {"t": "GP", "sc": "buzz", "ev": "Buzz Audio: all transactions for the year.", "parts": [{"type": "calc", "side": "N", "q": "Unit check: how many units are in ending inventory under every method?", "opts": ["20 units", "150 units", "90 units", "130 units"], "ans": 0, "why": [null, "That's units available. Subtract units sold.", "That only subtracts the last sale. Subtract both sales.", "That's units sold."], "rule": "Units available \u2212 units sold: 150 \u2212 130 = 20. The method changes the dollar amount, never the unit count.", "hl": []}], "id": 59}, {"t": "CC", "sc": null, "ev": "Under FIFO, ending inventory is made of the newest costs.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "FIFO sends the oldest units out first, so the units left on hand carry the most recent costs.", "hl": []}], "id": 60}, {"t": "CC", "sc": null, "ev": "Under LIFO, a sale can use units from a purchase made after the sale date.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 1, "why": [null, null], "rule": "A sale can only use layers on hand at the moment of the sale. Later purchases don't exist yet.", "hl": []}], "id": 61}, {"t": "CC", "sc": null, "ev": "Under weighted average, a new average is computed after every purchase.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "Each purchase changes the pool: total cost \u00f7 total units gives the new average.", "hl": []}], "id": 62}, {"t": "CC", "sc": null, "ev": "A sale changes the weighted average unit cost.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 1, "why": [null, null], "rule": "Units leave at the current average, so the average stays the same. Only purchases change it.", "hl": []}], "id": 63}, {"t": "CC", "sc": null, "ev": "When prices are rising, FIFO usually reports the highest net income.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "Rising prices: FIFO sends the older, cheaper costs to COGS, so COGS is lowest and income is highest.", "hl": []}], "id": 64}, {"t": "CC", "sc": null, "ev": "When prices are rising, LIFO usually gives the lowest taxable income.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "LIFO sends the newest, most expensive costs to COGS, so taxable income is lowest.", "hl": []}], "id": 65}, {"t": "CC", "sc": null, "ev": "When prices are falling, FIFO gives the lowest COGS.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 1, "why": [null, null], "rule": "Falling prices: the oldest units were the most expensive, so FIFO gives the highest COGS. The usual rule flips.", "hl": []}], "id": 66}, {"t": "CC", "sc": null, "ev": "Units available \u2212 units sold = units in ending inventory, no matter which method is used.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "The method only changes the dollar cost. The unit count is the same for FIFO, LIFO, and weighted average.", "hl": []}], "id": 67}, {"t": "CC", "sc": null, "ev": "Switching from FIFO to LIFO changes how many units are in ending inventory.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 1, "why": [null, null], "rule": "Same units, different costs. Only the dollar amount changes.", "hl": []}], "id": 68}, {"t": "CC", "sc": null, "ev": "Gross profit = Sales revenue \u2212 ending inventory.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 1, "why": [null, null], "rule": "Gross profit = Sales revenue \u2212 COGS.", "hl": []}], "id": 69}, {"t": "CC", "sc": null, "ev": "LIFO can leave very old costs sitting in ending inventory on the balance sheet.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "LIFO keeps the oldest layers on hand, so balance sheet inventory can be far from today's cost.", "hl": []}], "id": 70}, {"t": "CC", "sc": null, "ev": "When a sale uses only part of a layer, you cross out the layer and write what's left next to it.", "parts": [{"type": "tf", "side": "N", "q": "True or false?", "opts": ["True", "False"], "ans": 0, "why": [null, null], "rule": "Strike the layer and record the leftover units so the next sale starts from the right place.", "hl": []}], "id": 71}, {"t": "CC", "sc": null, "ev": "Which of the following is an advantage of the FIFO inventory method?", "parts": [{"type": "txt", "side": "F", "q": "Pick the best answer.", "opts": ["It reduces tax liabilities during periods of inflation.", "It provides a more accurate measure of current inventory costs on the balance sheet.", "It results in the lowest taxable income when prices are rising."], "ans": 1, "why": ["That describes LIFO. In inflation LIFO puts the higher costs in COGS, which lowers taxes.", null, "That's LIFO. FIFO gives the highest income when prices rise."], "rule": "Ending inventory under FIFO is made of the newest purchases, so the balance sheet value is close to today's cost.", "hl": []}], "id": 72}, {"t": "CC", "sc": null, "ev": "One key advantage of the weighted average inventory method is:", "parts": [{"type": "txt", "side": "W", "q": "Pick the best answer.", "opts": ["It averages out price fluctuations.", "It leads to the lowest tax liability during inflation.", "It results in the highest net income during rising prices.", "It ensures the newest items are sold first."], "ans": 0, "why": [null, "That's LIFO.", "That's FIFO.", "That's LIFO's flow assumption."], "rule": "Every unit carries the same blended cost, which smooths out the highs and lows.", "hl": []}], "id": 73}, {"t": "CC", "sc": null, "ev": "In periods of rising prices, which inventory method usually results in the highest reported net income?", "parts": [{"type": "txt", "side": "N", "q": "Pick the best answer.", "opts": ["FIFO", "LIFO", "Weighted average"], "ans": 0, "why": [null, "LIFO sends the newest, highest costs to COGS, so income is lowest.", "Weighted average lands in the middle."], "rule": "FIFO sends the oldest (cheapest) costs to COGS, so COGS is lowest and net income is highest.", "hl": []}], "id": 74}, {"t": "CC", "sc": null, "ev": "Which of the following is true about LIFO when prices are rising?", "parts": [{"type": "txt", "side": "L", "q": "Pick the best answer.", "opts": ["It results in lower COGS and higher net income compared to FIFO.", "It can lead to inventory values being understated on the balance sheet.", "It always produces higher ending inventory values than FIFO."], "ans": 1, "why": ["Backwards. LIFO gives higher COGS and lower income when prices rise.", null, "LIFO leaves the oldest, cheapest costs in inventory, so ending inventory is lower."], "rule": "LIFO leaves the oldest, cheapest layers in ending inventory, so the balance sheet value sits below current cost.", "hl": []}], "id": 75}, {"t": "CC", "sc": null, "ev": "In the FIFO method, which statement is accurate?", "parts": [{"type": "txt", "side": "F", "q": "Pick the best answer.", "opts": ["Ending inventory will consist of the most recent purchases.", "COGS will be based on the most recent inventory costs.", "It results in lower tax liabilities during inflation.", "It is more complex to implement than LIFO."], "ans": 0, "why": [null, "That's LIFO. FIFO's COGS uses the oldest costs.", "That's LIFO.", "Not a defining feature of FIFO."], "rule": "The oldest units are sold first, so whatever is left over is the most recent purchases.", "hl": []}], "id": 76}, {"t": "CC", "sc": null, "ev": "Which method is most suitable for a company trying to minimize tax expenses during inflation?", "parts": [{"type": "txt", "side": "N", "q": "Pick the best answer.", "opts": ["FIFO", "LIFO", "Weighted average", "Specific identification"], "ans": 1, "why": ["FIFO gives the lowest COGS during inflation, so taxes are highest.", null, "Weighted average lands between FIFO and LIFO.", "Depends on which units are picked; it isn't a tax-minimizing rule."], "rule": "LIFO sends the newest (most expensive) costs to COGS, lowering taxable income when prices rise.", "hl": []}], "id": 77}], "scen": {"grip": {"name": "Court Side Grips", "price": 12, "ev": [["B", "1/1", 40, 5], ["P", "2/8", 60, 6], ["P", "3/2", 50, 7], ["S", "3/20", 90, null], ["P", "6/5", 70, 8], ["S", "7/18", 100, null]]}, "hood": {"name": "Husky Hoodies", "price": 45, "ev": [["B", "1/1", 30, 22], ["P", "2/14", 50, 20], ["P", "4/1", 40, 18], ["S", "4/22", 75, null], ["P", "8/10", 60, 19], ["S", "9/12", 80, null]]}, "bottle": {"name": "Bottle Up", "price": 25, "ev": [["B", "1/1", 80, 10], ["P", "3/3", 120, 12], ["S", "3/28", 150, null], ["P", "5/9", 100, 13], ["P", "6/1", 60, 15], ["S", "6/30", 170, null]]}, "glow": {"name": "Glow Co.", "price": 20, "ev": [["B", "1/1", 50, 9], ["P", "2/2", 40, 8], ["S", "2/20", 70, null], ["P", "4/4", 60, 6], ["P", "5/15", 30, 7], ["S", "6/2", 85, null]]}, "buzz": {"name": "Buzz Audio", "price": 60, "ev": [["B", "1/1", 25, 30], ["P", "1/20", 35, 32], ["P", "2/10", 40, 35], ["S", "2/25", 70, null], ["P", "5/5", 50, 33], ["S", "6/20", 60, null]]}}, "topics": {"FI": "FIFO", "LI": "LIFO", "WA": "Weighted average", "GP": "Gross profit & comparing", "CC": "Concepts"}};
+const cards=DATA.cards,SCEN=DATA.scen,TOPICS=DATA.topics;
+const METH={F:"FIFO",L:"LIFO",W:"Weighted average"};
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}}};
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const TEAM_COLORS=["#2F6FB0","#2E8B57","#8E44AD","#C0392B","#138D90","#B7950B","#D35492","#5D6D7E"];
+const NTEAMS=8,PTS=100,PENALTY=100,BLITZ=180,STEAL_SECS=5;
+let saved=[];try{saved=JSON.parse(store.get("tb5-teams")||"[]")}catch(_){}
+const S={mode:"blitz",topics:new Set(Object.keys(TOPICS)),rounds:4,teams:[],deck:[],limit:0,pos:0,part:0,score:0,streak:0,time:BLITZ,timer:null,paused:false,locked:false,phase:"turn",turn:0,stealer:-1,stats:{},missed:new Map(),answered:0,right:0,last:0,cleared:false};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pool=()=>cards.filter(c=>S.topics.has(c.t));
+function teamLimit(){const n=pool().length,want=S.rounds*NTEAMS;if(n>=want)return want;return n>=NTEAMS?Math.floor(n/NTEAMS)*NTEAMS:n}
+function updateCap(){
+  const n=pool().length,want=S.rounds*NTEAMS,lim=teamLimit();
+  $("capNote").textContent=lim<want?`Only ${n} cards in the topics you picked, so this game will be ${lim} cards. Turn on more topics for a longer game.`:`${want} cards, no repeats. Right answers +100, wrong answers −100, on a turn or a steal.`;
+}
+const chips=$("chips");
+Object.entries(TOPICS).forEach(([k,v])=>{
+  const n=cards.filter(c=>c.t===k).length;
+  const l=document.createElement("label");l.className="chip";
+  l.innerHTML=`<input type="checkbox" value="${k}" checked><span class="tick"></span>${v} <span class="hint">(${n})</span>`;
+  l.querySelector("input").addEventListener("change",ev=>{ev.target.checked?S.topics.add(k):S.topics.delete(k);$("startBtn").disabled=!S.topics.size;updateCap()});
+  chips.appendChild(l);
+});
+for(let i=0;i<NTEAMS;i++){
+  const l=document.createElement("label");l.className="tname";l.style.setProperty("--c",TEAM_COLORS[i]);
+  const inp=document.createElement("input");inp.type="text";inp.maxLength=18;inp.value=saved[i]||("Team "+(i+1));inp.setAttribute("aria-label","Team "+(i+1)+" name");
+  l.appendChild(inp);$("teamNames").appendChild(l);
+}
+$("rounds").addEventListener("change",e=>{S.rounds=+e.target.value;updateCap()});
+updateCap();
+document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>{
+  S.mode=b.dataset.mode;document.querySelectorAll(".mode").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  $("teamSetup").hidden=S.mode!=="teams"}));
+function showBest(){["blitz","practice"].forEach(m=>{const v=store.get("tb5-best-"+m);$("best-"+m).textContent=v?"Best "+Number(v).toLocaleString():""})}
+showBest();
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function show(id){["start","play","end"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
+const isTeams=()=>S.mode==="teams";
+
+function start(){
+  Object.assign(S,{deck:shuffle(pool()),pos:0,part:0,score:0,streak:0,time:BLITZ,paused:false,locked:false,missed:new Map(),answered:0,right:0,phase:"turn",stealer:-1,cleared:false});
+  S.limit=isTeams()?teamLimit():S.deck.length;
+  S.order=[];if(isTeams()){while(S.order.length<S.limit)S.order.push(...shuffle([...Array(NTEAMS).keys()]));S.order.length=S.limit}
+  stopStealClock();
+  S.stats={};S.topics.forEach(t=>S.stats[t]={r:0,n:0});
+  if(isTeams()){
+    const names=[...document.querySelectorAll("#teamNames input")].map((x,i)=>x.value.trim()||"Team "+(i+1));
+    store.set("tb5-teams",JSON.stringify(names));
+    S.teams=names.map((n,i)=>({name:n,color:TEAM_COLORS[i],score:0,steals:0}));
+  }
+  $("play").classList.toggle("teams",isTeams());$("board").hidden=!isTeams();$("turn").hidden=!isTeams();
+  $("score").textContent="0";updateStreak();show("play");renderCard();
+  clearInterval(S.timer);S.last=performance.now();
+  S.timer=setInterval(tick,100);updateMeter();
+}
+function tick(){
+  const now=performance.now(),dt=(now-S.last)/1000;S.last=now;
+  if(S.mode!=="blitz"||S.paused)return;
+  S.time-=dt;if(S.time<=0){S.time=0;updateMeter();finish();return}
+  updateMeter();
+}
+function fmtTime(s){s=Math.ceil(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function updateMeter(){
+  const f=$("meterFill"),m=$("meter");m.classList.remove("low");
+  if(S.mode==="blitz"){f.style.transform=`scaleX(${S.time/BLITZ})`;m.classList.toggle("low",S.time<20);$("meterLabel").textContent=`${fmtTime(S.time)} left (clock pauses while you read the explanation)`}
+  else if(isTeams()){f.style.transform=`scaleX(${S.pos/S.limit})`;const rounds=Math.max(1,Math.ceil(S.limit/NTEAMS));$("meterLabel").textContent=`Card ${Math.min(S.pos+1,S.limit)} of ${S.limit}, round ${Math.min(Math.floor(S.pos/NTEAMS)+1,rounds)} of ${rounds}`}
+  else{f.style.transform=`scaleX(${S.pos/S.limit})`;$("meterLabel").textContent=`Card ${Math.min(S.pos+1,S.limit)} of ${S.limit}`}
+}
+function mult(){return Math.min(4,1+Math.floor(S.streak/5))}
+function updateStreak(){$("streak").textContent=S.streak;const m=mult();$("mult").hidden=m<2;$("mult").textContent="x"+m}
+
+function renderBoard(rollIdx){
+  const b=$("board");b.innerHTML="";
+  S.teams.forEach((t,i)=>{
+    const d=document.createElement("div");let c="team";
+    if(i===S.turn&&S.phase==="turn")c+=" turn";
+    if(i===S.turn&&S.phase!=="turn"&&S.phase!=="picking")c+=" out";
+    if(i===S.stealer)c+=" steal";
+    if(i===rollIdx)c+=" roll";
+    d.className=c;d.style.setProperty("--c",t.color);
+    d.innerHTML=`<span class="n">${esc(t.name)}</span><b>${t.score.toLocaleString()}</b>`;b.appendChild(d);
+  });
+}
+function setBanner(text,color,stealing){const t=$("turn");t.textContent=text;t.style.setProperty("--c",color);t.classList.toggle("stealing",!!stealing)}
+const cur=()=>S.deck[S.pos];
+const curPart=()=>cur().parts[S.part];
+
+function renderFig(sc,hl){
+  const fig=$("fig");if(!sc){fig.hidden=true;fig.innerHTML="";return}
+  const s=SCEN[sc];let rows="";
+  s.ev.forEach(([t,d,u,c])=>{
+    const sale=t==="S";const act=t==="B"?"Beginning Inv.":t==="P"?"Purchase":"Sale";
+    rows+=`<tr class="${sale?"sale":""}${hl.includes(d)?" hl":""}"><td>${d}</td><td>${act}</td><td>${sale?u+" units sold":u+" @ $"+c}</td><td class="r">${sale?"sells @ $"+s.price:"$"+(u*c).toLocaleString()}</td></tr>`;
+  });
+  fig.innerHTML=`<table><thead><tr><th>Date</th><th>Activity</th><th>Units</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`;fig.hidden=false;
+}
+function renderCard(){
+  if(S.pos>=S.limit){if(S.mode==="blitz")S.cleared=true;finish();return}
+  S.part=0;
+  if(isTeams())S.turn=S.order[S.pos];
+  $("eventText").textContent=cur().ev;
+  $("topicTag").textContent=TOPICS[cur().t];
+  renderPart();
+}
+function renderPart(){
+  const c=cur(),q=curPart();S.locked=false;
+  $("rule").hidden=true;$("judge").hidden=true;
+  stopStealClock();
+  if(isTeams()){S.stealer=-1;const t=S.teams[S.turn];const bannerTxt=t.name+(c.parts.length>1?`, your card (part ${S.part+1} of ${c.parts.length})`:", your card");
+    if(S.part===0){S.phase="picking";S.locked=true;setBanner("Picking a team...",t.color,false);
+      spin([...Array(NTEAMS).keys()],S.turn,()=>{S.phase="turn";S.locked=false;renderBoard();setBanner(bannerTxt,t.color,false)});
+    }else{S.phase="turn";renderBoard();setBanner(bannerTxt,t.color,false)}}
+  $("partTag").hidden=c.parts.length<2;$("partTag").textContent=`Part ${S.part+1} of ${c.parts.length}`;
+  $("table").className="table on-"+q.side;
+  renderFig(c.sc,q.hl);
+  $("prompt").textContent=q.q;
+  const box=$("answers");box.innerHTML="";
+  box.className="answers "+(q.type==="tf"?"two":q.type==="txt"?"txt":"four");
+  q.opts.forEach((lab,i)=>{
+    const b=document.createElement("button");b.className="ans";
+    const key=q.type==="tf"?(i?"F":"T"):String(i+1);
+    b.innerHTML=`<kbd>${key}</kbd>${esc(lab)}`;b.addEventListener("click",()=>answer(i,b));box.appendChild(b);
+  });
+  updateMeter();
+}
+function next(){
+  S.paused=false;S.last=performance.now();
+  if(S.part<cur().parts.length-1){S.part++;renderPart()}else{S.pos++;renderCard()}
+}
+const correctLabel=q=>q.opts[q.ans];
+function logMiss(q){S.missed.set(cur().id+"-"+S.part,{t:cur().t,side:q.side,q:q.q,ans:correctLabel(q),rule:q.rule})}
+function popAt(btn,pts){
+  if(!btn)return;const r=btn.getBoundingClientRect();const pop=document.createElement("div");pop.className="pop"+(pts<0?" neg":"");pop.textContent=(pts<0?"−":"+")+Math.abs(pts);
+  pop.style.left=(r.left+r.width/2-24)+"px";pop.style.top=(r.top-6)+"px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),700);
+}
+function showRule(q,ok,head,pick){
+  $("rule").classList.toggle("ok",ok);$("ruleHead").textContent=head;
+  const wn=$("whyNo");
+  if(!ok&&pick!=null&&pick!==q.ans&&q.type!=="tf"){
+    const w=q.why[pick]||"";
+    wn.innerHTML="";const l=document.createElement("span");l.className="lbl";l.textContent=`Why not “${q.opts[pick]}”`;wn.appendChild(l);wn.appendChild(document.createTextNode(w));wn.hidden=!w;
+  }else wn.hidden=true;
+  $("ruleLbl").textContent=ok?"Why it's right":"How to get it";
+  $("ruleText").textContent=q.rule;
+  $("rule").hidden=false;S.paused=true;$("contBtn").focus({preventScroll:true});
+  $("rule").scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+}
+function answer(i,btn){
+  if(S.locked)return;S.locked=true;
+  const q=curPart();const btns=[...$("answers").children];btns.forEach(b=>b.disabled=true);
+  if(isTeams()){teamAnswer(i,btn,q,btns);return}
+  S.answered++;S.stats[cur().t].n++;
+  if(i===q.ans){
+    const pts=100*mult();S.score+=pts;S.streak++;S.right++;S.stats[cur().t].r++;
+    btn.classList.add("right");$("score").textContent=S.score.toLocaleString();updateStreak();popAt(btn,pts);
+    showRule(q,true,"Correct: "+correctLabel(q));
+  }else{
+    S.streak=0;updateStreak();S.score-=PENALTY;$("score").textContent=S.score.toLocaleString();popAt(btn,-PENALTY);
+    btn.classList.add("wrong");btns[q.ans].classList.add("right");logMiss(q);
+    showRule(q,false,`Answer: ${correctLabel(q)} (−${PENALTY})`,i);
+  }
+}
+function award(t,btn,pts=PTS){S.teams[t].score+=pts;renderBoard();popAt(btn,pts)}
+function teamAnswer(i,btn,q,btns){
+  const right=i===q.ans;
+  if(S.phase==="turn"){
+    S.answered++;S.stats[cur().t].n++;
+    if(right){S.right++;S.stats[cur().t].r++;btn.classList.add("right");award(S.turn,btn);const tm=S.teams[S.turn];setBanner(tm.name+" got it",tm.color,false);showRule(q,true,`${tm.name} got it. Answer: ${correctLabel(q)}`);return}
+    btn.classList.add("wrong");award(S.turn,btn,-PENALTY);logMiss(q);S.firstPick=i;rollSteal(q,btns);
+  }else if(S.phase==="steal"){
+    stopStealClock();
+    const t=S.teams[S.stealer];S.phase="done";
+    if(right){btn.classList.add("right");t.steals++;award(S.stealer,btn);setBanner(t.name+" stole it",t.color,true);showRule(q,true,`${t.name} stole it. Answer: ${correctLabel(q)}`)}
+    else{btn.classList.add("wrong");btns[q.ans].classList.add("right");award(S.stealer,btn,-PENALTY);setBanner("No steal",t.color,true);showRule(q,false,`No steal (−${PENALTY} for ${t.name}). Answer: ${correctLabel(q)}`,i)}
+  }
+}
+function spin(cands,pick,done){
+  const seq=[];const n=reduce||cands.length<2?0:18;
+  for(let k=0;k<n;k++){let r;do{r=cands[Math.floor(Math.random()*cands.length)]}while(seq.length&&r===seq[seq.length-1]);seq.push(r)}
+  if(seq.length&&seq[seq.length-1]===pick)seq.pop();
+  seq.push(pick);let k=0;const gen=S.gen=(S.gen||0)+1;
+  (function step(){
+    if(gen!==S.gen||$("play").hidden)return;
+    renderBoard(seq[k]);
+    if(k===seq.length-1){setTimeout(()=>{if(gen===S.gen&&!$("play").hidden)done()},reduce?0:450);return}
+    const d=55+Math.pow(k/seq.length,2.2)*300;k++;setTimeout(step,d);
+  })();
+}
+function rollSteal(q,btns){
+  S.phase="rolling";renderBoard();
+  const others=[...Array(NTEAMS).keys()].filter(x=>x!==S.turn);
+  const pick=others[Math.floor(Math.random()*others.length)];
+  setBanner("Missed. Picking a team to steal...",S.teams[S.turn].color,false);
+  spin(others,pick,()=>land(q,pick,btns));
+}
+function stopStealClock(){clearInterval(S.stealTimer);S.stealTimer=null}
+function startStealClock(onExpire){
+  stopStealClock();const end=performance.now()+STEAL_SECS*1000;
+  const el=document.createElement("span");el.className="sclock";$("turn").appendChild(el);
+  const draw=()=>{const left=Math.max(0,(end-performance.now())/1000);el.textContent=Math.ceil(left);el.classList.toggle("urgent",left<=2);return left};
+  draw();
+  S.stealTimer=setInterval(()=>{if(draw()<=0){stopStealClock();onExpire()}},100);
+}
+function stealTimeout(q,btns){
+  if(S.phase!=="steal")return;
+  const t=S.teams[S.stealer];S.phase="done";S.locked=true;
+  btns.forEach(b=>b.disabled=true);btns[q.ans].classList.add("right");
+  award(S.stealer,null,-PENALTY);setBanner("Time's up",t.color,true);
+  showRule(q,false,`Time's up, no steal (−${PENALTY} for ${t.name}). Answer: ${correctLabel(q)}`,S.firstPick);
+}
+function land(q,pick,btns){
+  S.stealer=pick;const t=S.teams[pick];
+  if(q.type==="tf"){
+    S.phase="judge";renderBoard();setBanner("Steal: "+t.name,t.color,true);
+    btns[q.ans].classList.add("right");
+    $("judgeHead").textContent=`${t.name}: to steal, explain it`;
+    $("judgeText").textContent=q.ans===1?"The statement is false. Say what's wrong with it and fix it so it's true.":"The statement is true. Explain the rule behind it.";
+    $("judge").hidden=false;S.paused=true;$("judgeYes").focus({preventScroll:true});
+    startStealClock(()=>{if(S.phase==="judge")judge(false,true)});
+    $("judge").scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+  }else{
+    S.phase="steal";renderBoard();setBanner("Steal: "+t.name,t.color,true);
+    btns.forEach(b=>{if(!b.classList.contains("wrong"))b.disabled=false});S.locked=false;
+    startStealClock(()=>stealTimeout(q,btns));
+  }
+}
+function judge(ok,timedOut){
+  if(S.phase!=="judge")return;stopStealClock();
+  const q=curPart(),t=S.teams[S.stealer];$("judge").hidden=true;S.phase="done";
+  if(ok){t.steals++;award(S.stealer);setBanner(t.name+" stole it",t.color,true);showRule(q,true,`${t.name} stole it. Answer: ${correctLabel(q)}`)}
+  else{award(S.stealer,null,-PENALTY);setBanner(timedOut?"Time's up":"No steal",t.color,true);showRule(q,false,`${timedOut?"Time's up, no steal":"No steal"} (−${PENALTY} for ${t.name}). Answer: ${correctLabel(q)}`,S.firstPick)}
+}
+$("judgeYes").addEventListener("click",()=>judge(true));
+$("judgeNo").addEventListener("click",()=>judge(false));
+
+function finish(){
+  clearInterval(S.timer);stopStealClock();S.gen=(S.gen||0)+1;show("end");
+  const acc=S.answered?Math.round(100*S.right/S.answered):0;
+  const st=$("standings");st.hidden=!isTeams();st.innerHTML="";
+  if(isTeams()){
+    const ranked=S.teams.slice().sort((a,b)=>b.score-a.score||b.steals-a.steals);
+    const tie=ranked[1]&&ranked[1].score===ranked[0].score;
+    $("endScore").textContent=ranked[0].score.toLocaleString();
+    $("endScoreSub").textContent=tie?"Tie at the top":ranked[0].name+" wins";
+    $("endAccSub").textContent=`class accuracy on first tries, ${S.right} of ${S.answered}`;
+    let rank=0,prev=null;
+    ranked.forEach((t,idx)=>{if(t.score!==prev){rank=idx+1;prev=t.score}
+      const li=document.createElement("li");li.style.setProperty("--c",t.color);
+      li.innerHTML=`<span class="rk">${rank}</span><span>${esc(t.name)}</span><span class="st">${t.steals} steal${t.steals===1?"":"s"}</span><span class="pts">${t.score.toLocaleString()}</span>`;st.appendChild(li)});
+  }else{
+    $("endScore").textContent=S.score.toLocaleString();
+    const key="tb5-best-"+S.mode,best=Number(store.get(key)||0);
+    let sub=S.mode==="blitz"?(S.cleared?"points, every card cleared before time ran out":"points in 3 minutes"):"points";
+    if(S.score>best&&S.score>0){store.set(key,S.score);sub+=", a new best"}else if(best)sub+=` (best ${best.toLocaleString()})`;
+    $("endScoreSub").textContent=sub;$("endAccSub").textContent=`${S.right} of ${S.answered} right`;
+  }
+  $("endAcc").textContent=acc+"%";
+  const rows=$("topicRows");rows.innerHTML="";
+  Object.entries(S.stats).forEach(([t,s])=>{
+    const pct=s.n?Math.round(100*s.r/s.n):null;
+    const d=document.createElement("div");d.className="trow";
+    d.innerHTML=`<span>${TOPICS[t]}</span><span>${pct===null?"not seen":s.r+"/"+s.n}</span><div class="bar"><i class="${pct>=80?"":pct>=60?"mid":"lo"}" style="width:${pct||0}%"></i></div>`;
+    rows.appendChild(d);
+  });
+  const rv=$("review");rv.innerHTML="";
+  if(!S.missed.size){rv.innerHTML='<li class="empty" style="border-left-color:var(--good)">Nothing missed. Turn on more topics or try Blitz for a tougher run.</li>'}
+  S.missed.forEach(m=>{const li=document.createElement("li");
+    li.innerHTML=`<b>${esc(TOPICS[m.t])}: ${esc(m.q)} Answer: ${esc(m.ans)}</b>`;li.appendChild(document.createTextNode(m.rule));rv.appendChild(li)});
+  showBest();
+}
+$("startBtn").addEventListener("click",start);
+$("contBtn").addEventListener("click",next);
+$("againBtn").addEventListener("click",start);
+$("setupBtn").addEventListener("click",()=>{showBest();updateCap();show("start")});
+$("quitBtn").addEventListener("click",finish);
+document.addEventListener("keydown",ev=>{
+  if($("play").hidden||!$("judge").hidden)return;
+  if(ev.target.tagName==="INPUT")return;
+  if(!$("rule").hidden){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();next()}return}
+  if(S.locked)return;
+  const q=S.deck[S.pos]&&curPart();if(!q)return;
+  const k=ev.key.toLowerCase();let idx=-1;
+  if(q.type==="tf"){if(k==="t"||k==="1")idx=0;if(k==="f"||k==="2")idx=1}
+  else if(/^[1-4]$/.test(k))idx=+k-1;
+  if(idx>=0){const b=$("answers").children[idx];if(b&&!b.disabled)b.click()}
+});
+})();
+</script>
+</body>
+</html>
