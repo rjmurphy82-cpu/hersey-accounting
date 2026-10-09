@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Same Deal, Two Books | Chapter 4 Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C;
+  --brown:#111111; --orange:#C1102F; --cream:#FAFAFA;
+  --line:rgba(17,17,17,.18); --good:#2E7D4F; --bad:#B3261E;
+  --goodbg:#E3F1E7; --badbg:#F8E1DE; --shadow:0 2px 0 rgba(17,17,17,.25);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8;
+    --brown:#2B2B2B; --orange:#C1102F; --cream:#FAFAFA;
+    --line:rgba(242,242,242,.16); --good:#5DBE85; --bad:#F07A6E;
+    --goodbg:#1E3A28; --badbg:#44201B; --shadow:0 2px 0 rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8;
+  --brown:#2B2B2B; --orange:#C1102F; --cream:#FAFAFA;
+  --line:rgba(242,242,242,.16); --good:#5DBE85; --bad:#F07A6E;
+  --goodbg:#1E3A28; --badbg:#44201B; --shadow:0 2px 0 rgba(0,0,0,.5);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:18px;line-height:1.45}
+h1,h2,h3,.disp{font-family:"Oswald","Arial Narrow",Impact,sans-serif;font-weight:600;letter-spacing:.01em}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.chip:focus-within{outline:3px solid var(--orange);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 20px 40px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px;font-weight:600}
+.brand .bar{display:inline-block;width:28px;height:6px;background:var(--orange);border-top:2px solid var(--brown);border-bottom:2px solid var(--brown);box-sizing:content-box}
+[hidden]{display:none!important}
+
+/* ---------- start ---------- */
+.hero{display:grid;grid-template-columns:1fr 1fr;margin:28px 0 30px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.hero .half{padding:34px 28px 30px;color:var(--cream);min-height:210px;display:flex;flex-direction:column;justify-content:flex-end}
+.hero .b{background:var(--brown)} .hero .s{background:var(--orange);text-align:right}
+.hero h1{margin:0;font-size:clamp(40px,7vw,78px);line-height:.95;font-weight:700}
+.hero .s h1{color:var(--brown)}
+.hero p{margin:10px 0 0;font-size:16px;opacity:.9;max-width:34ch}
+.hero .s p{margin-left:auto;color:#111111}
+.lede{max-width:62ch;font-size:19px;margin:0 0 26px}
+.setup{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.setup h2{font-size:22px;margin:0 0 10px}
+.modes{display:grid;gap:10px}
+.mode{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:14px 16px}
+.mode strong{font-family:"Oswald",sans-serif;font-weight:600;font-size:22px;display:block}
+.mode span{color:var(--muted);font-size:15px}
+.mode[aria-pressed="true"]{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 10%,var(--paper))}
+.mode .best{font-family:"Oswald",sans-serif;font-size:15px;color:var(--muted);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-size:16px;font-weight:600;cursor:pointer;user-select:none}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip .tick{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted)}
+.chip:has(input:checked){border-color:var(--brown)}
+.chip:has(input:checked) .tick{background:var(--orange);border-color:var(--orange)}
+.go{margin-top:28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.btn{background:var(--brown);color:var(--cream);border:0;border-radius:10px;padding:14px 26px;font-family:"Oswald",sans-serif;font-size:22px;font-weight:600;box-shadow:var(--shadow)}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.hint{color:var(--muted);font-size:15px}
+kbd{font-family:"Oswald",sans-serif;font-size:13px;border:1.5px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:0 6px;background:var(--paper)}
+
+/* ---------- play ---------- */
+.hud{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;margin:16px 0 14px}
+.stat{font-family:"Oswald",sans-serif;line-height:1}
+.stat b{font-size:34px;font-weight:600;display:block}
+.stat small{font-family:"Barlow",sans-serif;color:var(--muted);font-size:14px;font-weight:600}
+.meter{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.meter i{display:block;height:100%;width:100%;background:var(--orange);transform-origin:left;transition:transform .1s linear}
+.meter.low i{background:var(--bad)}
+.streak{text-align:right}
+.mult{display:inline-block;margin-left:6px;background:var(--orange);color:var(--brown);border-radius:6px;padding:2px 7px;font-size:18px;vertical-align:4px}
+
+.table{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:62px auto 30px}
+.side{grid-row:1 / 4;padding:14px 20px;color:var(--cream);transition:opacity .2s, filter .2s;display:flex;flex-direction:column}
+.side.buyer{grid-column:1;background:var(--brown);border-radius:14px 0 0 14px}
+.side.seller{grid-column:2;background:var(--orange);border-radius:0 14px 14px 0;align-items:flex-end;color:var(--brown)}
+.side h3{margin:0;font-size:28px;line-height:1.1}
+.side .tag{font-size:13px;font-weight:700;opacity:0;transition:opacity .2s}
+.table.on-B .seller,.table.on-S .buyer{opacity:.28;filter:saturate(.4)}
+.table.on-B .buyer .tag,.table.on-S .seller .tag{opacity:1}
+.table.on-N .side{opacity:.55}
+.event{grid-column:1 / 3;grid-row:2;margin:0 6%;background:var(--paper);color:var(--ink);border-radius:10px;padding:18px 22px 20px;box-shadow:0 10px 30px rgba(0,0,0,.28);z-index:1;border:1px solid var(--line)}
+.event .meta{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.event .part{background:var(--line);color:var(--ink);border-radius:999px;padding:1px 10px}
+.event p{margin:0;font-size:clamp(19px,2.4vw,24px);font-weight:500;line-height:1.35}
+.prompt{font-family:"Oswald",sans-serif;font-size:clamp(22px,3vw,30px);font-weight:500;margin:20px 0 14px;text-align:center}
+.prompt .entry{display:block;font-family:"Barlow",sans-serif;font-size:clamp(18px,2.2vw,22px);font-weight:600;margin-bottom:4px}
+.prompt .dc{font-style:normal;font-weight:700;text-decoration:underline;text-decoration-thickness:4px;text-underline-offset:5px;text-decoration-color:var(--orange)}
+.answers{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.answers.two{grid-template-columns:1fr 1fr;max-width:640px;margin:0 auto}
+.answers.four{grid-template-columns:repeat(4,1fr)}
+.ans{position:relative;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:14px 10px 12px;min-height:74px;font-weight:600;font-size:17px;line-height:1.2;box-shadow:var(--shadow);text-align:center;display:flex;align-items:center;justify-content:center}
+.answers.two .ans{font-family:"Oswald",sans-serif;font-size:30px;min-height:90px}
+.answers.four .ans{font-family:"Oswald",sans-serif;font-size:26px}
+.ans kbd{position:absolute;top:5px;left:6px}
+.ans:hover:not(:disabled){border-color:var(--orange)}
+.ans:disabled{cursor:default}
+.ans.right{background:var(--goodbg);border-color:var(--good);color:var(--good)}
+.ans.wrong{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.ans.none-tile{font-style:italic}
+.rule{margin:16px auto 0;max-width:760px;background:var(--paper);border:2px solid var(--bad);border-left-width:10px;border-radius:10px;padding:16px 20px}
+.rule h3{margin:0 0 4px;font-size:24px;color:var(--bad)}
+.rule p{margin:0 0 12px;font-size:19px}
+.rule .btn{font-size:18px;padding:10px 20px}
+.pop.neg{color:var(--bad)}
+.pop{position:fixed;pointer-events:none;font-family:"Oswald",sans-serif;font-weight:700;font-size:26px;color:var(--good);animation:pop .7s ease-out forwards;z-index:5}
+@keyframes pop{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-46px)}}
+.quit{background:none;border:0;color:var(--muted);font-size:15px;font-weight:600;text-decoration:underline;margin-top:22px}
+
+/* ---------- end ---------- */
+.result{display:grid;grid-template-columns:1fr 1fr;border-radius:14px;overflow:hidden;margin:26px 0 26px;box-shadow:var(--shadow)}
+.result>div{padding:26px 28px}
+.result .l{background:var(--brown);color:var(--cream)}
+.result .r{background:var(--orange);color:var(--brown)}
+.result .big{font-family:"Oswald",sans-serif;font-size:clamp(54px,9vw,96px);font-weight:700;line-height:1}
+.result .sub{font-size:17px;font-weight:600;margin-top:4px}
+.cols{display:grid;grid-template-columns:1fr 1.3fr;gap:30px}
+.cols h2{font-size:24px;margin:0 0 12px}
+.trow{display:grid;grid-template-columns:1fr 64px;gap:4px 10px;margin-bottom:12px;font-weight:600;font-size:16px}
+.trow .bar{grid-column:1 / 3;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.trow .bar i{display:block;height:100%;background:var(--good)}
+.trow .bar i.mid{background:var(--orange)} .trow .bar i.lo{background:var(--bad)}
+.trow span:last-of-type{text-align:right;color:var(--muted)}
+.review{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.review li{background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:8px;padding:10px 14px;font-size:16px}
+.review li b{display:block;font-size:15px;color:var(--muted)}
+.empty{color:var(--muted)}
+.endbtns{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+
+/* ---------- teams ---------- */
+.teamsetup{margin-top:24px}
+.teamsetup h2{font-size:22px;margin:0 0 10px}
+.tnames{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tname{display:flex;align-items:center;gap:8px;background:var(--paper);border:2px solid var(--line);border-left:8px solid var(--c);border-radius:8px;padding:6px 10px}
+.tname input{border:0;background:transparent;color:var(--ink);font:600 17px "Barlow",sans-serif;width:100%;min-width:0}
+.tname input:focus{outline:none}
+.tname:focus-within{border-color:var(--c)}
+.rounds{margin-top:14px;display:flex;align-items:center;gap:10px;font-weight:600}
+.rounds select{font:600 17px "Barlow",sans-serif;padding:6px 10px;border-radius:8px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.board{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:14px}
+.team{background:var(--paper);border:2px solid var(--line);border-top:7px solid var(--c);border-radius:10px;padding:7px 10px 8px;transition:background .12s,color .12s,opacity .2s}
+.team .n{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team b{font-family:"Oswald",sans-serif;font-size:26px;font-weight:600;line-height:1.1}
+.team.turn{border-color:var(--c);box-shadow:0 0 0 3px var(--c)}
+.team.roll,.team.steal{background:var(--c);color:#fff;border-color:var(--c)}
+.team.out{opacity:.35}
+.teams .stat{display:none}
+.teams .hud{grid-template-columns:1fr;margin-top:10px}
+.turnbar{display:flex;align-items:center;gap:12px;font-family:"Oswald",sans-serif;font-size:clamp(24px,3vw,32px);font-weight:600;margin:0 0 12px;padding:6px 0 6px 14px;border-left:10px solid var(--c)}
+.turnbar.stealing{background:color-mix(in srgb,var(--c) 16%,transparent);border-radius:0 10px 10px 0}
+.rule.ok{border-color:var(--good)} .rule.ok h3{color:var(--good)}
+.rule.judge{border-color:var(--orange)} .rule.judge h3{color:var(--ink)}
+.judgebtns{display:flex;gap:10px;flex-wrap:wrap}
+.standings{list-style:none;padding:0;margin:0 0 30px;display:grid;gap:8px}
+.standings li{display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-left:10px solid var(--c);border-radius:8px;padding:8px 16px;font-weight:600}
+.standings .rk{font-family:"Oswald",sans-serif;font-size:24px;color:var(--muted)}
+.standings .pts{font-family:"Oswald",sans-serif;font-size:28px}
+.standings .st{color:var(--muted);font-size:15px}
+.standings li:first-child{padding:14px 16px}
+.standings li:first-child .pts{font-size:38px}
+@media (max-width:760px){
+  .tnames{grid-template-columns:1fr 1fr}
+  .board{grid-template-columns:repeat(4,1fr)}
+}
+@media (max-width:760px){
+  body{font-size:17px}
+  .setup,.cols,.result{grid-template-columns:1fr}
+  .hero .half{min-height:140px;padding:22px 18px}
+  .answers{grid-template-columns:repeat(2,1fr)}
+  .answers.four{grid-template-columns:1fr 1fr}
+  .ans{min-height:60px;font-size:15px}
+  .table{grid-template-rows:52px auto 18px}
+  .side{padding:10px 14px}
+  .side h3{font-size:22px}
+  .event{margin:0 3%;padding:14px 16px}
+  .hud{gap:12px}
+  .stat b{font-size:26px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+}
+.hero .l,.lane.L,.mult,.result .r,.side.seller,.hero .s h1,.hero .s p,.play{color:#fff!important}.d214{height:36px;width:auto;border-radius:3px;display:block}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .title span,:root:not([data-theme="light"]) h1 span{color:#FF4D63}}:root[data-theme="dark"] .title span,:root[data-theme="dark"] h1 span{color:#FF4D63}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="logo-214.png" alt="District 214" class="d214"><a href="/" style="color:inherit">District 214 Accounting</a> | Chapter 4: Accounting for Retailers</div>
+
+  <!-- START -->
+  <section id="start">
+    <div class="hero">
+      <div class="half b"><h1>Same deal,</h1><p>The buyer's books: freight, returns, and discounts all run through Merchandise Inventory.</p></div>
+      <div class="half s"><h1>two books.</h1><p>The seller's books: contra revenue accounts, Delivery Expense, and a COGS entry on every sale.</p></div>
+    </div>
+    <p class="lede">Every transaction gets recorded twice, once by each company. Read the deal, check whose books you're on, then pick the account. Miss one and you'll see the rule before the next card. Some cards have two parts: the buyer's entry and the seller's entry for the same deal.</p>
+    <div class="setup">
+      <div>
+        <h2>Mode</h2>
+        <div class="modes">
+          <button class="mode" data-mode="blitz" aria-pressed="true"><div><strong>Blitz</strong><span>90 seconds. Streaks multiply your points.</span></div><span class="best" id="best-blitz"></span></button>
+          <button class="mode" data-mode="practice" aria-pressed="false"><div><strong>Practice</strong><span>No clock. One pass through every card.</span></div><span class="best" id="best-practice"></span></button>
+          <button class="mode" data-mode="teams" aria-pressed="false"><div><strong>8 teams</strong><span>Teams take turns. Miss it and a random team gets to steal.</span></div></button>
+        </div>
+      </div>
+      <div>
+        <h2>Rules to drill</h2>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+    <div class="teamsetup" id="teamSetup" hidden>
+      <h2>Team names</h2>
+      <div class="tnames" id="teamNames"></div>
+      <label class="rounds">Cards per team
+        <select id="rounds"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+        <span class="hint" id="capNote"></span>
+      </label>
+    </div>
+    <div class="go">
+      <button class="btn" id="startBtn">Start</button>
+      <span class="hint">Keys: <kbd>1</kbd> to <kbd>9</kbd> and <kbd>0</kbd> pick accounts, <kbd>T</kbd>/<kbd>F</kbd> for true or false, <kbd>Enter</kbd> to continue.</span>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden>
+    <div class="board" id="board" hidden></div>
+    <div class="hud">
+      <div class="stat"><b id="score">0</b><small>points</small></div>
+      <div>
+        <div class="meter" id="meter"><i id="meterFill"></i></div>
+        <div class="hint" id="meterLabel" style="margin-top:4px"></div>
+      </div>
+      <div class="stat streak"><b><span id="streak">0</span><span class="mult" id="mult" hidden>x2</span></b><small>streak</small></div>
+    </div>
+    <div class="turnbar" id="turn" hidden></div>
+    <div class="table on-B" id="table">
+      <div class="side buyer"><h3>Buyer</h3><span class="tag">You're keeping these books</span></div>
+      <div class="side seller"><h3>Seller</h3><span class="tag">You're keeping these books</span></div>
+      <div class="event"><div class="meta"><span id="topicTag"></span><span class="part" id="partTag" hidden></span></div><p id="eventText"></p></div>
+    </div>
+    <div class="prompt" id="prompt"></div>
+    <div class="answers" id="answers"></div>
+    <div class="rule" id="rule" hidden>
+      <h3 id="ruleHead"></h3>
+      <p id="ruleText"></p>
+      <button class="btn" id="contBtn">Next</button>
+    </div>
+    <div class="rule judge" id="judge" hidden>
+      <h3 id="judgeHead"></h3>
+      <p id="judgeText"></p>
+      <div class="judgebtns"><button class="btn" id="judgeYes">They got it</button><button class="btn alt" id="judgeNo">Missed</button></div>
+    </div>
+    <button class="quit" id="quitBtn">End game</button>
+  </section>
+
+  <!-- END -->
+  <section id="end" hidden>
+    <div class="result">
+      <div class="l"><div class="big" id="endScore">0</div><div class="sub" id="endScoreSub">points</div></div>
+      <div class="r"><div class="big" id="endAcc">0%</div><div class="sub" id="endAccSub"></div></div>
+    </div>
+    <ol class="standings" id="standings" hidden></ol>
+    <div class="cols">
+      <div><h2>By rule set</h2><div id="topicRows"></div></div>
+      <div><h2>Rules you missed</h2><ul class="review" id="review"></ul></div>
+    </div>
+    <div class="endbtns">
+      <button class="btn" id="againBtn">Play again</button>
+      <button class="btn alt" id="setupBtn">Change mode or rules</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const ACCTS=[["CASH","Cash"],["AR","Accounts Receivable"],["MI","Merchandise Inventory"],["AP","Accounts Payable"],["SR","Sales Revenue"],["SRA","Sales Returns & Allowances"],["SD","Sales Discounts"],["COGS","Cost of Goods Sold"],["FO","Delivery Expense"],["NONE","No entry"]];
+const TOPICS={FR:"Freight & FOB",RT:"Returns & allowances",DS:"Discounts & terms",SC:"Sales & COGS",CS:"Contra accounts & statements"};
+const cards=[];
+const ai=code=>ACCTS.findIndex(a=>a[0]===code);
+function P(side,dc,entry,amt,ans,rule){return {type:"acct",side,dc,entry,amt,ans:ai(ans),rule}}
+function K(t,ev,...parts){cards.push({t,ev,parts})}
+function TF(t,ev,truth,rule){cards.push({t,ev,parts:[{type:"tf",side:"N",ans:truth?0:1,rule}]})}
+function C(t,ev,q,opts,ans,rule){cards.push({t,ev,parts:[{type:"calc",side:"N",q,base:opts,key:ans,opts,ans,rule}]})}
+
+/* ---------- Freight & FOB ---------- */
+K("FR","Midwest Supply ships $3,000 of goods to Corner Hardware, FOB shipping point. Corner Hardware pays the $150 freight bill.",
+  P("B","debit","Corner Hardware (buyer) pays the freight bill","$150","MI","Freight the buyer pays is part of what the goods cost. Buyer debits Merchandise Inventory."),
+  P("S","debit","Midwest Supply's books (seller)","the $150 freight Corner Hardware paid","NONE","FOB shipping point: the buyer owns the goods in transit and pays the freight. The seller records nothing for it."));
+K("FR","Lakeview Furniture sells a $2,400 table to Dana's Diner, FOB destination. Lakeview pays the $200 freight bill.",
+  P("S","debit","Lakeview Furniture (seller) pays the freight bill","$200","FO","Freight the seller pays is a selling cost: Delivery Expense, an operating expense. It never touches inventory or COGS."),
+  P("B","debit","Dana's Diner's books (buyer)","the $200 freight Lakeview paid","NONE","FOB destination: the seller owns the goods until they arrive and pays the freight. The buyer records nothing for it."));
+K("FR","Bella's Boutique pays $75 to have a shipment of dresses delivered from its supplier, FOB shipping point.",
+  P("B","debit","Bella's Boutique pays the freight on the incoming dresses","$75","MI","Bella's usually sells, but in this deal it is the buyer. Freight on goods coming in goes to Merchandise Inventory."));
+K("FR","Oak & Iron Home pays $40 to deliver a sofa it sold to a customer, FOB destination.",
+  P("S","debit","Oak & Iron Home pays to deliver the sofa","$40","FO","Oak & Iron is the seller in this deal. Freight on goods going out goes to Delivery Expense."));
+K("FR","Pioneer Sporting Goods receives a shipment of skis sent FOB destination. The supplier paid the $90 freight.",
+  P("B","debit","Pioneer Sporting Goods' books (buyer)","the $90 freight its supplier paid","NONE","FOB destination means the supplier (seller) pays. Pioneer, the buyer, records nothing for freight."));
+TF("FR","FOB shipping point: ownership passes to the buyer when the goods leave the seller's dock.",true,"Shipping point means title passes at the seller's dock. The buyer owns goods in transit, so the buyer pays freight.");
+TF("FR","FOB destination: the buyer pays the freight.",false,"Destination means the seller owns the goods until they arrive, so the seller pays freight and records Delivery Expense.");
+TF("FR","Delivery Expense is added to Cost of Goods Sold.",false,"Delivery Expense is an operating (selling) expense. It is not part of COGS.");
+TF("FR","Freight the buyer pays increases the cost of the inventory.",true,"Buyer's freight is part of the cost of getting the goods: Dr Merchandise Inventory.");
+TF("FR","Goods in transit shipped FOB destination belong to the buyer.",false,"FOB destination goods still belong to the seller while in transit.");
+
+/* ---------- Returns & allowances ---------- */
+K("RT","Corner Hardware returns $400 of damaged drills to Midwest Supply for credit on account.",
+  P("B","credit","Corner Hardware (buyer) records the return","$400","MI","Buyer's return takes the goods off the books: Cr Merchandise Inventory."),
+  P("S","debit","Midwest Supply (seller) records the return at selling price","$400","SRA","The seller never debits Sales Revenue on a return. It debits the contra revenue account Sales Returns & Allowances."));
+K("RT","Dana's Diner returns $300 of chairs to Lakeview Furniture for credit. The chairs cost Lakeview $180 and go back into stock.",
+  P("B","debit","Dana's Diner (buyer) records the return","$300","AP","Buyer owes less after a return: Dr Accounts Payable, Cr Merchandise Inventory."),
+  P("S","credit","Lakeview Furniture (seller) puts the chairs back into stock at cost","$180","COGS","COGS gets credited directly when goods come back. Revenue does not get debited directly. That is the asymmetry."));
+K("RT","Tech Hub accepts a $600 return of headphones sold on account. They cost $350 and are good to resell.",
+  P("S","debit","Tech Hub puts the headphones back on the shelf at cost","$350","MI","Goods back on the shelf: Dr Merchandise Inventory at cost ($350), Cr COGS."));
+K("RT","Style Street accepts $250 of returned jackets that a customer bought on account.",
+  P("S","credit","Style Street records the return at selling price","$250","AR","The customer owes less: Dr Sales Returns & Allowances, Cr Accounts Receivable."));
+K("RT","Oak & Iron Home gives Harbor Cafe a $100 allowance on a scratched bench. Harbor Cafe keeps the bench.",
+  P("S","debit","Oak & Iron Home (seller) records the allowance","$100","SRA","An allowance lowers the sale, so the seller debits the contra revenue account Sales Returns & Allowances (never Sales Revenue directly) and credits Accounts Receivable. Harbor Cafe keeps the bench, so there is no Inventory or COGS entry."),
+  P("B","credit","Harbor Cafe (buyer) records the allowance","$100","MI","Buyer's allowance lowers what the goods cost: Dr Accounts Payable, Cr Merchandise Inventory."));
+K("RT","Green Thumb Nursery gives a customer a $50 allowance on a wilted plant the customer bought on account and keeps.",
+  P("S","credit","Green Thumb Nursery records the allowance","$50","AR","The customer owes $50 less: Dr Sales Returns & Allowances, Cr Accounts Receivable. The plant stays with the customer, so there is no Inventory or COGS entry."));
+K("RT","A customer returns an $80 lamp bought for cash at Bright Home and gets a cash refund.",
+  P("S","credit","Bright Home records the refund","$80","CASH","Cash sale, cash refund: Dr Sales Returns & Allowances, Cr Cash."));
+TF("RT","When a customer returns goods, the seller debits Sales Revenue.",false,"Never debit Sales Revenue on a return. Debit Sales Returns & Allowances.");
+TF("RT","When returned goods go back on the shelf, the seller credits COGS.",true,"Returned goods: Dr Merchandise Inventory, Cr COGS, at cost.");
+TF("RT","An allowance requires the seller to credit COGS.",false,"Allowance means the goods stay with the customer, so there is no COGS entry.");
+TF("RT","The buyer records a return with a credit to Merchandise Inventory.",true,"Buyer's return: Dr Accounts Payable, Cr Merchandise Inventory.");
+TF("RT","The buyer records its returns in Sales Returns & Allowances.",false,"Sales Returns & Allowances belongs to the seller only. The buyer credits Merchandise Inventory.");
+
+/* ---------- Discounts & terms ---------- */
+K("DS","Midwest Supply sold $2,000 of goods to Corner Hardware, terms 2/10, n/30. Corner Hardware pays on day 8.",
+  P("B","credit","Corner Hardware (buyer) records its payment","the $40 discount","MI","Buyer's discount lowers the cost of the goods: Cr Merchandise Inventory."),
+  P("S","debit","Midwest Supply (seller) records the payment it receives","the $40 discount","SD","Seller's discount goes to Sales Discounts, a contra revenue account. Sales Revenue is never debited directly."));
+K("DS","Lakeview Furniture sold $5,000 of goods to Harbor Cafe, terms 1/10, n/30. Harbor Cafe pays on day 9.",
+  P("B","debit","Harbor Cafe (buyer) records its payment","the full $5,000","AP","Buyer debits Accounts Payable for the full $5,000 to clear the balance, even though only $4,950 of cash went out."),
+  P("S","credit","Lakeview Furniture (seller) records the payment it receives","the full $5,000","AR","Seller credits Accounts Receivable for the full $5,000. The customer's balance is settled."));
+K("DS","Tech Hub sold $1,500 of goods to Pixel Repair, terms 2/10, n/30. Pixel Repair pays on day 24.",
+  P("S","debit","Tech Hub (seller) records the payment it receives","$1,500","CASH","Outside the discount window there is no discount: Dr Cash $1,500, Cr Accounts Receivable $1,500. Sales Discounts is untouched."),
+  P("B","credit","Pixel Repair (buyer) records its payment","$1,500","CASH","Missed the window, so pay full price: Dr Accounts Payable, Cr Cash. Merchandise Inventory is untouched."));
+TF("DS","Sales Discounts is a contra revenue account with a normal debit balance.",true,"Contra revenue accounts run opposite Sales Revenue, so they carry debit balances.");
+TF("DS","The buyer records a discount it takes in Sales Discounts.",false,"Sales Discounts is the seller's account. The buyer credits Merchandise Inventory.");
+TF("DS","2/10, n/30 means 10% off if paid within 2 days.",false,"2/10, n/30 means 2% off if paid within 10 days. The full amount is due in 30.");
+TF("DS","The discount is figured on the amount owed after returns.",true,"Take returns out first, then apply the discount percentage.");
+TF("DS","The discount also applies to freight charges.",false,"Discounts apply to the merchandise only, not freight.");
+C("DS","Summit Outfitters buys $5,000 of tents on account, terms 2/10, n/30. It returns $1,000 of them, then pays within 10 days.","How big is the discount?",["$100","$80","$20","$0"],1,"Returns come out first: ($5,000 − $1,000) × 2% = $80.");
+C("DS","River Books buys $6,000 of books on account, terms 2/10, n/30. It returns $1,000 of them, then pays within 10 days.","How much cash does River Books pay?",["$5,880","$4,900","$5,000","$4,980"],1,"$5,000 still owed, less a $100 discount (2% of $5,000) = $4,900.");
+C("DS","Maple Market buys $3,000 of goods, terms 1/10, n/30, FOB shipping point, and pays $100 freight to the carrier. It pays the invoice on day 6.","How big is the discount?",["$31","$30","$60","$0"],1,"Discount applies to the merchandise only: $3,000 × 1% = $30. Freight gets no discount.");
+C("DS","Crown Jewelers makes a $6,000 sale on account, terms 2/10, n/30. The customer pays on day 8.","How much cash does Crown Jewelers receive?",["$6,000","$5,880","$5,400","$5,988"],1,"$6,000 × 2% = $120 discount, so $5,880 cash. Dr Cash $5,880, Dr Sales Discounts $120, Cr A/R $6,000.");
+C("DS","Prairie Pet Supply buys $4,000 on account, 2/10, n/30, pays $200 freight (FOB shipping point), returns $500 of goods, then pays within 10 days.","What is the net cost left in Merchandise Inventory?",["$3,700","$3,630","$3,430","$3,626"],1,"$4,000 + $200 freight − $500 return − $70 discount (2% of $3,500) = $3,630.");
+
+/* ---------- Sales & COGS ---------- */
+K("SC","Tech Hub sells $1,500 of laptops on account to Pixel Repair. The laptops cost Tech Hub $900.",
+  P("S","debit","Tech Hub (seller) records the cost of the laptops sold","$900","COGS","Every sale moves cost too. Dr COGS $900, Cr Merchandise Inventory $900."),
+  P("B","debit","Pixel Repair (buyer) records the purchase","$1,500","MI","Buyer records the purchase at cost: Dr Merchandise Inventory, Cr Accounts Payable."));
+K("SC","Style Street sells $800 of jackets on account. The jackets cost $500.",
+  P("S","credit","Style Street records the sale at selling price","$800","SR","Revenue entry at selling price: Dr Accounts Receivable $800, Cr Sales Revenue $800."),
+  P("S","credit","Style Street records the cost of the jackets sold","$500","MI","The goods left the shelf: Dr COGS, Cr Merchandise Inventory at cost ($500)."));
+K("SC","Green Thumb Nursery buys $3,000 of plants from a grower on account.",
+  P("B","credit","Green Thumb Nursery records the purchase","$3,000","AP","Purchase on account: Dr Merchandise Inventory, Cr Accounts Payable."));
+K("SC","Year end: Bright Home's physical count shows $300 less inventory than its books say.",
+  P("N","debit","Bright Home records the year-end adjustment","$300","COGS","Shrinkage adjustment: Dr COGS, Cr Merchandise Inventory."));
+TF("SC","COGS is recorded at the selling price.",false,"COGS is recorded at cost. Sales Revenue is recorded at selling price.");
+
+/* ---------- Contra accounts & statements ---------- */
+TF("CS","Net sales = Sales Revenue − Sales Returns & Allowances − Sales Discounts.",true,"Both contra revenue accounts come off Sales Revenue to get net sales.");
+TF("CS","Sales Returns & Allowances and Sales Discounts are reported on the balance sheet.",false,"They are contra revenue accounts on the income statement, subtracted from Sales Revenue.");
+TF("CS","Delivery Expense is subtracted before you get to gross profit.",false,"Gross profit = Net sales − COGS. Delivery Expense comes after, with operating expenses.");
+TF("CS","Contra revenue accounts have normal credit balances.",false,"They reduce revenue, so they carry normal debit balances.");
+C("CS","Harbor Outfitters: Sales Revenue $50,000. Sales Returns & Allowances $2,000. Sales Discounts $800.","What are net sales?",["$50,000","$48,000","$47,200","$52,800"],2,"$50,000 − $2,000 − $800 = $47,200.");
+C("CS","Lakeshore Gifts: net sales $61,000. COGS $38,000. Delivery Expense $1,500.","What is gross profit?",["$21,500","$23,000","$24,500","$61,000"],1,"Gross profit = $61,000 − $38,000 = $23,000. Delivery Expense is an operating expense below gross profit.");
+cards.forEach((c,i)=>c.id=i);
+
+/* ---------- state ---------- */
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}}};
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const TEAM_COLORS=["#2F6FB0","#2E8B57","#8E44AD","#C0392B","#138D90","#B7950B","#D35492","#5D6D7E"];
+const NTEAMS=8,PTS=100,PENALTY=100,BLITZ=90;
+let saved=[];try{saved=JSON.parse(store.get("tb4-teams")||"[]")}catch(_){}
+const S={mode:"blitz",topics:new Set(Object.keys(TOPICS)),rounds:4,teams:[],deck:[],limit:0,pos:0,part:0,score:0,streak:0,time:BLITZ,timer:null,paused:false,locked:false,phase:"turn",turn:0,stealer:-1,stats:{},missed:new Map(),answered:0,right:0,last:0,cleared:false};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pool=()=>cards.filter(c=>S.topics.has(c.t));
+function teamLimit(){const n=pool().length,want=S.rounds*NTEAMS;if(n>=want)return want;return n>=NTEAMS?Math.floor(n/NTEAMS)*NTEAMS:n}
+function updateCap(){
+  const n=pool().length,want=S.rounds*NTEAMS,lim=teamLimit();
+  $("capNote").textContent=lim<want?`Only ${n} cards in the rule sets you picked, so this game will be ${lim} cards (${Math.floor(lim/NTEAMS)||"under 1"} per team). Turn on more rule sets for a longer game.`:`${want} cards, no repeats. Right answers +100, wrong answers −100, on a turn or a steal.`;
+}
+
+const chips=$("chips");
+Object.entries(TOPICS).forEach(([k,v])=>{
+  const n=cards.filter(c=>c.t===k).length;
+  const l=document.createElement("label");l.className="chip";
+  l.innerHTML=`<input type="checkbox" value="${k}" checked><span class="tick"></span>${v} <span class="hint">(${n})</span>`;
+  l.querySelector("input").addEventListener("change",ev=>{ev.target.checked?S.topics.add(k):S.topics.delete(k);$("startBtn").disabled=!S.topics.size;updateCap()});
+  chips.appendChild(l);
+});
+for(let i=0;i<NTEAMS;i++){
+  const l=document.createElement("label");l.className="tname";l.style.setProperty("--c",TEAM_COLORS[i]);
+  const inp=document.createElement("input");inp.type="text";inp.maxLength=18;inp.value=saved[i]||("Team "+(i+1));inp.setAttribute("aria-label","Team "+(i+1)+" name");
+  l.appendChild(inp);$("teamNames").appendChild(l);
+}
+$("rounds").addEventListener("change",e=>{S.rounds=+e.target.value;updateCap()});
+updateCap();
+document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>{
+  S.mode=b.dataset.mode;document.querySelectorAll(".mode").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  $("teamSetup").hidden=S.mode!=="teams"}));
+function showBest(){["blitz","practice"].forEach(m=>{const v=store.get("tb4-best-"+m);$("best-"+m).textContent=v?"Best "+Number(v).toLocaleString():""})}
+showBest();
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function show(id){["start","play","end"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
+const isTeams=()=>S.mode==="teams";
+
+function start(){
+  Object.assign(S,{deck:shuffle(pool()),pos:0,part:0,score:0,streak:0,time:BLITZ,paused:false,locked:false,missed:new Map(),answered:0,right:0,phase:"turn",stealer:-1,cleared:false});
+  cards.forEach(c=>c.parts.forEach(p=>{if(p.type==="calc"){const order=shuffle(p.base.map((_,i)=>i));p.opts=order.map(i=>p.base[i]);p.ans=order.indexOf(p.key)}}));
+  S.limit=isTeams()?teamLimit():S.deck.length;
+  S.stats={};S.topics.forEach(t=>S.stats[t]={r:0,n:0});
+  if(isTeams()){
+    const names=[...document.querySelectorAll("#teamNames input")].map((x,i)=>x.value.trim()||"Team "+(i+1));
+    store.set("tb4-teams",JSON.stringify(names));
+    S.teams=names.map((n,i)=>({name:n,color:TEAM_COLORS[i],score:0,steals:0}));
+  }
+  $("play").classList.toggle("teams",isTeams());$("board").hidden=!isTeams();$("turn").hidden=!isTeams();
+  $("score").textContent="0";updateStreak();show("play");renderCard();
+  clearInterval(S.timer);S.last=performance.now();
+  S.timer=setInterval(tick,100);updateMeter();
+}
+function tick(){
+  const now=performance.now(),dt=(now-S.last)/1000;S.last=now;
+  if(S.mode!=="blitz"||S.paused)return;
+  S.time-=dt;if(S.time<=0){S.time=0;updateMeter();finish();return}
+  updateMeter();
+}
+function updateMeter(){
+  const f=$("meterFill"),m=$("meter");m.classList.remove("low");
+  if(S.mode==="blitz"){f.style.transform=`scaleX(${S.time/BLITZ})`;m.classList.toggle("low",S.time<15);$("meterLabel").textContent=`${Math.ceil(S.time)} seconds left, ${S.limit-S.pos} cards to go`}
+  else if(isTeams()){f.style.transform=`scaleX(${S.pos/S.limit})`;const rounds=Math.max(1,Math.ceil(S.limit/NTEAMS));$("meterLabel").textContent=`Card ${Math.min(S.pos+1,S.limit)} of ${S.limit}, round ${Math.min(Math.floor(S.pos/NTEAMS)+1,rounds)} of ${rounds}`}
+  else{f.style.transform=`scaleX(${S.pos/S.limit})`;$("meterLabel").textContent=`Card ${Math.min(S.pos+1,S.limit)} of ${S.limit}`}
+}
+function mult(){return Math.min(4,1+Math.floor(S.streak/5))}
+function updateStreak(){$("streak").textContent=S.streak;const m=mult();$("mult").hidden=m<2;$("mult").textContent="x"+m}
+
+function renderBoard(rollIdx){
+  const b=$("board");b.innerHTML="";
+  S.teams.forEach((t,i)=>{
+    const d=document.createElement("div");
+    let c="team";
+    if(i===S.turn&&S.phase==="turn")c+=" turn";
+    if(i===S.turn&&S.phase!=="turn")c+=" out";
+    if(i===S.stealer)c+=" steal";
+    if(i===rollIdx)c+=" roll";
+    d.className=c;d.style.setProperty("--c",t.color);
+    d.innerHTML=`<span class="n">${esc(t.name)}</span><b>${t.score.toLocaleString()}</b>`;b.appendChild(d);
+  });
+}
+function setBanner(text,color,stealing){const t=$("turn");t.textContent=text;t.style.setProperty("--c",color);t.classList.toggle("stealing",!!stealing)}
+const cur=()=>S.deck[S.pos];
+const curPart=()=>cur().parts[S.part];
+
+function renderCard(){
+  if(S.pos>=S.limit){if(S.mode==="blitz")S.cleared=true;finish();return}
+  S.part=0;
+  if(isTeams())S.turn=S.pos%NTEAMS;
+  $("eventText").textContent=cur().ev;
+  $("topicTag").textContent=TOPICS[cur().t];
+  renderPart();
+}
+function renderPart(){
+  const c=cur(),q=curPart();S.locked=false;
+  $("rule").hidden=true;$("judge").hidden=true;
+  if(isTeams()){S.phase="turn";S.stealer=-1;renderBoard();const t=S.teams[S.turn];setBanner(t.name+(c.parts.length>1?`, your card (part ${S.part+1} of ${c.parts.length})`:", your card"),t.color,false)}
+  $("partTag").hidden=c.parts.length<2;$("partTag").textContent=`Part ${S.part+1} of ${c.parts.length}`;
+  $("table").className="table on-"+q.side;
+  let p;
+  if(q.type==="acct")p=`<span class="entry">${esc(q.entry)}.</span>Which account is <em class="dc">${q.dc}ed</em> for ${esc(q.amt)}?`;
+  else if(q.type==="tf")p="True or false?";
+  else p=esc(q.q);
+  $("prompt").innerHTML=p;
+  const box=$("answers");box.innerHTML="";
+  const labels=q.type==="acct"?ACCTS.map(a=>a[1]):q.type==="tf"?["True","False"]:q.opts;
+  box.className="answers"+(q.type==="tf"?" two":q.type==="calc"?" four":"");
+  labels.forEach((lab,i)=>{
+    const b=document.createElement("button");b.className="ans"+(q.type==="acct"&&i===9?" none-tile":"");
+    const key=q.type==="acct"?(i===9?"0":String(i+1)):q.type==="tf"?(i?"F":"T"):String(i+1);
+    b.innerHTML=`<kbd>${key}</kbd>${esc(lab)}`;b.addEventListener("click",()=>answer(i,b));box.appendChild(b);
+  });
+  updateMeter();
+}
+function next(){
+  S.paused=false;S.last=performance.now();
+  if(S.part<cur().parts.length-1){S.part++;renderPart()}else{S.pos++;renderCard()}
+}
+function correctLabel(q){return q.type==="acct"?ACCTS[q.ans][1]:q.type==="tf"?(q.ans?"False":"True"):q.opts[q.ans]}
+function logMiss(q){S.missed.set(cur().id+"-"+S.part,{t:cur().t,side:q.side,rule:q.rule})}
+function popAt(btn,pts){
+  if(!btn)return;const r=btn.getBoundingClientRect();const pop=document.createElement("div");pop.className="pop"+(pts<0?" neg":"");pop.textContent=(pts<0?"−":"+")+Math.abs(pts);
+  pop.style.left=(r.left+r.width/2-24)+"px";pop.style.top=(r.top-6)+"px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),700);
+}
+function showRule(q,ok,head){
+  $("rule").classList.toggle("ok",ok);$("ruleHead").textContent=head;$("ruleText").textContent=q.rule;
+  $("rule").hidden=false;S.paused=true;$("contBtn").focus({preventScroll:true});
+  $("rule").scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+}
+function answer(i,btn){
+  if(S.locked)return;S.locked=true;
+  const q=curPart();const btns=[...$("answers").children];btns.forEach(b=>b.disabled=true);
+  if(isTeams()){teamAnswer(i,btn,q,btns);return}
+  S.answered++;S.stats[cur().t].n++;
+  if(i===q.ans){
+    const pts=100*mult();S.score+=pts;S.streak++;S.right++;S.stats[cur().t].r++;
+    btn.classList.add("right");$("score").textContent=S.score.toLocaleString();updateStreak();popAt(btn,pts);
+    showRule(q,true,"Correct: "+correctLabel(q));
+  }else{
+    S.streak=0;updateStreak();S.score-=PENALTY;$("score").textContent=S.score.toLocaleString();popAt(btn,-PENALTY);
+    btn.classList.add("wrong");btns[q.ans].classList.add("right");logMiss(q);
+    showRule(q,false,`Answer: ${correctLabel(q)} (−${PENALTY})`);
+  }
+}
+
+/* ---------- team play ---------- */
+function award(t,btn,pts=PTS){S.teams[t].score+=pts;renderBoard();popAt(btn,pts)}
+function teamAnswer(i,btn,q,btns){
+  const right=i===q.ans;
+  if(S.phase==="turn"){
+    S.answered++;S.stats[cur().t].n++;
+    if(right){S.right++;S.stats[cur().t].r++;btn.classList.add("right");award(S.turn,btn);const tm=S.teams[S.turn];setBanner(tm.name+" got it",tm.color,false);showRule(q,true,`${tm.name} got it. Answer: ${correctLabel(q)}`);return}
+    btn.classList.add("wrong");award(S.turn,btn,-PENALTY);logMiss(q);rollSteal(q,btns);
+  }else if(S.phase==="steal"){
+    const t=S.teams[S.stealer];S.phase="done";
+    if(right){btn.classList.add("right");t.steals++;award(S.stealer,btn);setBanner(t.name+" stole it",t.color,true);showRule(q,true,`${t.name} stole it. Answer: ${correctLabel(q)}`)}
+    else{btn.classList.add("wrong");btns[q.ans].classList.add("right");award(S.stealer,btn,-PENALTY);setBanner("No steal",t.color,true);showRule(q,false,`No steal (−${PENALTY} for ${t.name}). Answer: ${correctLabel(q)}`)}
+  }
+}
+function rollSteal(q,btns){
+  S.phase="rolling";renderBoard();
+  const others=[...Array(NTEAMS).keys()].filter(x=>x!==S.turn);
+  const pick=others[Math.floor(Math.random()*others.length)];
+  setBanner("Missed. Picking a team to steal...",S.teams[S.turn].color,false);
+  const seq=[];const n=reduce?0:18;
+  for(let k=0;k<n;k++){let r;do{r=others[Math.floor(Math.random()*others.length)]}while(seq.length&&r===seq[seq.length-1]);seq.push(r)}
+  if(seq.length&&seq[seq.length-1]===pick)seq.pop();
+  seq.push(pick);
+  let k=0;
+  (function step(){
+    renderBoard(seq[k]);
+    if(k===seq.length-1){setTimeout(()=>land(q,pick,btns),reduce?0:450);return}
+    const d=55+Math.pow(k/seq.length,2.2)*300;k++;setTimeout(step,d);
+  })();
+}
+function land(q,pick,btns){
+  S.stealer=pick;const t=S.teams[pick];
+  if(q.type==="tf"){
+    S.phase="judge";renderBoard();setBanner("Steal: "+t.name,t.color,true);
+    btns[q.ans].classList.add("right");
+    $("judgeHead").textContent=`${t.name}: to steal, explain it`;
+    $("judgeText").textContent=q.ans===1?"The statement is false. Say what's wrong with it and fix it so it's true.":"The statement is true. Explain the rule behind it.";
+    $("judge").hidden=false;S.paused=true;$("judgeYes").focus({preventScroll:true});
+    $("judge").scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+  }else{
+    S.phase="steal";renderBoard();setBanner("Steal: "+t.name,t.color,true);
+    btns.forEach(b=>{if(!b.classList.contains("wrong"))b.disabled=false});S.locked=false;
+  }
+}
+function judge(ok){
+  const q=curPart(),t=S.teams[S.stealer];$("judge").hidden=true;S.phase="done";
+  if(ok){t.steals++;award(S.stealer);setBanner(t.name+" stole it",t.color,true);showRule(q,true,`${t.name} stole it. Answer: ${correctLabel(q)}`)}
+  else{award(S.stealer,null,-PENALTY);setBanner("No steal",t.color,true);showRule(q,false,`No steal (−${PENALTY} for ${t.name}). Answer: ${correctLabel(q)}`)}
+}
+$("judgeYes").addEventListener("click",()=>judge(true));
+$("judgeNo").addEventListener("click",()=>judge(false));
+
+function finish(){
+  clearInterval(S.timer);show("end");
+  const acc=S.answered?Math.round(100*S.right/S.answered):0;
+  const st=$("standings");st.hidden=!isTeams();st.innerHTML="";
+  if(isTeams()){
+    const ranked=S.teams.slice().sort((a,b)=>b.score-a.score||b.steals-a.steals);
+    const tie=ranked[1]&&ranked[1].score===ranked[0].score;
+    $("endScore").textContent=ranked[0].score.toLocaleString();
+    $("endScoreSub").textContent=tie?"Tie at the top":ranked[0].name+" wins";
+    $("endAccSub").textContent=`class accuracy on first tries, ${S.right} of ${S.answered}`;
+    let rank=0,prev=null;
+    ranked.forEach((t,idx)=>{if(t.score!==prev){rank=idx+1;prev=t.score}
+      const li=document.createElement("li");li.style.setProperty("--c",t.color);
+      li.innerHTML=`<span class="rk">${rank}</span><span>${esc(t.name)}</span><span class="st">${t.steals} steal${t.steals===1?"":"s"}</span><span class="pts">${t.score.toLocaleString()}</span>`;st.appendChild(li)});
+  }else{
+    $("endScore").textContent=S.score.toLocaleString();
+    const key="tb4-best-"+S.mode,best=Number(store.get(key)||0);
+    let sub=S.mode==="blitz"?(S.cleared?"points, every card cleared before time ran out":"points in 90 seconds"):"points";
+    if(S.score>best&&S.score>0){store.set(key,S.score);sub+=", a new best"}else if(best)sub+=` (best ${best.toLocaleString()})`;
+    $("endScoreSub").textContent=sub;$("endAccSub").textContent=`${S.right} of ${S.answered} right`;
+  }
+  $("endAcc").textContent=acc+"%";
+  const rows=$("topicRows");rows.innerHTML="";
+  Object.entries(S.stats).forEach(([t,s])=>{
+    const pct=s.n?Math.round(100*s.r/s.n):null;
+    const d=document.createElement("div");d.className="trow";
+    d.innerHTML=`<span>${TOPICS[t]}</span><span>${pct===null?"not seen":s.r+"/"+s.n}</span><div class="bar"><i class="${pct>=80?"":pct>=60?"mid":"lo"}" style="width:${pct||0}%"></i></div>`;
+    rows.appendChild(d);
+  });
+  const rv=$("review");rv.innerHTML="";
+  if(!S.missed.size){rv.innerHTML='<li class="empty" style="border-left-color:var(--good)">Nothing missed. Turn on more rule sets for a tougher game.</li>'}
+  S.missed.forEach(m=>{const li=document.createElement("li");
+    const who=m.side==="B"?"Buyer":m.side==="S"?"Seller":"";
+    li.innerHTML=`<b>${TOPICS[m.t]}${who?", "+who:""}</b>`;li.appendChild(document.createTextNode(m.rule));rv.appendChild(li)});
+  showBest();
+}
+$("startBtn").addEventListener("click",start);
+$("contBtn").addEventListener("click",next);
+$("againBtn").addEventListener("click",start);
+$("setupBtn").addEventListener("click",()=>{showBest();updateCap();show("start")});
+$("quitBtn").addEventListener("click",finish);
+document.addEventListener("keydown",ev=>{
+  if($("play").hidden||!$("judge").hidden)return;
+  if(ev.target.tagName==="INPUT")return;
+  if(!$("rule").hidden){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();next()}return}
+  if(S.locked)return;
+  const q=S.deck[S.pos]&&curPart();if(!q)return;
+  const k=ev.key.toLowerCase();let idx=-1;
+  if(q.type==="acct"){if(k==="0")idx=9;else if(/^[1-9]$/.test(k))idx=+k-1}
+  else if(q.type==="tf"){if(k==="t"||k==="1")idx=0;if(k==="f"||k==="2")idx=1}
+  else if(/^[1-4]$/.test(k))idx=+k-1;
+  if(idx>=0){const b=$("answers").children[idx];if(b&&!b.disabled)b.click()}
+});
+})();
+</script>
+</body>
+</html>

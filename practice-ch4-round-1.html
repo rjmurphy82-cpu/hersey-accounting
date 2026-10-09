@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Problem Set Round 1 | District 214 Accounting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: logo bar, deck title, numbered problem strip, one problem card with click-to-reveal steps */
+:root{
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --line:rgba(17,17,17,.14);
+  --red:#C1102F; --redtext:#B00E2A; --redsoft:#FBE7EA; --black:#111111; --onblack:#FFFFFF;
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --scale:1;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:calc(18px * var(--scale))/1.5 var(--body)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 48px;padding-inline:20px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:15px;font-weight:600;color:var(--muted)}
+.top img{height:40px;width:auto;display:block;border-radius:3px}
+.top a{color:inherit}
+.top .sp{flex:1}
+.size{display:flex;gap:6px}
+.size button{background:var(--paper);border:2px solid var(--line);border-radius:8px;padding:2px 10px;font-weight:700;font-size:15px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,5vw,52px);line-height:1;margin:20px 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 18px;font-size:calc(17px * var(--scale))}
+.strip{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.strip button{flex:0 0 auto;min-width:40px;height:40px;border-radius:8px;border:2px solid var(--line);background:var(--paper);font-family:var(--display);font-weight:600;font-size:17px}
+.strip button.seen{border-color:color-mix(in srgb,var(--red) 40%,var(--line))}
+.strip button[aria-current="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:6px}
+.head{background:var(--black);color:var(--onblack);padding:16px 24px 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.head .label{font-family:var(--display);font-weight:600;font-size:calc(26px * var(--scale));line-height:1.1}
+.head .tag{background:var(--red);color:#fff;border-radius:999px;padding:2px 12px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.head .date{margin-left:auto;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.head .section{width:100%;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FF8A99}
+.body{padding:20px 24px 24px;display:grid;gap:16px}
+.body h2{font-family:var(--display);font-weight:600;font-size:calc(24px * var(--scale));margin:0;line-height:1.15}
+.body p{margin:0;max-width:72ch}
+.body ul{margin:0;padding-left:1.2em}
+.q{font-weight:700;font-size:calc(20px * var(--scale))}
+.tw{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:calc(17px * var(--scale));min-width:100%}
+th,td{border:1px solid var(--line);padding:6px 12px;text-align:left;vertical-align:top}
+th{background:var(--black);color:var(--onblack);font-family:var(--display);font-weight:500;letter-spacing:.02em}
+td.s{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px;color:var(--muted)}
+.tnote{font-size:15px;color:var(--muted);margin-top:4px}
+.reveals{display:grid;gap:12px}
+.rv{border-left:6px solid var(--red);background:color-mix(in srgb,var(--redsoft) 55%,var(--paper));border-radius:0 10px 10px 0;padding:12px 18px 14px;display:grid;gap:10px;animation:in .25s ease-out}
+@keyframes in{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rv .rl{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--redtext)}
+.lines{display:grid;gap:2px;font-variant-numeric:tabular-nums;font-size:calc(19px * var(--scale));font-weight:500}
+.answer{justify-self:start;background:var(--red);color:#fff;font-family:var(--display);font-weight:600;font-size:calc(28px * var(--scale));line-height:1.15;padding:6px 18px;border-radius:8px}
+.jt{font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+table.journal{min-width:min(100%,560px);background:var(--paper)}
+table.journal td.acct{min-width:16em}
+table.journal td.cr{padding-left:3em}
+table.journal td.n{text-align:right;width:8em}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:0 24px 22px}
+.btn{background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-family:var(--display);font-weight:600;font-size:20px}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line);padding:10px 18px;font-size:17px}
+.btn:disabled{opacity:.4;cursor:default}
+.left{color:var(--muted);font-size:15px;font-weight:600}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:14px;margin-top:14px}
+kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:0 6px;background:var(--paper)}
+@media (max-width:600px){.head,.body{padding-inline:16px}.controls{padding-inline:16px}.head .date{margin-left:0}table.journal td.acct{min-width:10em}}
+@media (prefers-reduced-motion: reduce){.rv{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a href="/"><img src="logo-214.png" alt="High School District 214"></a>
+    <span><a href="/#practices">Interactive Practices</a> / Chapter 4</span>
+    <span class="sp"></span>
+    <span class="size" aria-label="Text size"><button id="smaller" aria-label="Smaller text">A−</button><button id="bigger" aria-label="Bigger text">A+</button></span>
+  </div>
+  <h1>Problem Set Round 1</h1>
+  <p class="sub">Merchandising transactions</p>
+  <nav class="strip" id="strip" aria-label="Problems"></nav>
+  <article class="card">
+    <header class="head" id="head"></header>
+    <div class="body"><div id="given" style="display:grid;gap:14px"></div><div class="reveals" id="reveals"></div></div>
+    <div class="controls">
+      <button class="btn" id="revealBtn">Reveal next</button>
+      <button class="btn ghost" id="allBtn">Show all</button>
+      <button class="btn ghost" id="resetBtn">Hide answers</button>
+      <span class="left" id="left"></span>
+    </div>
+  </article>
+  <div class="nav">
+    <button class="btn ghost" id="prevBtn">Previous</button>
+    <span class="left" id="pos" style="align-self:center"></span>
+    <button class="btn ghost" id="nextBtn">Next problem</button>
+  </div>
+  <p class="hint">Keys: <kbd>Space</kbd> or <kbd>→</kbd> reveals the next step, then moves on. <kbd>←</kbd> goes back a problem. <kbd>H</kbd> hides answers.</p>
+</div>
+<script>
+const DECK={"id": "ch4-round-1", "chapter": 4, "title": "Problem Set Round 1", "topic": "Merchandising transactions", "blurb": "Journalize 13 September purchase, sale, return, freight, and discount transactions for a retailer.", "problems": [{"label": "Transaction 1", "tag": "Purchase", "date": "September 1", "given": [{"p": "Purchased merchandise from Vale Company for $7,200 under credit terms of 2/15, n/30, invoice dated September 1."}], "reveals": [{"entry": {"rows": [{"account": "Merchandise Inventory", "debit": "7,200"}, {"account": "Accounts Payable", "credit": "7,200"}]}}]}, {"label": "Transaction 2", "tag": "Sale", "date": "September 2", "given": [{"p": "Sold merchandise to Brenner Co. for $1,100 under credit terms of 2/10, n/60, invoice dated September 2. The merchandise cost $640."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Accounts Receivable", "debit": "1,100"}, {"account": "Sales Revenue", "credit": "1,100"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "640"}, {"account": "Merchandise Inventory", "credit": "640"}]}]}]}, {"label": "Transaction 3", "tag": "Freight", "date": "September 3", "given": [{"p": "Paid $175 cash for freight charges on the purchase of September 1."}], "reveals": [{"entry": {"rows": [{"account": "Merchandise Inventory", "debit": "175"}, {"account": "Cash", "credit": "175"}]}}]}, {"label": "Transaction 4", "tag": "Sale", "date": "September 8", "given": [{"p": "Sold merchandise that cost $1,950 for $2,450 cash."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Cash", "debit": "2,450"}, {"account": "Sales Revenue", "credit": "2,450"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "1,950"}, {"account": "Merchandise Inventory", "credit": "1,950"}]}]}]}, {"label": "Transaction 5", "tag": "Purchase", "date": "September 9", "given": [{"p": "Purchased merchandise from Kane Co. for $3,100 under credit terms of 2/15, n/60, invoice dated September 9."}], "reveals": [{"entry": {"rows": [{"account": "Merchandise Inventory", "debit": "3,100"}, {"account": "Accounts Payable", "credit": "3,100"}]}}]}, {"label": "Transaction 6", "tag": "Return", "date": "September 11", "given": [{"p": "Received a $350 credit memo from Kane Co. for the return of part of the merchandise purchased on September 9."}], "reveals": [{"entry": {"rows": [{"account": "Accounts Payable", "debit": "350"}, {"account": "Merchandise Inventory", "credit": "350"}]}}]}, {"label": "Transaction 7", "tag": "Collection", "date": "September 12", "given": [{"p": "Received the balance due from Brenner Co. for the invoice dated September 2, net of the discount."}], "reveals": [{"entry": {"rows": [{"account": "Cash", "debit": "1,078"}, {"account": "Sales Discounts", "debit": "22"}, {"account": "Accounts Receivable", "credit": "1,100"}]}, "lines": ["$1,100 balance · 2% discount = $22"]}]}, {"label": "Transaction 8", "tag": "Payment", "date": "September 16", "given": [{"p": "Paid the balance due to Vale Company within the discount period."}], "reveals": [{"entry": {"rows": [{"account": "Accounts Payable", "debit": "7,200"}, {"account": "Merchandise Inventory", "credit": "144"}, {"account": "Cash", "credit": "7,056"}]}, "lines": ["$7,200 balance · 2% discount = $144"]}]}, {"label": "Transaction 9", "tag": "Sale", "date": "September 19", "given": [{"p": "Sold merchandise that cost $1,050 to Tolman Co. for $1,600 under credit terms of 2/15, n/60, invoice dated September 19."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Accounts Receivable", "debit": "1,600"}, {"account": "Sales Revenue", "credit": "1,600"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "1,050"}, {"account": "Merchandise Inventory", "credit": "1,050"}]}]}]}, {"label": "Transaction 10", "tag": "Allowance", "date": "September 21", "given": [{"p": "Issued a $250 credit memo to Tolman Co. for an allowance on the goods sold on September 19."}], "reveals": [{"entry": {"rows": [{"account": "Sales Returns and Allowances", "debit": "250"}, {"account": "Accounts Receivable", "credit": "250"}]}}]}, {"label": "Transaction 11", "tag": "Payment", "date": "September 24", "given": [{"p": "Paid the balance due to Kane Co. within the discount period."}], "reveals": [{"entry": {"rows": [{"account": "Accounts Payable", "debit": "2,750"}, {"account": "Merchandise Inventory", "credit": "55"}, {"account": "Cash", "credit": "2,695"}]}, "lines": ["$3,100 less the $350 return = $2,750 · 2% discount = $55"]}]}, {"label": "Transaction 12", "tag": "Collection", "date": "September 30", "given": [{"p": "Received the balance due from Tolman Co. for the invoice dated September 19, net of the discount and the allowance."}], "reveals": [{"entry": {"rows": [{"account": "Cash", "debit": "1,323"}, {"account": "Sales Discounts", "debit": "27"}, {"account": "Accounts Receivable", "credit": "1,350"}]}, "lines": ["$1,600 less the $250 allowance = $1,350 · 2% discount = $27"]}]}, {"label": "Transaction 13", "tag": "Sale", "date": "September 30", "given": [{"p": "Sold merchandise that cost $6,100 to Brenner Co. for $8,300 under credit terms of 2/10, n/60, invoice dated September 30."}], "reveals": [{"entries": [{"title": "Entry 1 · Record the sale", "rows": [{"account": "Accounts Receivable", "debit": "8,300"}, {"account": "Sales Revenue", "credit": "8,300"}]}, {"title": "Entry 2 · Record the cost", "rows": [{"account": "Cost of Goods Sold", "debit": "6,100"}, {"account": "Merchandise Inventory", "credit": "6,100"}]}]}]}, {"label": "Summary", "heading": "Sale, Then Cost", "given": [{"p": "Every sale takes two entries."}], "reveals": []}]};
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const P=DECK.problems;
+let i=0,shown=0;const seen=new Set();
+const store={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}}};
+let scale=Number(store.get("d214-scale"))||1;
+function applyScale(){document.documentElement.style.setProperty("--scale",scale);store.set("d214-scale",scale)}
+applyScale();
+$("smaller").onclick=()=>{scale=Math.max(.85,+(scale-.1).toFixed(2));applyScale()};
+$("bigger").onclick=()=>{scale=Math.min(1.6,+(scale+.1).toFixed(2));applyScale()};
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+function table(t){
+  const w=el("div","tw"),tb=el("table");
+  if(t.head){const tr=el("tr");t.head.forEach(h=>tr.appendChild(el("th",null,h)));const th=el("thead");th.appendChild(tr);tb.appendChild(th)}
+  const body=el("tbody");const st=new Set((t.strike||[]).map(a=>a[0]+","+a[1]));
+  (t.rows||[]).forEach((r,ri)=>{const tr=el("tr");r.forEach((c,ci)=>tr.appendChild(el("td",st.has(ri+","+ci)?"s":null,c)));body.appendChild(tr)});
+  tb.appendChild(body);w.appendChild(tb);
+  if(t.note){const box=el("div");box.appendChild(w);box.appendChild(el("div","tnote",t.note));return box}
+  return w;
+}
+function entry(e){
+  const box=el("div");if(e.title)box.appendChild(el("div","jt",e.title));
+  const w=el("div","tw"),tb=el("table","journal");
+  const hr=el("tr");["Account","Debit","Credit"].forEach(h=>hr.appendChild(el("th",null,h)));const th=el("thead");th.appendChild(hr);tb.appendChild(th);
+  const body=el("tbody");
+  (e.rows||[]).forEach(r=>{const cr=r.credit!=null&&r.credit!==""&&(r.debit==null||r.debit==="");const tr=el("tr");
+    tr.appendChild(el("td","acct"+(cr?" cr":""),r.account));tr.appendChild(el("td","n",r.debit||""));tr.appendChild(el("td","n",r.credit||""));body.appendChild(tr)});
+  tb.appendChild(body);w.appendChild(tb);box.appendChild(w);return box;
+}
+function block(b){
+  if(b.p!=null)return el("p",null,b.p);
+  if(b.q!=null)return el("p","q",b.q);
+  if(b.list){const u=el("ul");b.list.forEach(x=>u.appendChild(el("li",null,x)));return u}
+  if(b.table)return table(b.table);
+  return el("div");
+}
+function reveal(r){
+  const d=el("div","rv");if(r.label)d.appendChild(el("div","rl",r.label));
+  if(r.lines){const l=el("div","lines");r.lines.forEach(x=>l.appendChild(el("div",null,x)));d.appendChild(l)}
+  if(r.list){const u=el("ul");r.list.forEach(x=>u.appendChild(el("li",null,x)));d.appendChild(u)}
+  if(r.table)d.appendChild(table(r.table));
+  if(r.entry)d.appendChild(entry(r.entry));
+  if(r.entries)r.entries.forEach(e=>d.appendChild(entry(e)));
+  if(r.answer)d.appendChild(el("div","answer",r.answer));
+  return d;
+}
+function strip(){
+  const s=$("strip");s.innerHTML="";
+  P.forEach((p,k)=>{const b=el("button",seen.has(k)?"seen":null,String(k+1));b.title=p.label+(p.heading?": "+p.heading:"");b.setAttribute("aria-label",b.title);if(k===i)b.setAttribute("aria-current","true");b.onclick=()=>go(k);s.appendChild(b)});
+  const cur=s.children[i];if(cur)cur.scrollIntoView({block:"nearest",inline:"center"});
+}
+function render(){
+  const p=P[i],h=$("head");h.innerHTML="";
+  if(p.section)h.appendChild(el("div","section",p.section));
+  h.appendChild(el("span","label",p.label));
+  if(p.tag)h.appendChild(el("span","tag",p.tag));
+  if(p.date)h.appendChild(el("span","date",p.date));
+  const g=$("given");g.innerHTML="";
+  if(p.heading)g.appendChild(el("h2",null,p.heading));
+  p.given.forEach(b=>g.appendChild(block(b)));
+  const rv=$("reveals");rv.innerHTML="";
+  p.reveals.slice(0,shown).forEach(r=>rv.appendChild(reveal(r)));
+  const n=p.reveals.length,left=n-shown;
+  $("revealBtn").disabled=left===0;$("allBtn").disabled=left===0;$("resetBtn").disabled=shown===0;
+  $("revealBtn").textContent=left===0?"All revealed":(shown===0?"Reveal":"Reveal next");
+  $("left").textContent=n===0?"Nothing to reveal on this one.":left?`${left} step${left===1?"":"s"} left`:"";
+  $("pos").textContent=`${i+1} of ${P.length}`;
+  $("prevBtn").disabled=i===0;$("nextBtn").disabled=i===P.length-1;
+  strip();
+}
+function go(k){i=Math.max(0,Math.min(P.length-1,k));shown=0;seen.add(i);try{history.replaceState(null,"","#p"+(i+1))}catch(_){}render();window.scrollTo({top:0})}
+function advance(){if(shown<P[i].reveals.length){shown++;render();const r=$("reveals").lastElementChild;if(r)r.scrollIntoView({block:"nearest",behavior:"smooth"})}else if(i<P.length-1)go(i+1)}
+$("revealBtn").onclick=advance;
+$("allBtn").onclick=()=>{shown=P[i].reveals.length;render()};
+$("resetBtn").onclick=()=>{shown=0;render()};
+$("prevBtn").onclick=()=>go(i-1);
+$("nextBtn").onclick=()=>go(i+1);
+document.addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("input,textarea"))return;
+  if(e.key===" "||e.key==="ArrowRight"||e.key==="Enter"){if(e.target.tagName==="BUTTON"&&e.key!=="ArrowRight")return;e.preventDefault();advance()}
+  else if(e.key==="ArrowLeft"){e.preventDefault();go(i-1)}
+  else if(e.key==="h"||e.key==="H"){shown=0;render()}
+});
+const m=/^#p(\d+)$/.exec(location.hash);go(m?(+m[1]-1):0);
+})();
+</script>
+</body>
+</html>

@@ -3,84 +3,181 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hersey Accounting Games</title>
-<meta name="description" content="Review games for Honors College Accounting at John Hersey High School, one for each chapter.">
+<title>District 214 Accounting</title>
+<meta name="description" content="Review games and interactive practices for Accounting in High School District 214.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: brand bar, short headline, then one ledger-style row per chapter */
+/* Layout: logo bar, headline, two tabs (games, practices), one ledger-style row per item grouped by chapter */
 :root{
-  --bg:#F5EDE0; --paper:#FFFBF4; --ink:#2A1810; --muted:#6E5847;
-  --brown:#3F2417; --orange:#E76728; --cream:#FBF3E6; --line:rgba(63,36,23,.18);
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --line:rgba(17,17,17,.14);
+  --red:#C1102F; --redtext:#B00E2A; --black:#111111;
   --display:"Oswald","Arial Narrow",Impact,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
-  :root{--bg:#1B110B; --paper:#2A1B12; --ink:#F4E9DA; --muted:#BFA994; --brown:#5B3624; --line:rgba(244,233,218,.16); color-scheme:dark}
+  :root:not([data-theme="light"]){--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --black:#2B2B2B; color-scheme:dark}
 }
+:root[data-theme="dark"]{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --black:#2B2B2B; color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 var(--body)}
-.wrap{max-width:900px;margin:0 auto;padding:28px 20px 56px}
-.brand{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px;font-weight:600}
-.brand .bar{width:28px;height:6px;background:var(--orange);border-block:2px solid var(--brown);box-sizing:content-box}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(40px,7vw,68px);line-height:.98;margin:22px 0 12px;text-wrap:balance}
-h1 span{color:var(--orange)}
-.lede{max-width:60ch;margin:0 0 30px;color:var(--muted)}
-.chapters{list-style:none;margin:0;padding:0;display:grid;gap:12px}
-.ch{display:grid;grid-template-columns:96px 1fr;background:var(--paper);border:2px solid var(--line);border-radius:12px;overflow:hidden}
-.num{background:var(--brown);color:var(--cream);font-family:var(--display);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px}
+[hidden]{display:none!important}
+.wrap{max-width:920px;margin:0 auto;padding-block:24px 56px;padding-inline:20px}
+.logo{height:56px;width:auto;display:block;border-radius:4px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(40px,7vw,66px);line-height:.98;margin:22px 0 10px;text-wrap:balance}
+h1 span{color:var(--redtext)}
+.lede{max-width:60ch;margin:0 0 24px;color:var(--muted)}
+.tabs{display:flex;gap:4px;border-bottom:3px solid var(--black);margin-bottom:22px}
+.tab{background:transparent;border:0;border-radius:10px 10px 0 0;padding:10px 20px 8px;font-family:var(--display);font-weight:600;font-size:22px;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--black);color:#fff}
+.tab:focus-visible,.play:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.chhead{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
+.chhead:first-child{margin-top:0}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.row{display:grid;grid-template-columns:96px 1fr;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.num{background:var(--black);color:#fff;font-family:var(--display);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px}
 .num small{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
-.num b{font-size:44px;font-weight:600;line-height:1}
+.num b{font-size:42px;font-weight:600;line-height:1}
 .info{padding:16px 20px;min-width:0;display:flex;flex-direction:column;gap:4px;justify-content:center}
 .topic{font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .info h2{font-family:var(--display);font-weight:600;font-size:26px;margin:0;line-height:1.1}
 .info p{margin:0;font-size:16px}
-.play{align-self:flex-start;margin-top:8px;background:var(--orange);color:#2A1810;text-decoration:none;font-family:var(--display);font-weight:600;font-size:19px;padding:8px 20px;border-radius:8px}
-.play:hover{background:#F07A3E}
-.play:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.ch.soon{opacity:.6}
-.ch.soon .num{background:var(--line);color:var(--ink)}
+.meta{font-size:14px;color:var(--muted);font-weight:600}
+.play{align-self:flex-start;margin-top:8px;background:var(--red);color:#fff;text-decoration:none;font-family:var(--display);font-weight:600;font-size:19px;padding:8px 20px;border-radius:8px}
+.play:hover{background:#D9203F}
+.row.soon{opacity:.6}
+.row.soon .num{background:var(--line);color:var(--ink)}
+.prac .num{background:var(--red)}
 footer{margin-top:36px;color:var(--muted);font-size:14px}
-@media (max-width:520px){.ch{grid-template-columns:70px 1fr}.num b{font-size:34px}.info{padding:12px 14px}}
+@media (max-width:520px){.row{grid-template-columns:70px 1fr}.num b{font-size:32px}.info{padding:12px 14px}.tab{font-size:18px;padding:8px 14px 6px}.logo{height:46px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="brand"><span class="bar"></span>Hersey Accounting | Mr. Murphy</div>
-  <h1>Review games, <span>one per chapter.</span></h1>
-  <p class="lede">Pick your chapter and play solo in Blitz or Practice, or as a class in 8-team mode. Calculator out.</p>
+  <a href="/"><img class="logo" src="logo-214.png" alt="High School District 214"></a>
+  <h1>District 214 <span>Accounting.</span></h1>
+  <p class="lede">Review games to play solo or as a class, and click-to-reveal practices that walk through every problem step by step.</p>
 
-  <ol class="chapters">
-    <li class="ch">
-      <div class="num"><small>Ch</small><b>5</b></div>
-      <div class="info">
-        <span class="topic">Inventory Costing</span>
-        <h2>Same Goods, Three Costs</h2>
-        <p>FIFO, LIFO, and weighted average on real inventory problems, plus gross profit and concept checks.</p>
-        <a class="play" href="chapter-5.html">Play</a>
-      </div>
-    </li>
-    <li class="ch soon">
-      <div class="num"><small>Ch</small><b>4</b></div>
-      <div class="info"><span class="topic">Accounting for Retailers</span><h2>Coming soon</h2></div>
-    </li>
-    <li class="ch soon">
-      <div class="num"><small>Ch</small><b>3</b></div>
-      <div class="info"><span class="topic">Adjusting and Closing Entries</span><h2>Coming soon</h2></div>
-    </li>
-    <li class="ch soon">
-      <div class="num"><small>Ch</small><b>2</b></div>
-      <div class="info"><h2>Coming soon</h2></div>
-    </li>
-    <li class="ch soon">
-      <div class="num"><small>Ch</small><b>1</b></div>
-      <div class="info"><h2>Coming soon</h2></div>
-    </li>
-  </ol>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-games" aria-controls="games" aria-selected="true">Review Games</button>
+    <button class="tab" role="tab" id="tab-practices" aria-controls="practices" aria-selected="false">Interactive Practices</button>
+  </div>
 
-  <footer>John Hersey High School | Honors College Accounting</footer>
+  <section id="games" role="tabpanel" aria-labelledby="tab-games">
+    <ol class="list">
+      <li class="row">
+        <div class="num"><small>Ch</small><b>5</b></div>
+        <div class="info">
+          <span class="topic">Inventory Costing</span>
+          <h2>Same Goods, Three Costs</h2>
+          <p>FIFO, LIFO, and weighted average on real inventory problems, plus gross profit and concept checks.</p>
+          <a class="play" href="chapter-5.html">Play</a>
+        </div>
+      </li>
+      <li class="row">
+        <div class="num"><small>Ch</small><b>4</b></div>
+        <div class="info">
+          <span class="topic">Accounting for Retailers</span>
+          <h2>Same Deal, Two Books</h2>
+          <p>Record each deal on the buyer's books and the seller's books: freight and FOB, returns, discounts, sales and COGS.</p>
+          <a class="play" href="chapter-4.html">Play</a>
+        </div>
+      </li>
+      <li class="row soon"><div class="num"><small>Ch</small><b>3</b></div><div class="info"><span class="topic">Adjusting and Closing Entries</span><h2>Coming soon</h2></div></li>
+      <li class="row soon"><div class="num"><small>Ch</small><b>2</b></div><div class="info"><h2>Coming soon</h2></div></li>
+      <li class="row soon"><div class="num"><small>Ch</small><b>1</b></div><div class="info"><h2>Coming soon</h2></div></li>
+    </ol>
+  </section>
+
+  <section id="practices" role="tabpanel" aria-labelledby="tab-practices" hidden>
+    <h3 class="chhead">Chapter 5: Inventory Costing</h3>
+    <ol class="list">
+      <li class="row prac">
+        <div class="num"><small>Ch</small><b>5</b></div>
+        <div class="info">
+          <span class="topic">FIFO and LIFO</span>
+          <h2>Practice Problem Set 1</h2>
+          <p>Northside Phone Cases sells phone cases for $8 per unit. Start with quick problems, then work up to a full year of FIFO and LIFO.</p>
+          <span class="meta">11 problems, click to reveal each step</span>
+          <a class="play" href="practice-ch5-set-1.html">Open</a>
+        </div>
+      </li>
+      <li class="row prac">
+        <div class="num"><small>Ch</small><b>5</b></div>
+        <div class="info">
+          <span class="topic">Weighted average inventory costing</span>
+          <h2>Weighted Average</h2>
+          <p>Cost sales at Northside Phone Cases with weighted average, from one-sale warm-ups to a full year compared against FIFO and LIFO.</p>
+          <span class="meta">9 problems, click to reveal each step</span>
+          <a class="play" href="practice-ch5-weighted-average.html">Open</a>
+        </div>
+      </li>
+    </ol>
+    <h3 class="chhead">Chapter 4: Accounting for Retailers</h3>
+    <ol class="list">
+      <li class="row prac">
+        <div class="num"><small>Ch</small><b>4</b></div>
+        <div class="info">
+          <span class="topic">Merchandising transactions</span>
+          <h2>Problem Set Round 1</h2>
+          <p>Journalize 13 September purchase, sale, return, freight, and discount transactions for a retailer.</p>
+          <span class="meta">14 problems, click to reveal each step</span>
+          <a class="play" href="practice-ch4-round-1.html">Open</a>
+        </div>
+      </li>
+      <li class="row prac">
+        <div class="num"><small>Ch</small><b>4</b></div>
+        <div class="info">
+          <span class="topic">Merchandising transactions</span>
+          <h2>Problem Set Round 2</h2>
+          <p>Journalize 13 March purchase, sale, return, freight, and discount transactions for a retailer.</p>
+          <span class="meta">14 problems, click to reveal each step</span>
+          <a class="play" href="practice-ch4-round-2.html">Open</a>
+        </div>
+      </li>
+    </ol>
+    <h3 class="chhead">Chapter 3: Adjusting and Closing Entries</h3>
+    <ol class="list">
+      <li class="row prac">
+        <div class="num"><small>Ch</small><b>3</b></div>
+        <div class="info">
+          <span class="topic">Deferrals and accruals</span>
+          <h2>Adjusting Entries</h2>
+          <p>25 problems on recording deferral and accrual adjusting entries, plus the original and follow-up entries around them.</p>
+          <span class="meta">25 problems, click to reveal each step</span>
+          <a class="play" href="practice-ch3-adjusting.html">Open</a>
+        </div>
+      </li>
+      <li class="row prac">
+        <div class="num"><small>Ch</small><b>3</b></div>
+        <div class="info">
+          <span class="topic">Depreciation methods and closing entries</span>
+          <h2>Depreciation and Closing Entries</h2>
+          <p>Record depreciation with straight-line, units of production, and double declining balance, then close the books for Turner Company.</p>
+          <span class="meta">8 problems, click to reveal each step</span>
+          <a class="play" href="practice-ch3-depr-closing.html">Open</a>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <footer>High School District 214 | Accounting</footer>
 </div>
+<script>
+(function(){
+  const tabs=[...document.querySelectorAll(".tab")];
+  function pick(id,push){
+    tabs.forEach(t=>{const on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on});
+    if(push){try{history.replaceState(null,"",id==="games"?location.pathname:"#"+id)}catch(_){}}
+  }
+  tabs.forEach(t=>{
+    t.addEventListener("click",()=>pick(t.getAttribute("aria-controls"),true));
+    t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=tabs[(tabs.indexOf(t)+1)%tabs.length];n.focus();n.click()}});
+  });
+  pick(location.hash==="#practices"?"practices":"games",false);
+})();
+</script>
 </body>
 </html>
