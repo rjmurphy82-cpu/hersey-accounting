@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Side-by-Side Bank Recs | District 214 Accounting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: logo bar, deck title, numbered problem strip, one problem card with click-to-reveal steps */
+:root{
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --line:rgba(17,17,17,.14);
+  --red:#C1102F; --redtext:#B00E2A; --redsoft:#FBE7EA; --black:#111111; --onblack:#FFFFFF;
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --scale:1;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#121212; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:rgba(242,242,242,.14); --redtext:#FF5C70; --redsoft:#3A1219; --black:#2B2B2B; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:calc(18px * var(--scale))/1.5 var(--body)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+[hidden]{display:none!important}
+/* App shell: fixed dark sidebar on the left with every game and practice, main content on the right */
+:root{--side:#111111; --sidehover:#202020; --sidetext:#E9E9E9; --sidemuted:#8E8E8E; --sidechip:#2A2A2A}
+html,body{height:100%}
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100%}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);color:var(--sidetext);padding:24px 16px 20px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#333 transparent}
+.side .brandlink img{height:50px;width:auto;display:block;border-radius:3px}
+.side .sitename{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;margin:12px 0 10px 2px;color:#fff}
+.side nav{display:flex;flex-direction:column;gap:2px}
+.side .ng{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sidemuted);margin:18px 0 6px 10px}
+.side .nch{font-size:12px;font-weight:600;color:var(--sidemuted);margin:8px 0 2px 10px}
+.side nav a{display:flex;gap:10px;align-items:center;color:var(--sidetext);text-decoration:none;padding:7px 10px;border-radius:6px;font-weight:600;font-size:15px;line-height:1.25}
+.side nav a:hover{background:var(--sidehover)}
+.side nav a:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.side nav a[aria-current="page"]{background:var(--red);color:#fff}
+.side .ch{flex:0 0 auto;width:24px;height:24px;border-radius:4px;background:var(--sidechip);font-family:var(--display);font-weight:600;font-size:13px;display:grid;place-items:center}
+.side nav a[aria-current="page"] .ch{background:rgba(0,0,0,.28)}
+.side .home .ch{background:transparent;font-size:16px}
+.side .sidefoot{margin-top:auto;padding:18px 10px 0;font-size:12px;color:var(--sidemuted)}
+.mbar{display:none}
+.scrim{display:none}
+.main{min-width:0;padding-block:30px 60px;padding-inline:clamp(20px,4vw,52px)}
+.inner{max-width:1120px}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(300px,86vw);z-index:30;transform:translateX(-102%);transition:transform .22s ease;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+  .mbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--side);padding:10px 16px}
+  .mbar img{height:36px;width:auto;display:block;border-radius:3px}
+  .mbar button{background:transparent;color:#fff;border:2px solid #444;border-radius:8px;padding:6px 14px;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .main{padding-block:22px 48px}
+}
+@media (prefers-reduced-motion: reduce){.side{transition:none}}
+
+.inner{max-width:1080px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:15px;font-weight:600;color:var(--muted)}
+.top a{color:inherit}
+.top .sp{flex:1}
+.size{display:flex;gap:6px}
+.size button{background:var(--paper);border:2px solid var(--line);border-radius:8px;padding:2px 10px;font-weight:700;font-size:15px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,5vw,52px);line-height:1;margin:20px 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 18px;font-size:calc(17px * var(--scale))}
+.strip{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.strip button{flex:0 0 auto;min-width:40px;height:40px;border-radius:8px;border:2px solid var(--line);background:var(--paper);font-family:var(--display);font-weight:600;font-size:17px}
+.strip button.seen{border-color:color-mix(in srgb,var(--red) 40%,var(--line))}
+.strip button[aria-current="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:6px}
+.head{background:var(--black);color:var(--onblack);padding:16px 24px 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.head .label{font-family:var(--display);font-weight:600;font-size:calc(26px * var(--scale));line-height:1.1}
+.head .tag{background:var(--red);color:#fff;border-radius:999px;padding:2px 12px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.head .date{margin-left:auto;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.head .section{width:100%;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FF8A99}
+.body{padding:20px 24px 24px;display:grid;gap:16px}
+.body h2{font-family:var(--display);font-weight:600;font-size:calc(24px * var(--scale));margin:0;line-height:1.15}
+.body p{margin:0;max-width:72ch}
+.body ul{margin:0;padding-left:1.2em}
+.q{font-weight:700;font-size:calc(20px * var(--scale))}
+.tw{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:calc(17px * var(--scale));min-width:100%}
+th,td{border:1px solid var(--line);padding:6px 12px;text-align:left;vertical-align:top}
+th{background:var(--black);color:var(--onblack);font-family:var(--display);font-weight:500;letter-spacing:.02em}
+td.s{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px;color:var(--muted)}
+.tnote{font-size:15px;color:var(--muted);margin-top:4px}
+.reveals{display:grid;gap:12px}
+.rv{border-left:6px solid var(--red);background:color-mix(in srgb,var(--redsoft) 55%,var(--paper));border-radius:0 10px 10px 0;padding:12px 18px 14px;display:grid;gap:10px;animation:in .25s ease-out}
+@keyframes in{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rv .rl{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--redtext)}
+.lines{display:grid;gap:2px;font-variant-numeric:tabular-nums;font-size:calc(19px * var(--scale));font-weight:500}
+.answer{justify-self:start;background:var(--red);color:#fff;font-family:var(--display);font-weight:600;font-size:calc(28px * var(--scale));line-height:1.15;padding:6px 18px;border-radius:8px}
+.jt{font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+table.journal{min-width:min(100%,560px);background:var(--paper)}
+table.journal td.acct{min-width:16em}
+table.journal td.cr{padding-left:3em}
+table.journal td.n{text-align:right;width:8em}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:0 24px 22px}
+.btn{background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-family:var(--display);font-weight:600;font-size:20px}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line);padding:10px 18px;font-size:17px}
+.btn:disabled{opacity:.4;cursor:default}
+.left{color:var(--muted);font-size:15px;font-weight:600}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:14px;margin-top:14px}
+kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:0 6px;background:var(--paper)}
+@media (max-width:600px){.head,.body{padding-inline:16px}.controls{padding-inline:16px}.head .date{margin-left:0}table.journal td.acct{min-width:10em}}
+@media (prefers-reduced-motion: reduce){.rv{animation:none}}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sideb{border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper);font-variant-numeric:tabular-nums;font-size:calc(18px * var(--scale))}
+.sideb .sh{background:var(--black);color:var(--onblack);font-family:var(--display);font-weight:600;font-size:calc(21px * var(--scale));padding:8px 14px;letter-spacing:.02em}
+.sideb.book .sh{background:var(--red);color:#fff}
+.sideb .r{display:flex;justify-content:space-between;gap:12px;padding:6px 14px;border-top:1px solid var(--line)}
+.sideb .r b{white-space:nowrap}
+.sideb .grp{padding:6px 14px 0;font-size:calc(14px * var(--scale));font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sideb .grp+.r{border-top:0}
+.sideb .r.it span{padding-left:1em}
+.sideb .r.new{background:var(--redsoft);animation:in .25s ease-out}
+.sideb .r.adj{border-top:3px double var(--ink);font-weight:700;font-size:calc(20px * var(--scale))}
+.sideb .r.adj b.q{color:var(--muted);font-weight:600}
+.sideb .r.adj.done b{color:var(--redtext)}
+.sideb .none{padding:6px 14px;color:var(--muted);font-size:calc(15px * var(--scale));font-style:italic;border-top:1px solid var(--line)}
+ol.facts{margin:0;padding-left:1.6em;display:grid;gap:6px;font-size:calc(18px * var(--scale))}
+ol.facts li{padding:3px 8px;border-radius:8px}
+ol.facts li.cur{background:var(--redsoft)}
+.badge{display:inline-block;margin-left:8px;border-radius:6px;padding:0 8px;font-size:calc(13px * var(--scale));font-weight:700;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px;background:var(--black);color:var(--onblack)}
+.badge.book{background:var(--red);color:#fff}
+@media (max-width:760px){.board{grid-template-columns:1fr}}
+
+
+:root{--good:#1E7A3C;--goodsoft:#E7F4EB}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--good:#3FB86A;--goodsoft:#123020}}
+:root[data-theme="dark"]{--good:#3FB86A;--goodsoft:#123020}
+.qbox{border:2px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:12px;background:var(--paper)}
+.qbox .ql{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--redtext)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:10px 14px;font:600 calc(19px * var(--scale))/1.25 var(--body);min-height:58px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt .k{flex:none;width:32px;height:32px;border-radius:7px;background:var(--black);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:17px}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--good);border-color:var(--good);color:#fff}
+.opt.right .k{background:rgba(0,0,0,.25)}
+.opt.wrong{border-color:var(--red);color:var(--redtext);text-decoration:line-through;background:transparent}
+.opt.dim{opacity:.45}
+.fb{border-left:6px solid var(--red);background:color-mix(in srgb,var(--redsoft) 55%,var(--paper));border-radius:0 10px 10px 0;padding:12px 16px;display:grid;gap:8px;animation:in .25s ease-out}
+.fb.ok{border-color:var(--good);background:var(--goodsoft)}
+.fb.key{border-color:var(--ink);background:var(--bg)}
+.fb .fh{font-family:var(--display);font-weight:600;font-size:calc(22px * var(--scale))}
+.fb.ok .fh{color:var(--good)}
+.fb.no .fh{color:var(--redtext)}
+.fb .muted{color:var(--muted)}
+.head .score{margin-left:auto;background:rgba(255,255,255,.14);border-radius:999px;padding:2px 12px;font-weight:700;font-size:15px}
+.head .date+.score{margin-left:12px}
+#given{grid-template-columns:minmax(0,1fr)}
+#given>*,.qbox>*,.fb>*,.board>*,.opts>*{min-width:0}
+.opt span:last-child{min-width:0;overflow-wrap:anywhere}
+@media (max-width:600px){.opts{grid-template-columns:1fr}}
+/* ---- layout pieces (all sizes) ---- */
+.layout{display:flex;flex-direction:column;gap:14px}
+.lc,.rc{display:contents}
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}
+.egrid{display:grid;gap:10px}
+/* ---- one-screen mode: MacBook and iPad ---- */
+body.fit #tsz{display:none!important}
+body.fit main.main{zoom:1!important}
+body.fit .main{height:var(--avail,100vh);overflow-y:auto;padding-block:calc(10px * var(--k));padding-inline:clamp(14px,2vw,28px);display:flex;flex-direction:column}
+body.fit .inner{max-width:none;width:100%;display:flex;flex-direction:column}
+body.fit .top,body.fit .sub,body.fit .hint{display:none}
+body.fit .titlerow{display:flex;align-items:center;gap:calc(16px * var(--k));min-width:0}
+body.fit h1{font-size:calc(26px * var(--k));margin:0;white-space:nowrap}
+body.fit .strip{padding:2px;min-width:0;flex:1;gap:5px}
+body.fit .strip button{min-width:calc(32px * var(--k));height:calc(32px * var(--k));font-size:calc(15px * var(--k))}
+body.fit .card{margin-top:calc(8px * var(--k))}
+body.fit .head{padding:calc(7px * var(--k)) 18px calc(7px * var(--k))}
+body.fit .head .label{font-size:calc(21px * var(--k))}
+body.fit .head .section{font-size:calc(11px * var(--k))}
+body.fit .head .date,body.fit .head .score{font-size:calc(13px * var(--k))}
+body.fit .body{padding:calc(10px * var(--k)) 18px;gap:calc(8px * var(--k))}
+body.fit .body h2{font-size:calc(22px * var(--k))}
+body.fit .body p,body.fit .body td,body.fit .body th{font-size:calc(15px * var(--k))}
+body.fit .layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:calc(16px * var(--k));align-items:start}
+body.fit .lc{display:grid;gap:calc(9px * var(--k));min-width:0}
+body.fit .rc{display:block;min-width:0}
+body.fit .intro{font-size:calc(14.5px * var(--k))!important;color:var(--muted)}
+body.fit ol.facts{font-size:calc(15px * var(--k));gap:calc(1px * var(--k));padding-left:1.4em}
+body.fit ol.facts li{padding:calc(2px * var(--k)) 6px;line-height:1.3}
+body.fit .badge{font-size:calc(11px * var(--k))}
+body.fit .board{grid-template-columns:1fr;gap:calc(9px * var(--k))}
+body.fit .board.demo{grid-template-columns:1fr 1fr}
+body.fit .sideb{font-size:calc(15px * var(--k));line-height:1.3}
+body.fit .sideb .sh{font-size:calc(17px * var(--k));padding:calc(4px * var(--k)) 12px}
+body.fit .sideb .r{padding:calc(3px * var(--k)) 12px}
+body.fit .sideb .grp{font-size:calc(11px * var(--k));padding:calc(3px * var(--k)) 12px 0}
+body.fit .sideb .r.adj{font-size:calc(17px * var(--k))}
+body.fit .sideb .none{font-size:calc(13px * var(--k));padding:calc(3px * var(--k)) 12px}
+body.fit .qbox{padding:calc(9px * var(--k)) 14px;gap:calc(7px * var(--k))}
+body.fit .qbox .ql{font-size:calc(12px * var(--k))}
+body.fit .q{font-size:calc(16px * var(--k))!important}
+body.fit .q.fact{display:none}
+body.fit .opts{gap:calc(7px * var(--k))}
+body.fit .opt{font-size:calc(15px * var(--k));min-height:calc(42px * var(--k));padding:calc(5px * var(--k)) 10px;gap:10px}
+body.fit .opt .k{width:calc(26px * var(--k));height:calc(26px * var(--k));font-size:calc(14px * var(--k))}
+body.fit .fb{padding:calc(7px * var(--k)) 12px;gap:calc(4px * var(--k))}
+body.fit .fb .fh{font-size:calc(17px * var(--k))}
+body.fit .lines{font-size:calc(14.5px * var(--k));line-height:1.35}
+body.fit .jt{font-size:calc(11px * var(--k));margin-bottom:2px}
+body.fit .rv{padding:calc(7px * var(--k)) 12px;gap:calc(5px * var(--k))}
+body.fit .rv .rl{font-size:calc(11.5px * var(--k))}
+body.fit table.journal{min-width:0;width:100%}
+body.fit table.journal td,body.fit table.journal th{font-size:calc(13.5px * var(--k));padding:calc(2px * var(--k)) 7px}
+body.fit table.journal td.acct{min-width:0}
+body.fit table.journal td.cr{padding-left:1.6em}
+body.fit table.journal td.n{width:5.2em}
+body.fit .egrid{grid-template-columns:1fr 1fr;gap:calc(8px * var(--k))}
+body.fit .controls{padding:calc(6px * var(--k)) 18px calc(10px * var(--k));gap:8px}
+body.fit .btn{font-size:calc(17px * var(--k));padding:calc(7px * var(--k)) 16px}
+body.fit .btn.ghost{font-size:calc(15px * var(--k));padding:calc(5px * var(--k)) 12px}
+body.fit .left{font-size:calc(14px * var(--k))}
+body.fit .nav{margin-top:calc(8px * var(--k))}
+
+.fitmenu{display:none}
+body.fit .fitmenu{display:inline-flex;align-items:center;gap:6px;background:var(--black);color:#fff;border:0;border-radius:8px;padding:calc(6px * var(--k)) 12px;font:600 calc(14px * var(--k)) var(--body);letter-spacing:.04em;white-space:nowrap}
+body.fit .shell{grid-template-columns:1fr}
+body.fit .side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(300px,86vw);z-index:30;transform:translateX(-102%);transition:transform .22s ease}
+body.fit .side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+body.fit .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+body.fit .mbar{display:none!important}
+body.fit .nav,body.fit .intro{display:none!important}
+body.fit .rc{display:grid;gap:calc(9px * var(--k))}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="mbar"><a href="/"><img src="logo-214.png" alt="High School District 214"></a><button id="menuBtn" aria-expanded="false" aria-controls="side">Menu</button></div>
+  <aside class="side" id="side">
+    <a class="brandlink" href="/"><img src="logo-214.png" alt="High School District 214"></a>
+    <div class="sitename">Accounting</div>
+    <nav aria-label="Site">
+      <a class="home" href="/"><span class="ch">⌂</span>Home</a>
+      <div class="ng">Review Games</div>
+      <a href="chapter-6.html"><span class="ch">6</span>Make It Match</a>
+      <a href="chapter-5.html"><span class="ch">5</span>Same Goods, Three Costs</a>
+      <a href="chapter-4.html"><span class="ch">4</span>Same Deal, Two Books</a>
+      <div class="ng">Interactive Practices</div>
+      <div class="nch">Chapter 6</div>
+      <a href="practice-ch6-bank-rec.html"><span class="ch">6</span>Bank Rec Practice</a>
+      <a href="practice-ch6-side-by-side.html" aria-current="page"><span class="ch">6</span>Side-by-Side Recs</a>
+      <div class="nch">Chapter 5</div>
+      <a href="practice-ch5-set-1.html"><span class="ch">5</span>Practice Problem Set 1</a>
+      <a href="practice-ch5-weighted-average.html"><span class="ch">5</span>Weighted Average</a>
+      <div class="nch">Chapter 4</div>
+      <a href="practice-ch4-round-1.html"><span class="ch">4</span>Problem Set Round 1</a>
+      <a href="practice-ch4-round-2.html"><span class="ch">4</span>Problem Set Round 2</a>
+      <div class="nch">Chapter 3</div>
+      <a href="practice-ch3-adjusting.html"><span class="ch">3</span>Adjusting Entries</a>
+      <a href="practice-ch3-depr-closing.html"><span class="ch">3</span>Depreciation and Closing Entries</a>
+    </nav>
+    <div class="sidefoot">High School District 214 | Accounting</div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main"><div class="inner">
+  <div class="top">
+    <span><a href="/#practices">Interactive Practices</a> / Chapter 6</span>
+    <span class="sp"></span>
+    <span class="size" aria-label="Text size"><button id="smaller" aria-label="Smaller text">A−</button><button id="bigger" aria-label="Bigger text">A+</button></span>
+  </div>
+  <h1>Side-by-Side Bank Recs</h1>
+  <p class="sub">Eight full reconciliations: pick where each item goes, then the adjusted balance</p>
+  <nav class="strip" id="strip" aria-label="Problems"></nav>
+  <article class="card">
+    <header class="head" id="head"></header>
+    <div class="body"><div id="given" style="display:grid;gap:14px"></div><div class="reveals" id="reveals"></div></div>
+    <div class="controls">
+      <button class="btn" id="revealBtn">Reveal next</button>
+      <button class="btn ghost" id="allBtn">Show all</button>
+      <button class="btn ghost" id="resetBtn">Hide answers</button>
+      <span class="left" id="left"></span>
+    </div>
+  </article>
+  <div class="nav">
+    <button class="btn ghost" id="prevBtn">Previous</button>
+    <span class="left" id="pos" style="align-self:center"></span>
+    <button class="btn ghost" id="nextBtn">Next problem</button>
+  </div>
+  <p class="hint">Keys: <kbd>A</kbd> to <kbd>D</kbd> or <kbd>1</kbd> to <kbd>4</kbd> pick an answer. <kbd>Space</kbd> or <kbd>→</kbd> goes to the next question. <kbd>←</kbd> goes back a problem.</p>
+  </div></main>
+</div>
+<script>
+(function(){const s=document.getElementById("side"),b=document.getElementById("menuBtn"),c=document.getElementById("scrim");
+function set(o){s.classList.toggle("open",o);c.classList.toggle("on",o);b.setAttribute("aria-expanded",o);b.textContent=o?"Close":"Menu"}
+b.addEventListener("click",()=>set(!s.classList.contains("open")));c.addEventListener("click",()=>set(false));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")set(false)});
+const cur=s.querySelector('[aria-current="page"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest"});})();
+</script>
+<script>
+const P=[{"type": "info", "label": "How it works", "blocks": [{"h2": "Side-by-Side Bank Reconciliations"}, {"p": "Each problem gives you the bank statement balance, the Cash balance per books, and a list of items. For each item, pick where it goes on the reconciliation. Right or wrong, you'll see why, and the item drops onto the correct side."}, {"p": "After the last item, pick the adjusted balance. Then you'll see the adjusting entries for the book side."}, {"demo": true}, {"q": "Bank side: deposits in transit, outstanding checks, bank errors. Book side: anything the bank did that the books don't know about yet, plus errors in the books. Only book-side items get an entry."}]}, {"type": "rec", "label": "Lakeside Coffee", "date": "March 31", "bank": 6420, "book": 5924, "adj": 5780, "items": [{"f": "A $1,150 deposit made on March 31 does not appear on the bank statement.", "side": "bank", "s": 1, "amt": 1150, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "Outstanding checks total $1,790.", "side": "bank", "s": -1, "amt": 1790, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "The bank statement shows a $22 service charge.", "side": "book", "s": -1, "amt": 22, "short": "Service charge", "why": "The bank already took the fee. The books don't have it yet.", "je": [["Bank Service Charge Expense", "D", "22"], ["Cash", "C", "22"]]}, {"f": "A $140 check from a customer was returned marked NSF.", "side": "book", "s": -1, "amt": 140, "short": "NSF check", "why": "The check bounced, so that cash was never collected.", "je": [["Accounts Receivable", "D", "140"], ["Cash", "C", "140"]]}, {"f": "The bank statement shows $18 of interest earned.", "side": "book", "s": 1, "amt": 18, "short": "Interest earned", "why": "The bank already added it. The books don't have it yet.", "je": [["Cash", "D", "18"], ["Interest Revenue", "C", "18"]]}]}, {"type": "rec", "label": "Northgate Cycles", "date": "April 30", "bank": 9315, "book": 8107, "adj": 9364, "items": [{"f": "Checks #418 for $615, #421 for $1,280, and #422 for $96 have not cleared the bank.", "side": "bank", "s": -1, "amt": 1991, "short": "Outstanding checks (#418, #421, #422)", "why": "$615 + $1,280 + $96 = $1,991. The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "The bank collected a $1,500 note receivable for Northgate and charged a $15 collection fee.", "side": "book", "s": 1, "amt": 1485, "short": "Note collected, less $15 fee", "why": "$1,500 − $15 = $1,485. The bank has the money; the books don't know yet.", "je": [["Cash", "D", "1,485"], ["Bank Service Charge Expense", "D", "15"], ["Notes Receivable", "C", "1,500"]]}, {"f": "The April 30 deposit of $2,040 is not on the bank statement.", "side": "bank", "s": 1, "amt": 2040, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "The bank paid the $210 electric bill by EFT. Northgate has not recorded it.", "side": "book", "s": -1, "amt": 210, "short": "EFT: electric bill", "why": "The money already left the account.", "je": [["Utilities Expense", "D", "210"], ["Cash", "C", "210"]]}, {"f": "The bank charged an $18 monthly service fee.", "side": "book", "s": -1, "amt": 18, "short": "Service charge", "why": "The bank already took the fee. The books don't have it yet.", "je": [["Bank Service Charge Expense", "D", "18"], ["Cash", "C", "18"]]}]}, {"type": "rec", "label": "Ridgeview Dental", "date": "May 31", "bank": 12880, "book": 11828, "adj": 11525, "items": [{"f": "Check #1052 for office supplies was written for $428 but recorded in the books as $482.", "side": "book", "s": 1, "amt": 54, "short": "Error: check #1052 recorded too high", "why": "$482 − $428 = $54. The books took out $54 too much.", "je": [["Cash", "D", "54"], ["Supplies Expense", "C", "54"]]}, {"f": "Deposit in transit, $960.", "side": "bank", "s": 1, "amt": 960, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "A patient's $325 check was returned marked NSF.", "side": "book", "s": -1, "amt": 325, "short": "NSF check", "why": "The check bounced, so that cash was never collected.", "je": [["Accounts Receivable", "D", "325"], ["Cash", "C", "325"]]}, {"f": "Outstanding checks total $2,315.", "side": "bank", "s": -1, "amt": 2315, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "The bank charged $32 for printing new checks.", "side": "book", "s": -1, "amt": 32, "short": "Printed checks", "why": "The bank already charged the account.", "je": [["Bank Service Charge Expense", "D", "32"], ["Cash", "C", "32"]]}]}, {"type": "rec", "label": "Harbor Print Shop", "date": "June 30", "bank": 7640, "book": 6906, "adj": 6535, "items": [{"f": "Outstanding checks total $2,880.", "side": "bank", "s": -1, "amt": 2880, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "The bank mistakenly charged Harbor's account for a $350 check written by Harbor Pizza.", "side": "bank", "s": 1, "amt": 350, "short": "Bank error: Harbor Pizza check", "why": "The bank took out money it shouldn't have. Add it back and tell the bank. No entry.", "je": null}, {"f": "A $1,260 customer payment on account was deposited correctly but recorded in the books as $1,620.", "side": "book", "s": -1, "amt": 360, "short": "Error: deposit recorded too high", "why": "$1,620 − $1,260 = $360. The books show $360 more cash than was deposited.", "je": [["Accounts Receivable", "D", "360"], ["Cash", "C", "360"]]}, {"f": "Deposit in transit, $1,425.", "side": "bank", "s": 1, "amt": 1425, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "Service charge, $25.", "side": "book", "s": -1, "amt": 25, "short": "Service charge", "why": "The bank already took the fee. The books don't have it yet.", "je": [["Bank Service Charge Expense", "D", "25"], ["Cash", "C", "25"]]}, {"f": "Interest earned, $14.", "side": "book", "s": 1, "amt": 14, "short": "Interest earned", "why": "The bank already added it. The books don't have it yet.", "je": [["Cash", "D", "14"], ["Interest Revenue", "C", "14"]]}]}, {"type": "rec", "label": "Summit Landscaping", "date": "July 31", "bank": 15204, "book": 13019, "adj": 13609, "items": [{"f": "The July 31 deposit of $2,380 was made after the bank closed for the day.", "side": "bank", "s": 1, "amt": 2380, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "Check #775 for July rent cleared the bank for $1,790 but was recorded in the books as $1,970.", "side": "book", "s": 1, "amt": 180, "short": "Error: check #775 recorded too high", "why": "$1,970 − $1,790 = $180. The books took out $180 too much.", "je": [["Cash", "D", "180"], ["Rent Expense", "C", "180"]]}, {"f": "A customer paid $640 on account by EFT. Summit has not recorded it.", "side": "book", "s": 1, "amt": 640, "short": "EFT: customer payment", "why": "The money is already in the account. The books don't know yet.", "je": [["Cash", "D", "640"], ["Accounts Receivable", "C", "640"]]}, {"f": "Outstanding checks total $3,975.", "side": "bank", "s": -1, "amt": 3975, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "A customer's $210 check was returned NSF, and the bank charged a $20 fee.", "side": "book", "s": -1, "amt": 230, "short": "NSF check plus $20 fee", "why": "$210 + $20 = $230. The check bounced and the bank charged for it.", "je": [["Accounts Receivable", "D", "210"], ["Bank Service Charge Expense", "D", "20"], ["Cash", "C", "230"]]}]}, {"type": "rec", "label": "Prairie Pet Supply", "date": "August 31", "bank": 4118, "book": 2925, "adj": 2840, "items": [{"f": "Deposits of $780 and $1,045 made on August 31 are not on the bank statement.", "side": "bank", "s": 1, "amt": 1825, "short": "Deposits in transit", "why": "$780 + $1,045 = $1,825. The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "The bank mistakenly credited Prairie's account for a $500 deposit made by Prairie Pharmacy.", "side": "bank", "s": -1, "amt": 500, "short": "Bank error: Prairie Pharmacy deposit", "why": "The bank added money that isn't ours. Take it out and tell the bank. No entry.", "je": null}, {"f": "Outstanding checks total $2,603.", "side": "bank", "s": -1, "amt": 2603, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "Check #340 for new equipment was written for $2,150 but recorded in the books as $2,510.", "side": "book", "s": 1, "amt": 360, "short": "Error: check #340 recorded too high", "why": "$2,510 − $2,150 = $360. The books took out $360 too much.", "je": [["Cash", "D", "360"], ["Equipment", "C", "360"]]}, {"f": "A customer's $415 check was returned marked NSF.", "side": "book", "s": -1, "amt": 415, "short": "NSF check", "why": "The check bounced, so that cash was never collected.", "je": [["Accounts Receivable", "D", "415"], ["Cash", "C", "415"]]}, {"f": "Bank service charge, $30.", "side": "book", "s": -1, "amt": 30, "short": "Service charge", "why": "The bank already took the fee. The books don't have it yet.", "je": [["Bank Service Charge Expense", "D", "30"], ["Cash", "C", "30"]]}]}, {"type": "rec", "label": "Copper Canyon Outfitters", "date": "September 30", "bank": 21560, "book": 16018, "adj": 19098, "items": [{"f": "Outstanding checks total $5,872.", "side": "bank", "s": -1, "amt": 5872, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "The bank collected a $4,000 note receivable plus $120 of interest for Copper Canyon and charged a $25 collection fee.", "side": "book", "s": 1, "amt": 4095, "short": "Note plus interest, less $25 fee", "why": "$4,000 + $120 − $25 = $4,095.", "je": [["Cash", "D", "4,095"], ["Bank Service Charge Expense", "D", "25"], ["Notes Receivable", "C", "4,000"], ["Interest Revenue", "C", "120"]]}, {"f": "Deposit in transit, $3,410.", "side": "bank", "s": 1, "amt": 3410, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "A customer's $685 check was returned marked NSF.", "side": "book", "s": -1, "amt": 685, "short": "NSF check", "why": "The check bounced, so that cash was never collected.", "je": [["Accounts Receivable", "D", "685"], ["Cash", "C", "685"]]}, {"f": "The bank paid the $312 monthly insurance bill by EFT. It has not been recorded.", "side": "book", "s": -1, "amt": 312, "short": "EFT: insurance bill", "why": "The money already left the account.", "je": [["Insurance Expense", "D", "312"], ["Cash", "C", "312"]]}, {"f": "Check #2219 for advertising cleared the bank for $575 but was recorded in the books as $557.", "side": "book", "s": -1, "amt": 18, "short": "Error: check #2219 recorded too low", "why": "$575 − $557 = $18. The books took out $18 too little.", "je": [["Advertising Expense", "D", "18"], ["Cash", "C", "18"]]}]}, {"type": "rec", "label": "Maple Grove Tutoring", "date": "October 31", "bank": 3276, "book": 3393, "adj": 2754, "items": [{"f": "Deposit in transit, $890.", "side": "bank", "s": 1, "amt": 890, "short": "Deposit in transit", "why": "The books already have it. The bank hasn't processed it yet.", "je": null}, {"f": "Outstanding checks total $1,412.", "side": "bank", "s": -1, "amt": 1412, "short": "Outstanding checks", "why": "The books already took these out. The bank hasn't paid them yet.", "je": null}, {"f": "A $2,180 customer payment on account was recorded in the books as $2,810.", "side": "book", "s": -1, "amt": 630, "short": "Error: deposit recorded too high", "why": "$2,810 − $2,180 = $630. The books show $630 more cash than was deposited.", "je": [["Accounts Receivable", "D", "630"], ["Cash", "C", "630"]]}, {"f": "Service charge, $15.", "side": "book", "s": -1, "amt": 15, "short": "Service charge", "why": "The bank already took the fee. The books don't have it yet.", "je": [["Bank Service Charge Expense", "D", "15"], ["Cash", "C", "15"]]}, {"f": "Interest earned, $6.", "side": "book", "s": 1, "amt": 6, "short": "Interest earned", "why": "The bank already added it. The books don't have it yet.", "je": [["Cash", "D", "6"], ["Interest Revenue", "C", "6"]]}]}];
+(function(){
+const $=id=>document.getElementById(id);
+const m$=n=>"$"+n.toLocaleString("en-US");
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const shuffle=a=>{for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+const OPTS=[["bank",1,"Add to the bank balance"],["bank",-1,"Deduct from the bank balance"],["book",1,"Add to the book balance"],["book",-1,"Deduct from the book balance"]];
+const where=x=>(x.s>0?"added to the ":"deducted from the ")+x.side+" balance";
+const correctIdx=x=>OPTS.findIndex(o=>o[0]===x.side&&o[1]===x.s);
+let i=0;const ST={},seen=new Set();
+const S=()=>ST[i]||(ST[i]={step:0,picks:[],adj:null,adjOpts:null});
+const nQ=p=>p.type!=="rec"?0:p.items.length+(p.single?0:1);
+
+/* ---------- reconciliation board ---------- */
+function sideBox(p,side,placedIdx,showAdj){
+  const box=el("div","sideb "+side);
+  box.appendChild(el("div","sh",side==="bank"?"Bank side":"Book side"));
+  const st=el("div","r");st.appendChild(el("span",null,side==="bank"?"Balance per bank statement":"Balance per books"));st.appendChild(el("b",null,p[side]!=null?m$(p[side]):"$ ____"));box.appendChild(st);
+  const placed=p.items.map((x,n)=>({...x,n})).filter(x=>placedIdx.has(x.n)&&x.side===side);
+  [[1,"Add"],[-1,"Deduct"]].forEach(([sg,word])=>{
+    const rows=placed.filter(x=>x.s===sg);if(!rows.length)return;
+    box.appendChild(el("div","grp",word+":"));
+    rows.forEach(x=>{const r=el("div","r it"+(x.n===p._new?" new":""));r.appendChild(el("span",null,x.short));r.appendChild(el("b",null,(sg>0?"+ ":"− ")+(x.amt!=null?m$(x.amt):"$ ____")));box.appendChild(r)});
+  });
+  if(!placed.length)box.appendChild(el("div","none",p.single?(placedIdx.size?"Nothing on this side":"Where does the item go?"):"No items placed yet"));
+  if(!p.single){
+    const a=el("div","r adj"+(showAdj?" done":""));a.appendChild(el("span",null,side==="bank"?"Adjusted bank balance":"Adjusted book balance"));
+    a.appendChild(el("b",showAdj?null:"q",showAdj?m$(p.adj):"?"));box.appendChild(a);
+  }
+  return box;
+}
+function board(p,placedIdx,showAdj){const b=el("div","board");b.appendChild(sideBox(p,"bank",placedIdx,showAdj));b.appendChild(sideBox(p,"book",placedIdx,showAdj));return b}
+const DEMO={bank:5000,book:4380,adj:4500,_new:-1,items:[{side:"bank",s:1,amt:800,short:"Deposit in transit"},{side:"bank",s:-1,amt:1300,short:"Outstanding checks"},{side:"book",s:1,amt:150,short:"Interest earned"},{side:"book",s:-1,amt:30,short:"Service charge"}]};
+
+/* ---------- entries ---------- */
+function entryTable(title,rows){
+  const box=el("div");if(title)box.appendChild(el("div","jt",title));
+  const w=el("div","tw"),tb=el("table","journal");const hr=el("tr");["Account","Debit","Credit"].forEach(h=>hr.appendChild(el("th",null,h)));const th=el("thead");th.appendChild(hr);tb.appendChild(th);
+  const body=el("tbody");rows.forEach(([a,dc,v])=>{const tr=el("tr");tr.appendChild(el("td","acct"+(dc==="C"?" cr":""),a));tr.appendChild(el("td","n",dc==="D"?v:""));tr.appendChild(el("td","n",dc==="C"?v:""));body.appendChild(tr)});
+  tb.appendChild(body);w.appendChild(tb);box.appendChild(w);return box;
+}
+
+/* ---------- feedback ---------- */
+function itemFeedback(x,pick){
+  const c=correctIdx(x),shown=pick.shown,ok=!shown&&pick.i===c,[ps]=OPTS[pick.i];
+  const d=el("div","fb "+(ok?"ok":shown?"key":"no"));
+  d.appendChild(el("div","fh",shown?"Answer: "+OPTS[c][2]:ok?"Correct!":"Not quite. The answer is: "+OPTS[c][2]));
+  const l=el("div","lines");
+  if(!ok&&!shown){
+    if(ps===x.side)l.appendChild(el("div",null,`Right side, wrong direction. It gets ${where(x)}.`));
+    else l.appendChild(el("div",null,x.side==="bank"?"This is a bank-side item. The company's books are already right; the difference is on the bank's end.":"This is a book-side item. The bank's number is already right; the company's books need to catch up."));
+  }
+  l.appendChild(el("div",null,x.why));d.appendChild(l);
+  if(FIT){d.appendChild(el("div","lines")).appendChild(el("div","muted",x.je?"Book-side item, so it needs an adjusting entry (shown under the reconciliation).":"Bank-side item, so no adjusting entry."))}
+  else if(x.je){d.appendChild(el("div","jt","Book-side item, so it needs an adjusting entry:"));d.appendChild(entryTable(null,x.je))}
+  else d.appendChild(el("div","lines")).appendChild(el("div","muted","Bank-side item, so no adjusting entry."));
+  return d;
+}
+function adjOptions(p){
+  const sb=p.items.filter(x=>x.side==="bank").reduce((t,x)=>t+x.s*x.amt,0),sk=p.items.filter(x=>x.side==="book").reduce((t,x)=>t+x.s*x.amt,0);
+  const cand=[[p.bank-sb,"That's the bank side with every sign flipped. Deposits in transit get added and outstanding checks get deducted, not the other way around."],
+    [p.book-sk,"That's the book side with every sign flipped. Check which book items add (money the bank collected) and which deduct (fees, NSF checks, payments)."],
+    [p.bank,"That's the bank statement balance before any adjustments."],
+    [p.book,"That's the Cash balance per books before any adjustments."],
+    [p.bank+sb+sk,"That's what you get by putting the book-side items on the bank side too."]];
+  const out=[[p.adj,null]];
+  cand.forEach(c=>{if(out.length<4&&c[0]>0&&!out.some(o=>o[0]===c[0]))out.push(c)});
+  return shuffle(out);
+}
+function mathLine(p,side){let t=p[side].toLocaleString("en-US");p.items.filter(x=>x.side===side).forEach(x=>t+=(x.s>0?" + ":" − ")+x.amt.toLocaleString("en-US"));return (side==="bank"?"Bank: ":"Books: ")+t+" = "+m$(p.adj)}
+
+/* ---------- render ---------- */
+function score(p,s){let r=0,a=0;s.picks.forEach((k,n)=>{if(k&&!k.shown){a++;if(k.i===correctIdx(p.items[n]))r++}});if(s.adj&&!s.adj.shown){a++;if(s.adjOpts[s.adj.i][1]===null)r++}return [r,a]}
+function optButtons(labels,pick,correct,onPick){
+  const g=el("div","opts");
+  labels.forEach((t,k)=>{const b=el("button","opt");b.appendChild(el("span","k","ABCD"[k]));b.appendChild(el("span",null,t));
+    if(pick){b.disabled=true;if(k===correct)b.classList.add("right");else if(k===pick.i&&!pick.shown)b.classList.add("wrong");else b.classList.add("dim")}
+    else b.onclick=()=>onPick(k);g.appendChild(b)});
+  return g;
+}
+function strip(){
+  const s=$("strip");s.innerHTML="";
+  P.forEach((p,k)=>{const b=el("button",seen.has(k)?"seen":null,String(k+1));b.title=(p.section?p.section+", ":"")+p.label;b.setAttribute("aria-label",b.title);if(k===i)b.setAttribute("aria-current","true");b.onclick=()=>go(k);s.appendChild(b)});
+  const c=s.children[i];if(c)c.scrollIntoView({block:"nearest",inline:"center"});
+}
+function render(){
+  const p=P[i],s=S(),h=$("head"),g=$("given"),rv=$("reveals");h.innerHTML="";g.innerHTML="";rv.innerHTML="";
+  if(p.section)h.appendChild(el("div","section",p.section));
+  h.appendChild(el("span","label",p.label));if(p.date)h.appendChild(el("span","date",p.date));
+  if(p.type==="info"){
+    p.blocks.forEach(b=>{
+      if(b.h2)g.appendChild(el("h2",null,b.h2));else if(b.p)g.appendChild(el("p",null,b.p));else if(b.q)g.appendChild(el("p","q",b.q));
+      else if(b.demo){const d=board(DEMO,new Set([0,1,2,3]),true);d.classList.add("demo");g.appendChild(d)}
+      else if(b.table){const w=el("div","tw"),t=el("table"),tr=el("tr");b.table.head.forEach(x=>tr.appendChild(el("th",null,x)));const th=el("thead");th.appendChild(tr);t.appendChild(th);const tb=el("tbody");b.table.rows.forEach(r=>{const r2=el("tr");r.forEach(c=>r2.appendChild(el("td",null,c)));tb.appendChild(r2)});t.appendChild(tb);w.appendChild(t);g.appendChild(w)}
+    });
+  }else{
+    const n=p.items.length,[r,a]=score(p,s);
+    if(a)h.appendChild(el("span","score",`${r} of ${a} correct`));
+    const placed=new Set();s.picks.forEach((k,j)=>{if(k)placed.add(j)});
+    const cur=Math.min(s.step,n-1);p._new=s.picks[cur]&&s.step<n?cur:-1;
+    const lay=el("div","layout"),lc=el("div","lc"),rc=el("div","rc");lay.appendChild(lc);lay.appendChild(rc);g.appendChild(lay);
+    const fitDone=FIT&&s.adj!=null;
+    if(!p.single){
+      lc.appendChild(el("p","intro o1",`Prepare the bank reconciliation for ${p.label} on ${p.date}. Pick where each item goes, then pick the adjusted balance.`));
+      if(!fitDone){
+        const lst=el("ol","facts o2");
+        p.items.forEach((x,j)=>{const li=el("li",j===s.step?"cur":null,x.f);if(placed.has(j))li.appendChild(el("span","badge"+(x.side==="book"?" book":""),(x.side==="bank"?"Bank ":"Book ")+(x.s>0?"+":"−")));lst.appendChild(li)});
+        lc.appendChild(lst);
+      }
+    }
+    const bd=board(p,placed,s.adj!=null);bd.classList.add("o3");rc.appendChild(bd);
+    const qb=el("div","qbox o4");
+    if(s.step<n){
+      const x=p.items[s.step],pick=s.picks[s.step];
+      qb.appendChild(el("div","ql",p.single?"Where does this item go?":`Item ${s.step+1} of ${n}`));
+      qb.appendChild(el("p","q"+(p.single?"":" fact"),x.f));
+      qb.appendChild(optButtons(OPTS.map(o=>o[2]),pick,correctIdx(x),k=>{s.picks[s.step]={i:k};render()}));
+      if(pick){qb.appendChild(itemFeedback(x,pick));
+        if(FIT&&x.je){const e1=el("div","rv o6");e1.appendChild(el("div","rl","Adjusting entry for this item"));e1.appendChild(entryTable(x.short,x.je));rc.appendChild(e1)}}
+    }else{
+      if(!s.adjOpts)s.adjOpts=adjOptions(p);
+      const ci=s.adjOpts.findIndex(o=>o[1]===null);
+      qb.appendChild(el("div","ql","Last step"));
+      qb.appendChild(el("p","q","What is the adjusted cash balance? Both sides should end at this number."));
+      qb.appendChild(optButtons(s.adjOpts.map(o=>m$(o[0])),s.adj,ci,k=>{s.adj={i:k};render()}));
+      if(s.adj){
+        const ok=!s.adj.shown&&s.adj.i===ci,d=el("div","fb "+(ok?"ok":s.adj.shown?"key":"no"));
+        d.appendChild(el("div","fh",s.adj.shown?"Answer: "+m$(p.adj):ok?"Correct! Both sides end at "+m$(p.adj)+".":"Not quite. The adjusted balance is "+m$(p.adj)+"."));
+        const l=el("div","lines");if(!ok&&!s.adj.shown)l.appendChild(el("div",null,s.adjOpts[s.adj.i][1]));
+        l.appendChild(el("div",null,mathLine(p,"bank")));l.appendChild(el("div",null,mathLine(p,"book")));d.appendChild(l);qb.appendChild(d);
+        const e=el("div","rv entries o5");e.appendChild(el("div","rl","Adjusting entries (book side only).  Bank-side items need no entry."));
+        const eg=el("div","egrid");p.items.filter(x=>x.je).forEach(x=>eg.appendChild(entryTable(x.short,x.je)));e.appendChild(eg);lc.appendChild(e);
+      }
+    }
+    lc.insertBefore(qb,lc.querySelector(".entries"));
+  }
+  // controls
+  const answered=curAnswered(),last=i===P.length-1,done=isDone();
+  const nb=$("revealBtn");nb.disabled=!answered||(done&&last);
+  nb.textContent=p.type==="info"?"Start":(!answered?"Pick an answer":done?"Next problem":(s.step===p.items.length-1&&!p.single?"Adjusted balance":"Next item"));
+  if(p.type==="info"&&!last)nb.textContent=i===0?"Start":"Next problem";
+  $("allBtn").disabled=p.type==="info"||answered;$("allBtn").textContent="Show answer";
+  $("resetBtn").disabled=p.type==="info"||(!s.picks.length&&!s.adj);$("resetBtn").textContent="Start over";
+  $("left").textContent=p.type==="info"?"":(p.single?"":`${Math.min(s.step+1,nQ(p))} of ${nQ(p)}`);
+  $("pos").textContent=`${i+1} of ${P.length}`;$("prevBtn").disabled=i===0;$("nextBtn").disabled=last;
+  strip();
+  if(!SIM)requestAnimationFrame(()=>fitNow(false));
+}
+/* ---------- one-screen fitting (MacBook / iPad) ---------- */
+let FIT=false,SIM=false,K=1;const KMAX=1.3,KMIN=.6;
+const mainEl=document.querySelector(".main"),root=document.documentElement;
+function setK(k){K=k;root.style.setProperty("--k",k.toFixed(3))}
+function avail(){const mb=document.querySelector(".mbar");const h=window.innerHeight-(mb&&getComputedStyle(mb).display!=="none"?mb.offsetHeight:0);root.style.setProperty("--avail",h+"px")}
+function over(){return mainEl.scrollHeight>mainEl.clientHeight+1}
+function shrink(k){setK(k);while(K>KMIN&&over())setK(Math.max(KMIN,K-.03));return K}
+function fitNow(grow){if(!FIT)return;if(grow){shrink(Math.min(KMAX,K));return}if(over())shrink(K)}
+function fitProblem(){
+  if(!FIT)return;
+  const p=P[i],saved=ST[i];let k=KMAX;SIM=true;
+  const states=[];
+  if(p.type==="rec"){
+    p.items.forEach((x,j)=>{const picks=p.items.slice(0,j+1).map((y,t)=>({i:t===j?(correctIdx(y)^2):correctIdx(y)}));states.push({step:j,picks,adj:null,adjOpts:null})});
+    if(!p.single){const picks=p.items.map(y=>({i:correctIdx(y)}));const ao=adjOptions(p);states.push({step:p.items.length,picks,adj:{i:ao.findIndex(o=>o[1]!==null)},adjOpts:ao})}
+  }else states.push(null);
+  states.forEach(st=>{if(st)ST[i]=st;else delete ST[i];render();k=shrink(k)});
+  if(saved)ST[i]=saved;else delete ST[i];SIM=false;render();setK(k);
+}
+function setMode(){
+  const on=window.innerWidth>=700&&window.innerHeight>=500;
+  FIT=on;document.body.classList.toggle("fit",on);avail();
+  if(!on){root.style.removeProperty("--k")}
+}
+let rt=null;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{setMode();render();fitProblem()},150)});
+function curAnswered(){const p=P[i],s=S();if(p.type!=="rec")return true;return s.step<p.items.length?!!s.picks[s.step]:!!s.adj}
+function isDone(){const p=P[i],s=S();if(p.type!=="rec")return true;return p.single?!!s.picks[0]:!!s.adj}
+function go(k){i=Math.max(0,Math.min(P.length-1,k));seen.add(i);try{history.replaceState(null,"","#p"+(i+1))}catch(_){}render();fitProblem();window.scrollTo({top:0});mainEl.scrollTop=0}
+function next(){
+  if(!curAnswered())return;
+  if(isDone()){if(i<P.length-1)go(i+1);return}
+  S().step++;render();const q=document.querySelector(".qbox");if(q)q.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function pickKey(k){
+  const p=P[i],s=S();if(p.type!=="rec"||curAnswered())return;
+  if(s.step<p.items.length)s.picks[s.step]={i:k};else{if(!s.adjOpts)return;s.adj={i:k}}render();
+}
+$("revealBtn").onclick=next;
+$("allBtn").onclick=()=>{const p=P[i],s=S();if(p.type!=="rec"||curAnswered())return;
+  if(s.step<p.items.length)s.picks[s.step]={i:correctIdx(p.items[s.step]),shown:true};else s.adj={i:s.adjOpts.findIndex(o=>o[1]===null),shown:true};render()};
+$("resetBtn").onclick=()=>{delete ST[i];render()};
+(function(){const h=document.querySelector(".inner h1"),st=$("strip");if(h&&st){const w=document.createElement("div");w.className="titlerow";h.parentNode.insertBefore(w,h);
+  const mb=document.createElement("button");mb.className="fitmenu";mb.type="button";mb.textContent="☰  Menu";mb.setAttribute("aria-label","Open the site menu");mb.onclick=()=>{const m=document.getElementById("menuBtn");if(m)m.click()};
+  w.appendChild(mb);w.appendChild(h);w.appendChild(st)}})();
+setMode();
+$("prevBtn").onclick=()=>go(i-1);$("nextBtn").onclick=()=>go(i+1);
+document.addEventListener("keydown",e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey)return;if(e.target.closest&&e.target.closest("input,textarea"))return;
+  const k=e.key.toLowerCase(),idx="abcd".indexOf(k)>=0?"abcd".indexOf(k):"1234".indexOf(k);
+  if(idx>=0&&k.length===1){e.preventDefault();pickKey(idx);return}
+  if(e.key===" "||e.key==="ArrowRight"||e.key==="Enter"){if(e.target.tagName==="BUTTON"&&e.key!=="ArrowRight")return;e.preventDefault();next()}
+  else if(e.key==="ArrowLeft"){e.preventDefault();go(i-1)}
+});
+const mm=/^#p(\d+)$/.exec(location.hash);go(mm?(+mm[1]-1):0);
+})();
+</script>
+<style>.top .size{display:none!important}</style>
+<script>try{document.documentElement.style.setProperty("--scale",1);localStorage.removeItem("d214-scale")}catch(e){}</script>
+<!-- Text size controls: scale the page content, remembered across pages -->
+<style id="tsz-css">
+#tsz{position:fixed;left:14px;bottom:14px;z-index:9999;display:flex;align-items:center;gap:2px;background:#111;color:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.3);font:600 15px "Barlow",system-ui,sans-serif}
+#tsz button{background:transparent;border:0;color:#fff;font:inherit;cursor:pointer;border-radius:999px;min-width:40px;height:36px;padding:0 10px}
+#tsz button:hover{background:rgba(255,255,255,.15)}
+#tsz button:focus-visible{outline:3px solid #C1102F;outline-offset:1px}
+#tsz button:disabled{opacity:.35;cursor:default}
+#tsz .big{font-size:20px}
+#tsz .pct{min-width:58px;font-variant-numeric:tabular-nums}
+@media print{#tsz{display:none}}
+</style>
+<div id="tsz" role="group" aria-label="Text size">
+  <button type="button" data-d="-1" aria-label="Smaller text" title="Smaller text (-)">A−</button>
+  <button type="button" data-d="0" class="pct" aria-label="Reset text size" title="Reset text size (0)">100%</button>
+  <button type="button" data-d="1" class="big" aria-label="Bigger text" title="Bigger text (+)">A+</button>
+</div>
+<script>
+(function(){
+  var STEPS=[0.8,0.9,1,1.1,1.25,1.4,1.6,1.8,2],KEY="d214-text-size",box=document.getElementById("tsz");
+  var target=document.querySelector("main")||document.body;
+  var i=2;try{var v=parseFloat(localStorage.getItem(KEY));var j=STEPS.indexOf(v);if(j>=0)i=j}catch(e){}
+  function apply(){
+    var z=STEPS[i];target.style.zoom=z;
+    box.style.zoom=target===document.body?1/z:1;
+    box.children[1].textContent=Math.round(z*100)+"%";
+    box.children[0].disabled=i===0;box.children[2].disabled=i===STEPS.length-1;
+    try{localStorage.setItem(KEY,z)}catch(e){}
+  }
+  function step(d){i=d===0?2:Math.max(0,Math.min(STEPS.length-1,i+d));apply()}
+  box.addEventListener("click",function(e){var b=e.target.closest("button");if(b){step(+b.dataset.d);b.blur()}});
+  document.addEventListener("keydown",function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;var t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT")return;
+    if(e.key==="+"||e.key==="=")step(1);else if(e.key==="-"||e.key==="_")step(-1);else if(e.key==="0")step(0);
+  });
+  apply();
+})();
+</script>
+</body>
+</html>

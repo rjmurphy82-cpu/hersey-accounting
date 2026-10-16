@@ -579,5 +579,42 @@ document.addEventListener("keydown",ev=>{
 });
 })();
 </script>
+<!-- Text size controls: scale the page content, remembered across pages -->
+<style id="tsz-css">
+#tsz{position:fixed;left:14px;bottom:14px;z-index:9999;display:flex;align-items:center;gap:2px;background:#111;color:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.3);font:600 15px "Barlow",system-ui,sans-serif}
+#tsz button{background:transparent;border:0;color:#fff;font:inherit;cursor:pointer;border-radius:999px;min-width:40px;height:36px;padding:0 10px}
+#tsz button:hover{background:rgba(255,255,255,.15)}
+#tsz button:focus-visible{outline:3px solid #C1102F;outline-offset:1px}
+#tsz button:disabled{opacity:.35;cursor:default}
+#tsz .big{font-size:20px}
+#tsz .pct{min-width:58px;font-variant-numeric:tabular-nums}
+@media print{#tsz{display:none}}
+</style>
+<div id="tsz" role="group" aria-label="Text size">
+  <button type="button" data-d="-1" aria-label="Smaller text" title="Smaller text (-)">A−</button>
+  <button type="button" data-d="0" class="pct" aria-label="Reset text size" title="Reset text size (0)">100%</button>
+  <button type="button" data-d="1" class="big" aria-label="Bigger text" title="Bigger text (+)">A+</button>
+</div>
+<script>
+(function(){
+  var STEPS=[0.8,0.9,1,1.1,1.25,1.4,1.6,1.8,2],KEY="d214-text-size",box=document.getElementById("tsz");
+  var target=document.querySelector("main")||document.body;
+  var i=2;try{var v=parseFloat(localStorage.getItem(KEY));var j=STEPS.indexOf(v);if(j>=0)i=j}catch(e){}
+  function apply(){
+    var z=STEPS[i];target.style.zoom=z;
+    box.style.zoom=target===document.body?1/z:1;
+    box.children[1].textContent=Math.round(z*100)+"%";
+    box.children[0].disabled=i===0;box.children[2].disabled=i===STEPS.length-1;
+    try{localStorage.setItem(KEY,z)}catch(e){}
+  }
+  function step(d){i=d===0?2:Math.max(0,Math.min(STEPS.length-1,i+d));apply()}
+  box.addEventListener("click",function(e){var b=e.target.closest("button");if(b){step(+b.dataset.d);b.blur()}});
+  document.addEventListener("keydown",function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;var t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT")return;
+    if(e.key==="+"||e.key==="=")step(1);else if(e.key==="-"||e.key==="_")step(-1);else if(e.key==="0")step(0);
+  });
+  apply();
+})();
+</script>
 </body>
 </html>

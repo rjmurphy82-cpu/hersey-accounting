@@ -121,9 +121,13 @@ kbd{font-family:var(--display);font-size:13px;border:1.5px solid var(--line);bor
     <nav aria-label="Site">
       <a class="home" href="/"><span class="ch">⌂</span>Home</a>
       <div class="ng">Review Games</div>
+      <a href="chapter-6.html"><span class="ch">6</span>Make It Match</a>
       <a href="chapter-5.html"><span class="ch">5</span>Same Goods, Three Costs</a>
       <a href="chapter-4.html"><span class="ch">4</span>Same Deal, Two Books</a>
       <div class="ng">Interactive Practices</div>
+      <div class="nch">Chapter 6</div>
+      <a href="practice-ch6-bank-rec.html"><span class="ch">6</span>Bank Rec Practice</a>
+      <a href="practice-ch6-side-by-side.html"><span class="ch">6</span>Side-by-Side Recs</a>
       <div class="nch">Chapter 5</div>
       <a href="practice-ch5-set-1.html" aria-current="page"><span class="ch">5</span>Practice Problem Set 1</a>
       <a href="practice-ch5-weighted-average.html"><span class="ch">5</span>Weighted Average</a>
@@ -258,6 +262,45 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="h"||e.key==="H"){shown=0;render()}
 });
 const m=/^#p(\d+)$/.exec(location.hash);go(m?(+m[1]-1):0);
+})();
+</script>
+<style>.top .size{display:none!important}</style>
+<script>try{document.documentElement.style.setProperty("--scale",1);localStorage.removeItem("d214-scale")}catch(e){}</script>
+<!-- Text size controls: scale the page content, remembered across pages -->
+<style id="tsz-css">
+#tsz{position:fixed;left:14px;bottom:14px;z-index:9999;display:flex;align-items:center;gap:2px;background:#111;color:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.3);font:600 15px "Barlow",system-ui,sans-serif}
+#tsz button{background:transparent;border:0;color:#fff;font:inherit;cursor:pointer;border-radius:999px;min-width:40px;height:36px;padding:0 10px}
+#tsz button:hover{background:rgba(255,255,255,.15)}
+#tsz button:focus-visible{outline:3px solid #C1102F;outline-offset:1px}
+#tsz button:disabled{opacity:.35;cursor:default}
+#tsz .big{font-size:20px}
+#tsz .pct{min-width:58px;font-variant-numeric:tabular-nums}
+@media print{#tsz{display:none}}
+</style>
+<div id="tsz" role="group" aria-label="Text size">
+  <button type="button" data-d="-1" aria-label="Smaller text" title="Smaller text (-)">A−</button>
+  <button type="button" data-d="0" class="pct" aria-label="Reset text size" title="Reset text size (0)">100%</button>
+  <button type="button" data-d="1" class="big" aria-label="Bigger text" title="Bigger text (+)">A+</button>
+</div>
+<script>
+(function(){
+  var STEPS=[0.8,0.9,1,1.1,1.25,1.4,1.6,1.8,2],KEY="d214-text-size",box=document.getElementById("tsz");
+  var target=document.querySelector("main")||document.body;
+  var i=2;try{var v=parseFloat(localStorage.getItem(KEY));var j=STEPS.indexOf(v);if(j>=0)i=j}catch(e){}
+  function apply(){
+    var z=STEPS[i];target.style.zoom=z;
+    box.style.zoom=target===document.body?1/z:1;
+    box.children[1].textContent=Math.round(z*100)+"%";
+    box.children[0].disabled=i===0;box.children[2].disabled=i===STEPS.length-1;
+    try{localStorage.setItem(KEY,z)}catch(e){}
+  }
+  function step(d){i=d===0?2:Math.max(0,Math.min(STEPS.length-1,i+d));apply()}
+  box.addEventListener("click",function(e){var b=e.target.closest("button");if(b){step(+b.dataset.d);b.blur()}});
+  document.addEventListener("keydown",function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;var t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT")return;
+    if(e.key==="+"||e.key==="=")step(1);else if(e.key==="-"||e.key==="_")step(-1);else if(e.key==="0")step(0);
+  });
+  apply();
 })();
 </script>
 </body>
