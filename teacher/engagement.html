@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teacher | The Engagement</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="District 214 Accounting simulation: bid against a rival accounting firm to fix a client's internal controls and bank reconciliation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: brown masthead, step rail, one working column per step; slides are fixed-palette 16:9 boards sized in cqw */
+:root{
+  --bg:#F4F3F3; --paper:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --line:#DEDCDC;
+  --brown:#111111; --orange:#C1102F; --orange-ink:#B00E2A; --onbrown:#FFFFFF;
+  --good:#2E7A4C; --good-bg:#E4F2E8; --bad:#B13A2A; --bad-bg:#F8E3DF; --warn:#9A6514; --warn-bg:#FBEFD8;
+  --chip:#ECEAEA;
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  /* slide palette: fixed in both themes */
+  --s-cream:#F4F3F3; --s-paper:#FFFFFF; --s-brown:#111111; --s-orange:#C1102F; --s-ink:#111111; --s-muted:#5C5C5C; --s-line:#DEDCDC;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141414; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:#333333;
+  --brown:#0B0B0B; --orange:#E0213F; --orange-ink:#FF5C70; --onbrown:#FFFFFF;
+  --good:#6FCB91; --good-bg:#1C3324; --bad:#F08574; --bad-bg:#3A1D18; --warn:#E8B65A; --warn-bg:#3A2C12;
+  --chip:#2A2A2A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#141414; --paper:#1E1E1E; --ink:#F2F2F2; --muted:#A8A8A8; --line:#333333;
+  --brown:#0B0B0B; --orange:#E0213F; --orange-ink:#FF5C70; --onbrown:#FFFFFF;
+  --good:#6FCB91; --good-bg:#1C3324; --bad:#F08574; --bad-bg:#3A1D18; --warn:#E8B65A; --warn-bg:#3A2C12;
+  --chip:#2A2A2A; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--brown)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* masthead */
+.mast{background:var(--brown);color:var(--onbrown);border-bottom:4px solid var(--orange);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.mast .wrap{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:wrap}
+.home img{height:36px;display:block;border-radius:3px}
+.mchip.sync-ok{border-color:#3FA66B;color:#9BE3B6}.mchip.sync-bad{border-color:#FF5C70;color:#FF8A99}
+.bigcode{font-family:var(--display);font-size:clamp(64px,12vw,128px);line-height:1;letter-spacing:.08em;color:var(--orange-ink)}
+.brand{display:flex;flex-direction:column;line-height:1.05;margin-right:auto}
+.brand small{font-family:var(--display);letter-spacing:.18em;font-size:11px;color:#FF8A99;text-transform:uppercase}
+.brand b{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:.02em;text-transform:uppercase}
+.mchip{font-family:var(--display);font-size:13px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,255,255,.3);border-radius:3px;padding:4px 9px;white-space:nowrap}
+.mchip.deck{background:var(--orange);border-color:var(--orange);color:#fff}
+.mbtn{background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--onbrown);border-radius:3px;padding:4px 10px;font-family:var(--display);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.mbtn:hover{background:rgba(255,255,255,.08)}
+
+/* step rail */
+.rail{background:var(--paper);border-bottom:1px solid var(--line)}
+.rail .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px}
+.rail button{flex:0 0 auto;border:1px solid transparent;background:none;border-radius:3px;padding:6px 10px;display:flex;gap:8px;align-items:baseline;color:var(--muted);font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:14px}
+.rail button .n{font-family:var(--mono);font-size:12px}
+.rail button.on{background:var(--brown);color:var(--onbrown)}
+.rail button.done{color:var(--good)}
+.rail button.done.on{color:var(--onbrown)}
+.rail button:disabled{opacity:.4;cursor:not-allowed}
+
+main{padding-block:24px 64px}
+h1,h2,h3{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.02em;line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4vw,42px)}
+h2{font-size:24px}
+h3{font-size:17px;letter-spacing:.05em}
+p{margin:0}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--orange-ink)}
+.lede{color:var(--muted);max-width:68ch}
+.stack{display:flex;flex-direction:column;gap:16px}
+.head{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.pace{display:inline-flex;gap:6px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pace i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange)}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.grid2>*{min-width:0}
+.cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.sticky{position:sticky;top:90px}
+@media (max-width:860px){.sticky{position:static}}
+.btn{border:1px solid var(--brown);background:var(--brown);color:var(--onbrown);border-radius:3px;padding:9px 16px;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:15px}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.or{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.next{display:flex;justify-content:space-between;gap:10px;margin-top:24px;flex-wrap:wrap}
+.note{font-size:14px;color:var(--muted)}
+.ok{color:var(--good)} .no{color:var(--bad)}
+.tag{display:inline-block;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:11px;padding:2px 7px;border-radius:2px;background:var(--chip);color:var(--muted)}
+.tag.good{background:var(--good-bg);color:var(--good)} .tag.bad{background:var(--bad-bg);color:var(--bad)} .tag.warn{background:var(--warn-bg);color:var(--warn)} .tag.or{background:var(--orange);color:#fff}
+input[type=text],input[type=password],textarea,select{background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:8px 10px;width:100%}
+textarea{font-family:var(--mono);font-size:12px;min-height:90px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:600}
+
+/* home */
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.pair{background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.pair .ph{padding:12px 14px;border-bottom:1px solid var(--line)}
+.pair .ph b{font-family:var(--display);text-transform:uppercase;font-size:17px;display:block;line-height:1.15}
+.pair .ph span{font-size:13px;color:var(--muted)}
+.pair .gb{display:grid;grid-template-columns:1fr 1fr}
+.pair .gb button{border:0;background:none;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;border-right:1px solid var(--line)}
+.pair .gb button:last-child{border-right:0}
+.pair .gb button:hover{background:var(--chip)}
+.pair .gb b{font-family:var(--display);font-size:22px}
+.pair .gb small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* client file */
+.folder{position:relative;margin-top:18px}
+.folder .tab{position:absolute;top:-26px;left:0;background:var(--brown);color:var(--onbrown);font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:13px;padding:5px 14px;border-radius:4px 4px 0 0}
+.folder .body{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--brown);border-radius:0 4px 4px 4px;padding:20px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.facts div{border-left:3px solid var(--orange);padding-left:10px}
+.facts small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.facts b{font-family:var(--display);font-size:18px;font-weight:500}
+.quote{border-left:3px solid var(--line);padding:2px 0 2px 14px}
+.quote p{font-style:italic}
+.quote small{color:var(--muted);font-size:13px}
+.fin{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+.fin td{padding:4px 0;border-bottom:1px dotted var(--line)}
+.fin td:last-child{text-align:right;font-family:var(--mono)}
+.fin tr.t td{font-weight:700;border-bottom:1px solid var(--ink)}
+.fin tr.h td{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted);padding-top:12px;border:0}
+ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.rival{border:1px dashed var(--orange);background:transparent}
+
+/* bank rec */
+.recwrap{overflow-x:auto}
+.rec{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.rec th{text-align:left;font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.rec td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.rec td.amt{font-family:var(--mono);text-align:right;white-space:nowrap}
+.rec select{min-width:150px;padding:6px}
+.rec tr.wrong td{background:var(--bad-bg)}
+.rec tr.right td{background:var(--good-bg)}
+.ledger{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.ledger{grid-template-columns:1fr}}
+.ledger .side{border:1px solid var(--line);border-radius:4px;padding:12px;background:var(--paper)}
+.ledger table{width:100%;font-family:var(--mono);font-size:13px;border-collapse:collapse}
+.ledger td{padding:3px 0}
+.ledger td:last-child{text-align:right}
+.ledger tr.adj td{border-top:2px solid var(--ink);font-weight:600;padding-top:6px}
+.gap{margin-top:14px;padding:16px;border-radius:4px;background:var(--brown);color:var(--onbrown);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.gap .num{display:block;font-family:var(--display);font-size:38px;color:#FF8A99;line-height:1}
+.gap p{max-width:60ch}
+
+/* walkthrough */
+.obs{counter-reset:o;display:flex;flex-direction:column;gap:8px;padding:0;margin:0;list-style:none}
+.obs li{counter-increment:o;display:grid;grid-template-columns:28px 1fr;gap:6px;font-size:15px}
+.obs li::before{content:counter(o);font-family:var(--mono);font-size:12px;color:var(--orange-ink);padding-top:2px}
+.wk{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.wk button{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:12px;display:flex;gap:10px;align-items:flex-start}
+.wk button .box{flex:0 0 18px;height:18px;border:2px solid var(--muted);border-radius:3px;margin-top:2px;display:grid;place-items:center;font-size:12px;color:#fff}
+.wk button.sel{border-color:var(--orange);box-shadow:inset 0 0 0 1px var(--orange)}
+.wk button.sel .box{background:var(--orange);border-color:var(--orange)}
+.wk button b{display:block;font-weight:600;line-height:1.25}
+.wk button small{color:var(--muted);font-size:13px}
+.wk button.res-hit{border-color:var(--good);background:var(--good-bg)}
+.wk button.res-miss{border-color:var(--warn);background:var(--warn-bg)}
+.wk button.res-false{border-color:var(--bad);background:var(--bad-bg)}
+.wk button:disabled{cursor:default}
+
+/* fixes */
+.fix{border:1px solid var(--line);border-radius:4px;background:var(--paper);overflow:hidden}
+.fix .fh{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fix .opts{display:flex;flex-direction:column}
+.fix .opts button{text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 14px 10px 40px;position:relative}
+.fix .opts button:last-child{border-bottom:0}
+.fix .opts button::before{content:"";position:absolute;left:14px;top:13px;width:14px;height:14px;border-radius:50%;border:2px solid var(--muted)}
+.fix .opts button.sel{background:var(--chip)}
+.fix .opts button.sel::before{border-color:var(--orange);background:radial-gradient(var(--orange) 45%,transparent 50%)}
+
+/* pricing */
+.svc{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+.svc th{text-align:left;font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.svc td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.svc td.num{font-family:var(--mono);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.svc tr.off td:not(:first-child){opacity:.45}
+.svc tr.off input[type=range]{pointer-events:none}
+.svc input[type=checkbox]{width:18px;height:18px;accent-color:var(--orange)}
+.svc input[type=range]{width:100%;min-width:120px;accent-color:var(--orange)}
+.svc .nm{font-weight:600;line-height:1.25}
+.svc .ds{font-size:12px;color:var(--muted)}
+.pricewrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--paper)}
+.mg{font-family:var(--mono);font-weight:600}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.checks li{display:grid;grid-template-columns:22px 1fr;gap:6px;font-size:14px;line-height:1.35}
+.checks li .ic{font-weight:700}
+.checks li small{display:block;color:var(--muted);font-size:12px}
+.tot{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px;font-variant-numeric:tabular-nums}
+.tot b{font-family:var(--mono);text-align:right}
+.tot .big{font-family:var(--display);font-size:22px;text-transform:uppercase}
+.stamp{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;padding:8px 10px;border-radius:3px;text-align:center;font-size:15px}
+.stamp.ok{background:var(--good-bg);color:var(--good);border:1px solid var(--good)}
+.stamp.no{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+
+/* value prop chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:8px 12px;text-align:left;max-width:100%;line-height:1.3}
+.chips button.sel{background:var(--brown);color:var(--onbrown);border-color:var(--brown)}
+
+/* deck */
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.thumb{display:flex;flex-direction:column;gap:6px}
+.thumb .cap{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.thumb .slide{border:1px solid var(--line);border-radius:3px;cursor:pointer}
+.codebox{display:flex;flex-direction:column;gap:8px}
+
+/* slides */
+.slide{aspect-ratio:16/9;width:100%;max-width:100%;container-type:inline-size;background:var(--s-cream);color:var(--s-ink);position:relative;overflow:hidden;font-family:var(--body)}
+.slide *{margin:0}
+.s-band{position:absolute;inset:0 0 auto 0;height:1.1cqw;background:var(--s-orange)}
+.s-in{position:absolute;inset:4.5cqw 5cqw 4.2cqw 5cqw;display:flex;flex-direction:column;gap:2cqw}
+.s-eye{font-family:var(--display);text-transform:uppercase;letter-spacing:.22em;font-size:1.25cqw;color:var(--s-orange)}
+.s-h{font-family:var(--display);font-weight:600;text-transform:uppercase;font-size:3.8cqw;line-height:1.05;color:var(--s-brown);text-wrap:balance}
+.s-p{font-size:1.65cqw;line-height:1.4}
+.s-foot{position:absolute;left:5cqw;right:5cqw;bottom:1.6cqw;display:flex;justify-content:space-between;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:1cqw;color:var(--s-muted)}
+.s-cards{display:grid;gap:1.6cqw;flex:1;min-height:0}
+.s-card{background:var(--s-paper);border:.12cqw solid var(--s-line);border-top:.5cqw solid var(--s-brown);padding:1.6cqw;display:flex;flex-direction:column;gap:.9cqw;min-width:0}
+.s-card b{font-family:var(--display);font-weight:600;text-transform:uppercase;font-size:1.9cqw;line-height:1.1;color:var(--s-brown)}
+.s-card span{font-size:1.4cqw;line-height:1.35;color:var(--s-muted)}
+.s-card i{font-size:1.45cqw;line-height:1.35}
+.s-big{font-family:var(--display);font-size:4.6cqw;line-height:1;color:var(--s-brown);font-variant-numeric:tabular-nums}
+.s-big.or{color:var(--s-orange)}
+.s-lab{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:1.15cqw;color:var(--s-muted)}
+.s-tbl{width:100%;border-collapse:collapse;font-size:1.4cqw}
+.s-tbl td{padding:.7cqw .6cqw;border-bottom:.1cqw solid var(--s-line);vertical-align:top;line-height:1.3}
+.s-tbl td:first-child{font-weight:600;color:var(--s-brown);width:34%}
+.s-tbl td.m{font-family:var(--mono);text-align:right;white-space:nowrap;width:1%}
+.s-tbl tr.t td{border-top:.25cqw solid var(--s-brown);border-bottom:0;font-weight:700}
+.s-title{position:absolute;inset:0;display:grid;grid-template-columns:42% 58%}
+.s-title .l{background:var(--s-brown);color:#FFFFFF;padding:5cqw 4cqw;display:flex;flex-direction:column;justify-content:space-between}
+.s-title .r{padding:5cqw 5cqw;display:flex;flex-direction:column;justify-content:center;gap:2cqw}
+.s-wait{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:repeating-linear-gradient(135deg,var(--s-cream) 0 1.2cqw,#E8E6E6 1.2cqw 2.4cqw);color:var(--s-muted);font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:2cqw;padding:4cqw}
+.gantt{display:flex;flex-direction:column;gap:.9cqw;font-size:1.35cqw}
+.gantt .gr{display:grid;grid-template-columns:30% 1fr;gap:1.2cqw;align-items:center}
+.gantt .track{position:relative;height:2.2cqw;background:var(--s-paper);border:.1cqw solid var(--s-line)}
+.gantt .bar{position:absolute;top:0;bottom:0;background:var(--s-brown)}
+.gantt .bar.rec{background:var(--s-orange)}
+.gantt .axis{display:grid;grid-template-columns:30% 1fr;gap:1.2cqw}
+.gantt .ticks{display:grid;grid-template-columns:repeat(12,1fr);font-family:var(--mono);font-size:1cqw;color:var(--s-muted)}
+
+/* present */
+body.presenting #tsz{display:none!important}
+.present{position:fixed;inset:0;z-index:50;background:#0A0A0A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.present .stage{width:min(100vw,calc((100vh - 56px) * 16 / 9));max-width:100%}
+.present .ctl{display:flex;gap:10px;align-items:center;color:#EEEEEE;font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:14px}
+.present .ctl button{background:transparent;border:1px solid #555555;color:#EEEEEE;border-radius:3px;padding:6px 12px;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em}
+
+/* teacher */
+.tt{width:100%;border-collapse:collapse;font-size:14px}
+.tt th,.tt td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tt th{font-family:var(--display);font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted)}
+.tt td.m{font-family:var(--mono);white-space:nowrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:7px 12px;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.tabs button.on{background:var(--brown);color:var(--onbrown);border-color:var(--brown)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.vs{grid-template-columns:1fr}}
+.vs>*{min-width:0}
+.score{font-family:var(--display);font-size:44px;line-height:1}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bad-bg);color:var(--bad);padding:8px 10px;border-radius:3px;font-size:14px}
+@media (prefers-reduced-motion:no-preference){.rail button,.btn,.chips button,.wk button{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<script>window.ENG_ROLE="teacher"</script>
+<header class="mast"><div class="wrap">
+  <a class="home" href="/" aria-label="District 214 Accounting home"><img src="/logo-214.png" alt="District 214"></a>
+  <div class="brand"><small>District 214 Accounting · Simulation</small><b>The Engagement</b></div>
+  <span id="mSync"></span>
+  <span id="mGroup"></span>
+  <span id="mDeck"></span>
+</div></header>
+<nav class="rail" id="rail" hidden><div class="wrap" id="railIn"></div></nav>
+<main class="wrap" id="app"></main>
+<div id="presentRoot"></div>
+
+<script>
+/* ===================== DATA ===================== */
+const W = {
+  seg:{n:"One person handles cash from start to finish",r:"The same person can take cash and hide it in the records.",fix:["Split the duties: one person counts and prepares the deposit, a second person records it, and the owner reviews the bank match every week.","Have the owner recount the cash drawer once a month.","Ask the manager to sign a statement promising honesty."]},
+  cash:{n:"Cash sits on site; deposits are irregular",r:"Undeposited cash can be lost, stolen, or quietly borrowed.",fix:["Deposit cash every day (or use a locked drop safe) and log each deposit with two signatures.","Move the cash into a locked drawer in the office.","Deposit once a week to save trips to the bank."]},
+  rec:{n:"Bank accounts are not reconciled monthly",r:"Errors, bank charges, and theft go unnoticed for months.",fix:["Reconcile every account monthly, done by someone who does not handle cash, then reviewed and signed by the owner.","Reconcile once a year before taxes are filed.","Check the online bank balance when cash feels low."]},
+  checks:{n:"Pre-signed blank checks; no payment approval",r:"Anyone holding a signed check can pay anyone, for any amount.",fix:["Stop pre-signing. The owner approves each payment against an invoice, with electronic dual approval when away.","Keep the blank signed checks in a locked drawer.","Limit pre-signed checks to five per weekend."]},
+  docs:{n:"No prenumbered receipts or invoices",r:"A missing receipt is invisible, so collected cash can disappear.",fix:["Use prenumbered receipts and invoices from the system, account for every number, and keep voided copies.","Write the date on every receipt.","Buy a nicer receipt book."]},
+  access:{n:"Shared logins; everyone has full system access",r:"No one can tell who changed what, and anyone can change anything.",fix:["Give each person their own login with role-based permissions; only the owner can change vendors, pay rates, or bank details.","Change the shared password every quarter.","Hide the shared password somewhere new."]},
+  vendor:{n:"No approval for bills or new vendors",r:"A fake vendor can be created and paid by the same person.",fix:["New vendors need owner approval and a verified address and tax ID; bills over a set limit need a second approver.","Review the vendor list once a year.","Let the manager keep handling vendors since he knows them."]},
+  personal:{n:"Personal and business spending are mixed",r:"Profit is misstated, tax deductions are at risk, and lenders lose trust.",fix:["Separate personal and business cards; the owner reimburses any personal charge, and every expense needs a receipt and business purpose.","Tag personal charges once at year end.","Leave it alone; it is the owner's money anyway."]},
+  inv:{n:"No inventory counts; stock is unsecured",r:"Shrinkage is invisible and cost of goods sold is wrong.",fix:["Lock the stockroom, track check-in and check-out, and run monthly cycle counts against the records.","Do one full count per year.","Buy extra stock to cover what goes missing."]},
+  payroll:{n:"Payroll changes made by one person, no review",r:"Ghost employees or inflated pay rates can run for months.",fix:["The owner approves every hire, termination, and pay rate change, and reviews each payroll register before it runs.","Spot check payroll once a quarter.","Trust the office manager's experience."]},
+  vacation:{n:"Key employee never takes vacation; no backup",r:"Schemes that need daily cover-up stay hidden, and the business stalls if that person leaves.",fix:["Require one full week of vacation each year and cross-train a backup who performs the duties while the employee is out.","Ask the employee to write down their process.","Give a bonus for never missing work."]},
+  petty:{n:"Petty cash with no fund limit or receipts",r:"Small amounts leak out with no record of where they went.",fix:["Set up an imprest petty cash fund: fixed amount, one custodian, a receipt for every payout, replenished only with receipts.","Count petty cash when it runs out.","Pay small vendors straight from the register drawer."]}
+};
+const WKEYS = Object.keys(W);
+const SIDES = {"bank+":"Add to bank","bank-":"Subtract from bank","book+":"Add to books","book-":"Subtract from books"};
+
+const CLIENTS = [
+{ id:"bakery", name:"Sweet Crumb Bakery & Café", industry:"Bakery and café", town:"Arlington Heights", owner:"Dana Kowalski", role:"Owner and head baker", staff:"18 (mostly part-time)", years:11, size:1.0,
+  about:"A neighborhood bakery and café with a fast-growing catering business. Dana bakes from 4 a.m., runs the front of house at lunch, and does the books at night. Her manager Marisol has been with her for nine years.",
+  ind:["Bakeries and cafés handle more cash than most businesses, so cash controls come first.","Margins are thin: food, labor, and rent eat most of every dollar, so small leaks matter.","Catering brings large deposits paid by check or cash, often weeks before the event."],
+  interview:[
+   ["Dana","I bake at 4 a.m. and do paperwork at 10 p.m. I want my evenings back."],
+   ["Dana","Some weeks the register says we had a great day and the bank account doesn't feel like it. I can't tell you where the money goes."],
+   ["Dana","Marisol opens, counts the drawer, makes the deposit, and enters it in QuickBooks. I trust her completely."],
+   ["Dana","I tried an accounting app once. Too many buttons. If it's complicated, my team won't use it."],
+   ["Dana","Catering customers pay a deposit, sometimes by check, sometimes cash."]],
+  walk:["Register cash sits in a zippered bag in the office desk drawer, sometimes three or four days before it is deposited.",
+   "Marisol counts the drawer, fills out the deposit slip, takes it to the bank, and records it in QuickBooks.",
+   "The last bank reconciliation saved in QuickBooks is dated February.",
+   "Catering orders are written on a generic receipt pad with no numbers. Voided tickets go in the trash.",
+   "A coffee can of petty cash pays the window washer and farmers market vendors. No receipts are kept and no one knows the starting amount.",
+   "Only Dana can sign checks, and she reviews each bill before she signs.",
+   "Payroll runs through an outside payroll service. Dana approves every run on her phone."],
+  weak:["seg","cash","rec","docs","petty"],
+  prios:[{id:"leak",t:"Find and stop the cash leaks",q:"I can't tell you where the money goes."},{id:"time",t:"Give Dana her evenings back",q:"I want my evenings back."},{id:"simple",t:"Keep systems simple for a busy team",q:"If it's complicated, my team won't use it."},{id:"cheap",t:"Pay the lowest possible fee",q:""},{id:"second",t:"Open a second location next year",q:""},{id:"sell",t:"Prepare the business for sale",q:""}],
+  truePrios:["leak","time","simple"],
+  fin:{rev:1284000,cogs:436600,payroll:498000,rent:132000,other:158900,cash:19654,ar:6800,inv:14200,equip:186000,ap:22450,unearned:0,loan:94000,invLabel:"Ingredients and supplies"},
+  rec:{bank:14862,book:19654,items:[["Night drop deposit made Sept 30, not on the bank statement",3415,"bank+"],["Check #4471 to Dairy Fresh Supply, not yet cleared",1240,"bank-"],["Check #4475 to Ace Equipment Repair, not yet cleared",950,"bank-"],["Monthly bank service fee",35,"book-"],["Catering customer's check returned NSF",212,"book-"],["Sept 12 deposit was $1,830 but was recorded in the books as $1,380",450,"book+"]]},
+  reveal:"Register Z-tapes show four September cash days that match no bank deposit.", revealShort:"Four days of register cash never reached the bank."
+},
+{ id:"auto", name:"Northline Auto & Tire", industry:"Auto repair and tire sales", town:"Palatine", owner:"Greg Whitfield", role:"Owner", staff:"14", years:22, size:1.4,
+  about:"An independent repair shop with six bays and a busy tire business. Greg is a master mechanic who would rather be under a car than at a desk. His service manager Tom runs the parts side.",
+  ind:["Repair shops carry large parts and tire inventories that are easy to walk out the door.","Many payments are by card, but parts suppliers are paid by check, often in a hurry.","Banks lean on clean financial statements when renewing a line of credit."],
+  interview:[
+   ["Greg","My banker wants clean financials by January or the line of credit doesn't renew."],
+   ["Greg","Before I leave on Fridays I sign a stack of blank checks so Tom can pay the parts suppliers."],
+   ["Greg","Tom orders the parts, sets up new suppliers, and pays them. Easier that way."],
+   ["Greg","We do a tire count when we think about it. Probably two years ago."],
+   ["Greg","My guys are busy. I can't have them sitting in training all week."]],
+  walk:["Eleven checks, already signed by Greg, sit in the top drawer of the service desk.",
+   "Three new vendors were added this year. Two list only a P.O. box as an address.",
+   "The tire storage room is unlocked and there is no sign-out sheet.",
+   "Everyone in the office logs into the accounting system as \"frontdesk.\" The password is taped under the keyboard.",
+   "The last completed bank reconciliation is from May.",
+   "Customer payments go through a card terminal and post to the books automatically each day.",
+   "Payroll is processed by an outside service and Greg approves each run."],
+  weak:["checks","vendor","inv","access","rec"],
+  prios:[{id:"lender",t:"Lender-ready financials by January",q:"My banker wants clean financials by January."},{id:"safe",t:"Know the money is safe",q:"I just want to know the money is safe."},{id:"nodisrupt",t:"Minimal disruption to the shop",q:"I can't have them sitting in training all week."},{id:"cheap",t:"Pay the lowest possible fee",q:""},{id:"tax",t:"Cut this year's tax bill",q:""},{id:"expand",t:"Add a second shop",q:""}],
+  truePrios:["lender","safe","nodisrupt"],
+  fin:{rev:2420000,cogs:1064800,payroll:742000,rent:168000,other:288700,cash:44105,ar:38400,inv:126500,equip:214000,ap:71800,unearned:0,loan:120000,invLabel:"Parts and tire inventory"},
+  rec:{bank:42318,book:44105,items:[["Deposit made Sept 30, not on the bank statement",6940,"bank+"],["Check #8810 to Lakeview Parts, not yet cleared",4125,"bank-"],["Check #8814 to Prairie Lift Service, not yet cleared",7150,"bank-"],["Monthly bank service fee",60,"book-"],["Interest earned on the account",18,"book+"],["Check #8802 to Wolf Tire Supply was written for $2,460 but recorded as $2,640",180,"book+"]]},
+  reveal:"A cleared check, #8797 for $6,260, was paid to \"MPS Holdings LLC.\" It has no invoice, no entry in the books, and the payee is one of the P.O. box vendors.", revealShort:"$6,260 was paid to a vendor with only a P.O. box and no invoice."
+},
+{ id:"dental", name:"Brightpath Family Dental", industry:"Dental practice", town:"Buffalo Grove", owner:"Dr. Anita Rao", role:"Owner dentist", staff:"22", years:16, size:1.6,
+  about:"A successful family practice with four dentists and a loyal patient base. Dr. Rao plans to open a second office in 2027. Her office manager Linda has run the front office and payroll for 14 years.",
+  ind:["Practices collect from patients and insurance companies, so receivables are large and slow.","Payroll is the biggest expense, which makes payroll controls critical.","Banks financing a new office want two years of clean statements."],
+  interview:[
+   ["Dr. Rao","I'm opening a second office in 2027. The bank will want two years of clean statements."],
+   ["Dr. Rao","Linda adds new hires and updates pay rates. I don't look at it. That's why I have Linda."],
+   ["Dr. Rao","Linda hasn't taken a vacation since 2019. She's that dedicated."],
+   ["Dr. Rao","Patient privacy is everything. Whoever we hire has to handle data carefully."],
+   ["Dr. Rao","The front desk uses my login for billing and accounting. And I put my car lease and family phone plan on the practice card. My old accountant said it was fine."]],
+  walk:["The September payroll register still includes a hygienist who left the practice in June.",
+   "Linda enters new hires, terminations, and pay rate changes. No one else reviews them.",
+   "Linda has not taken more than two days off in a row since 2019, and no one else knows the payroll system.",
+   "Three front desk employees use Dr. Rao's personal login for the billing and accounting software.",
+   "The practice credit card statement shows a car lease, a family phone plan, and two vacation rentals.",
+   "The last bank reconciliation was done by Linda in March.",
+   "Insurance payments arrive by direct deposit and are matched to claims automatically by the billing software.",
+   "Every check requires Dr. Rao's signature."],
+  weak:["payroll","vacation","access","personal","rec"],
+  prios:[{id:"growth",t:"Bank-ready statements for the second office",q:"The bank will want two years of clean statements."},{id:"pay",t:"Make sure payroll is right",q:"I don't look at it. That's why I have Linda."},{id:"privacy",t:"Protect patient data and trust",q:"Patient privacy is everything."},{id:"cheap",t:"Cut accounting costs",q:""},{id:"refund",t:"Get a bigger tax refund",q:""},{id:"retire",t:"Plan Dr. Rao's retirement",q:""}],
+  truePrios:["growth","pay","privacy"],
+  fin:{rev:3140000,cogs:408200,payroll:1602000,rent:214000,other:538300,cash:58312,ar:186400,inv:22600,equip:512000,ap:48300,unearned:0,loan:286000,invLabel:"Dental supplies",arLabel:"Insurance and patient receivables",cogsLabel:"Supplies and lab fees"},
+  rec:{bank:61540,book:58312,items:[["Deposit made Sept 30, not on the bank statement",8225,"bank+"],["Check #3302 to Midwest Dental Lab, not yet cleared",9640,"bank-"],["Check #3306 to Oakwood Properties (rent), not yet cleared",5230,"bank-"],["Monthly bank service fee",45,"book-"],["Interest earned on the account",32,"book+"],["Patient's check returned NSF",385,"book-"],["Check #3299 for supplies cleared at $1,280 but was recorded as $1,190",90,"book-"]]},
+  reveal:"Two direct deposits of $1,464.50 went to the hygienist who left in June. Her bank account on file was changed in July.", revealShort:"Payroll is still paying an employee who left in June."
+},
+{ id:"gym", name:"Prairie Fit Studio", industry:"Boutique fitness studio", town:"Mount Prospect", owner:"Jess and Marcus Lee", role:"Co-owners", staff:"9 (instructors and desk staff)", years:5, size:0.8,
+  about:"A small studio offering group classes, personal training, and a retail shelf of apparel and supplements. Jess runs the business side and Marcus teaches most classes. Cash is tight.",
+  ind:["Membership dues are steady, but January spikes and summer slumps make cash flow uneven.","Card processors take a cut of every payment, and those fees add up.","Part-time desk staff turn over often, so procedures must be easy to teach."],
+  interview:[
+   ["Jess","Money is tight. Whatever we do has to pay for itself."],
+   ["Marcus","I pay for gas and groceries on the studio debit card sometimes, then I forget."],
+   ["Jess","Drop-in classes are $25 cash at the front desk. The kids working the desk put it in the cash box."],
+   ["Jess","We have no idea which months we make money. January is huge, summer is dead."],
+   ["Jess","Every April we panic about taxes."]],
+  walk:["The cash box sits under the front desk. Deposits happen every couple of weeks, when someone remembers.",
+   "No bank reconciliation has ever been done.",
+   "All five desk employees have administrator access in the accounting software.",
+   "A new supplement supplier was added by a desk employee and has been paid three times.",
+   "The studio debit card shows gas, groceries, and a streaming subscription.",
+   "Membership dues auto-draft through the gym software and deposit directly to the bank.",
+   "Payroll runs through an outside service and Jess approves each run."],
+  weak:["cash","rec","access","vendor","personal"],
+  prios:[{id:"afford",t:"An affordable plan that pays for itself",q:"Whatever we do has to pay for itself."},{id:"flow",t:"See cash flow month to month",q:"We have no idea which months we make money."},{id:"tax",t:"No more April tax panic",q:"Every April we panic about taxes."},{id:"expand",t:"Open a second studio",q:""},{id:"app",t:"Launch a member app",q:""},{id:"sell",t:"Sell the studio",q:""}],
+  truePrios:["afford","flow","tax"],
+  fin:{rev:782000,cogs:58600,payroll:368000,rent:186000,other:131400,cash:10980,ar:2100,inv:7400,equip:96000,ap:14200,unearned:0,loan:68000,invLabel:"Retail inventory",cogsLabel:"Retail cost of goods"},
+  rec:{bank:9415,book:10980,items:[["Deposit made Sept 30, not on the bank statement",1860,"bank+"],["Check #1158 to Studio Sound Systems, not yet cleared",1445,"bank-"],["Check #1160 to Prairie Cleaning Co., not yet cleared",1500,"bank-"],["Monthly bank service fee",28,"book-"],["September card processing fees, never recorded",312,"book-"],["A member's $640 annual payment was recorded twice",640,"book-"]]},
+  reveal:"Class rosters show 67 cash drop-ins in September ($1,675). The cash box held $5 and there were no September cash deposits.", revealShort:"A month of drop-in cash never reached the bank."
+},
+{ id:"events", name:"Harbor & Vine Events", industry:"Event planning and catering", town:"Schaumburg", owner:"Nicole Barrera", role:"Founder", staff:"12 full-time, 40 event-day", years:8, size:1.2,
+  about:"A wedding and corporate event company growing about 30% a year. Couples pay deposits months ahead. Ray, the event coordinator, has been there since day one and handles every vendor.",
+  ind:["Customer deposits are collected long before the event, so they are a liability (unearned revenue) until the event happens.","Rental inventory like linens, chairs, and serving pieces disappears between events.","Fast growth breaks systems that worked when the owner did everything."],
+  interview:[
+   ["Nicole","Couples pay a deposit when they book. Half the time I can't tell you who has paid what."],
+   ["Nicole","We're growing 30% a year. I need systems that work when I'm not in the room."],
+   ["Nicole","I don't want another app. I want a person I can call."],
+   ["Nicole","Ray handles everything with vendors. He works every weekend and has never missed one."],
+   ["Nicole","Linens and chafing dishes walk out the door. We buy more every season."]],
+  walk:["Coordinators collect client deposits on any receipt pad they have. Receipts are not numbered.",
+   "Ray adds new vendors and approves his own vendor invoices for payment.",
+   "Ray has not taken a weekend off in three years. No one else knows the vendor accounts.",
+   "The last bank reconciliation was in January.",
+   "Rental inventory goes out on trucks with no check-out list and is never counted.",
+   "Nicole signs every check personally.",
+   "Payroll runs through an outside service and Nicole approves each run."],
+  weak:["docs","vendor","vacation","rec","inv"],
+  prios:[{id:"deposits",t:"Track every client deposit",q:"Half the time I can't tell you who has paid what."},{id:"scale",t:"Systems that work without Nicole in the room",q:"I need systems that work when I'm not in the room."},{id:"person",t:"A real person to call, not another app",q:"I want a person I can call."},{id:"cheap",t:"Pay the lowest possible fee",q:""},{id:"brand",t:"Rebrand the company",q:""},{id:"venue",t:"Buy their own venue",q:""}],
+  truePrios:["deposits","scale","person"],
+  fin:{rev:1920000,cogs:806400,payroll:648000,rent:96000,other:247600,cash:34810,ar:84500,inv:41200,equip:158000,ap:39600,unearned:112000,loan:54000,invLabel:"Event supplies inventory",cogsLabel:"Food, rentals, and event costs"},
+  rec:{bank:27650,book:34810,items:[["Deposit made Sept 30, not on the bank statement",12400,"bank+"],["Check #2087 to Northshore Rentals, not yet cleared",6210,"bank-"],["Check #2091 to Fresh Fields Produce, not yet cleared",3175,"bank-"],["Monthly bank service fee",50,"book-"],["Interest earned on the account",25,"book+"],["Client deposit check returned NSF",1500,"book-"],["Check #2079 to Lakefront Linen was written for $2,975 but recorded as $2,795",180,"book-"]]},
+  reveal:"Three handwritten deposit receipts from September total $2,440. None of that money was ever deposited.", revealShort:"$2,440 in client deposits was collected but never deposited."
+}];
+
+const FIRMS = {
+ A:{ key:"A", model:"Regional, tech-forward firm", defName:"Summit Ledger Group", blurb:"40 people across three offices. Cloud software does much of the routine matching and reporting.",
+   rate:70, partnerRate:130, platform:85, mult:{reccatch:0.7,software:0.6,monthrec:0.5,bookkeeping:0.7}, setupFloor:0.40, recurFloor:0.50, minMonthly:600, maxHours:null,
+   contract:"12-month agreement", pricing:"Usually prices above local firms and justifies it with technology and a bigger team.",
+   strengths:[{id:"cloud",t:"Cloud tools match bank activity daily, not once a month"},{id:"team",t:"A full team of CPAs, so coverage never stops"},{id:"manual",t:"Formal written controls manual that lenders trust"},{id:"dash",t:"Phone dashboard with cash, bills, and alerts in one place"},{id:"exp",t:"Proven playbook from 300+ small business clients"}],
+   weaknesses:[{id:"contract",t:"Requires a 12-month contract",q:"Can I leave if I'm not happy after 90 days?"},{id:"price",t:"Highest price in the area",q:"What am I paying for that I will actually use?"},{id:"junior",t:"Junior staff do the monthly work; partner visits quarterly",q:"Who exactly will do my books each month?"},{id:"tickets",t:"Support runs through a ticket system (24 to 48 hour replies)",q:"If something looks wrong on a Friday, who picks up the phone?"},{id:"playbook",t:"One standard playbook for every client",q:"What will you change to fit how my business actually runs?"}],
+   rules:["Setup work must earn at least a 40% margin.","Monthly work must earn at least a 50% margin (our software platform costs $85 a month per client).","Monthly fee must be at least $600.","Every engagement is a 12-month agreement.","Monthly bank reconciliation must be included.","We never audit a client whose controls we design (independence).","Annual recurring fees should stay at or below 2.5% of the client's revenue."] },
+ B:{ key:"B", model:"Local boutique firm", defName:"Kettle & Pine Accounting", blurb:"Four people in one office in town. The founding partner works every account personally.",
+   rate:50, partnerRate:85, platform:0, mult:{software:1.4,controls:1.2}, setupFloor:0.30, recurFloor:0.40, minMonthly:0, maxHours:25,
+   contract:"Month-to-month", pricing:"Usually prices below regional firms but has to work more hours by hand.",
+   strengths:[{id:"partner",t:"The partner personally works your account every month"},{id:"flex",t:"Month-to-month, no long contract"},{id:"cost",t:"Lower overhead, so a lower price"},{id:"local",t:"Local office, on-site the same day"},{id:"fit",t:"Controls built around how your team already works"}],
+   weaknesses:[{id:"manual",t:"Limited automation; more manual work",q:"How will you catch a problem between monthly visits?"},{id:"small",t:"Four-person team with limited capacity",q:"What happens during tax season when your team is slammed?"},{id:"keyperson",t:"Everything depends on one partner",q:"Who covers my account if your partner is out sick?"},{id:"formal",t:"Little experience writing formal controls manuals",q:"Will my bank accept your controls documentation?"},{id:"hours",t:"No after-hours or weekend support",q:"Can I reach you on a Saturday if something goes wrong?"}],
+   rules:["Setup work must earn at least a 30% margin.","Monthly work must earn at least a 40% margin.","Our team can give one client no more than 25 hours a month.","Month-to-month agreements are allowed.","Monthly bank reconciliation must be included.","We never audit a client whose controls we design (independence).","Annual recurring fees should stay at or below 2.5% of the client's revenue."] }
+};
+
+const SERVICES = [
+ {id:"forensic",type:"setup",n:"Cash discrepancy investigation",d:"Trace the unexplained bank difference to its source and document it.",h:10},
+ {id:"cleanup",type:"setup",n:"Books cleanup and catch-up",d:"Fix miscoded entries and bring the general ledger current.",h:30},
+ {id:"reccatch",type:"setup",n:"Back bank reconciliations",d:"Reconcile every month since the last completed reconciliation.",h:14},
+ {id:"software",type:"setup",n:"Accounting system setup",d:"Bank feeds, individual logins, user permissions, approval workflows.",h:12},
+ {id:"controls",type:"setup",n:"Controls design + procedures manual",d:"Segregation of duties chart, approval limits, written procedures.",h:20},
+ {id:"training",type:"setup",n:"Staff training workshops",d:"Two short sessions so the team can follow the new procedures.",h:6},
+ {id:"audit",type:"setup",n:"Annual financial statement audit",d:"Independent audit opinion on the year-end statements.",h:40},
+ {id:"monthrec",type:"recur",n:"Monthly bank reconciliation",d:"Every account reconciled, reviewed, and signed off with the owner.",h:4,req:true},
+ {id:"bookkeeping",type:"recur",n:"Monthly bookkeeping + statements",d:"Record activity and deliver monthly financial statements.",h:10},
+ {id:"apreview",type:"recur",n:"Bill and vendor approval review",d:"Second set of eyes on new vendors and larger payments.",h:3},
+ {id:"payroll",type:"recur",n:"Payroll review",d:"Compare each payroll register to approved hires and pay rates.",h:2},
+ {id:"controlcheck",type:"recur",n:"Controls check + surprise cash count",d:"Quarterly visit, billed monthly: test procedures, count cash.",h:2},
+ {id:"advisory",type:"recur",n:"Owner meeting + KPI review",d:"Monthly partner sit-down on cash, margins, and decisions.",h:2,partner:true}
+];
+const PHASES = {forensic:[1,2],cleanup:[1,4],reccatch:[3,5],software:[4,6],controls:[6,9],training:[10,11]};
+
+const STEPS = [
+ {n:"Client file",min:8},{n:"Bank rec",min:10},{n:"Walkthrough",min:7},{n:"Fixes",min:5},{n:"Price it",min:10},{n:"Value prop",min:4},{n:"Pitch deck",min:1}
+];
+
+/* ===================== STATE ===================== */
+const ROLE=window.ENG_ROLE||"student";
+const KEY="engagement-sim-v1";
+const fresh=()=>({code:"",group:null,firm:"",members:["","",""],step:0,rec:{ans:{},tries:0,done:false,showWrong:false},flags:[],flagsDone:false,flagTry:null,fixes:{},sel:{monthrec:true},price:{},prios:[],strengths:[],rivalW:null,headline:"",headEdited:false,maxStep:0});
+let S=fresh();
+try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(fresh(),JSON.parse(raw));}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} queueSync(); paintMast();}
+let view = ROLE==="teacher"?"teacher":(S.group? "group":"home");
+let teacher={unlocked:ROLE==="teacher",tab:"live",client:0,codes:{},picked:{},session:"",live:{},netOk:null,confirmEnd:false};
+try{const t=JSON.parse(localStorage.getItem(KEY+"-t")||"null"); if(t){teacher.codes=t.codes||{};teacher.picked=t.picked||{};teacher.session=t.session||"";}}catch(e){}
+function saveT(){try{localStorage.setItem(KEY+"-t",JSON.stringify({codes:teacher.codes,picked:teacher.picked,session:teacher.session}));}catch(e){}}
+
+/* ===================== LIVE SYNC (/api/live, same backend as Bank Rec Live) ===================== */
+let syncState="off",syncT=null;
+async function liveCall(op,path,v){const r=await fetch("/api/live",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({op,path,v})});const j=await r.json().catch(()=>({}));return {status:r.status,ok:r.ok,j};}
+function queueSync(){
+  if(ROLE==="teacher"||!S.group)return;
+  const c=(S.code||"").trim();
+  if(!c){syncState="off";return;}
+  if(!/^\d{4}$/.test(c)){syncState="bad";return;}
+  clearTimeout(syncT);syncT=setTimeout(doSync,1000);
+}
+async function doSync(){
+  try{
+    const sl=slideList(S);
+    const res=await liveCall("set",`games/${S.code.trim()}/players/g${S.group}`,{kind:"engagement",code:encode(S),step:S.step,ready:sl.filter(x=>x.ready).length,of:sl.length,ok:mgmtOK(S),firm:firmName(S),members:S.members.filter(Boolean),t:Date.now()});
+    syncState=res.ok?"ok":(res.status===404?"nogame":"err");
+  }catch(e){syncState="err";}
+  paintMast();
+  const sm=$("#syncMsg");if(sm)sm.innerHTML=syncNote();
+}
+function syncNote(){
+  if(syncState==="ok")return '<span class="ok">Synced. Your teacher can open your deck on the projector.</span>';
+  if(syncState==="nogame")return '<span class="no">No class session with that code. Check the code on the board.</span>';
+  if(syncState==="err")return '<span class="no">Not synced right now. Your work is still saved on this device, and the pitch code below is your backup.</span>';
+  if(syncState==="bad")return '<span class="no">The class code is 4 digits.</span>';
+  return "Optional. Type the code on the board so your deck shows up on the teacher screen.";
+}
+
+/* ===================== HELPERS ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>(n<0?"-":"")+"$"+Math.abs(Math.round(n)).toLocaleString("en-US");
+const pct=n=>(isFinite(n)?(n*100).toFixed(1):"0.0")+"%";
+const clientOf=g=>CLIENTS[Math.ceil(g/2)-1];
+const firmOf=g=>FIRMS[g%2?"A":"B"];
+const rivalOf=g=>g%2?g+1:g-1;
+const firmName=s=>(s.firm||"").trim()||firmOf(s.group).defName;
+const roundTo=(n,step)=>Math.round(n/step)*step;
+const ceilTo=(n,step)=>Math.ceil(n/step)*step;
+
+function recCalc(c,ans){
+  let bank=c.rec.bank,book=c.rec.book;
+  c.rec.items.forEach((it,i)=>{const a=ans[i]; if(!a)return; const v=it[1];
+    if(a==="bank+")bank+=v; if(a==="bank-")bank-=v; if(a==="book+")book+=v; if(a==="book-")book-=v;});
+  return {bank,book,gap:book-bank};
+}
+function recTruth(c){const ans={};c.rec.items.forEach((it,i)=>ans[i]=it[2]);return recCalc(c,ans);}
+
+function svcHours(s,svc){const c=clientOf(s.group),f=firmOf(s.group);return Math.round(svc.h*c.size*(f.mult[svc.id]||1)*10)/10;}
+function svcCost(s,svc){const f=firmOf(s.group);return svcHours(s,svc)*(svc.partner?f.partnerRate:f.rate);}
+function svcStep(svc){return svc.type==="setup"?50:10;}
+function svcRange(s,svc){const c=svcCost(s,svc),st=svcStep(svc);return {min:ceilTo(c,st),max:ceilTo(c*3,st),def:roundTo(c*1.6,st)};}
+function svcPrice(s,svc){const p=s.price[svc.id];return p==null?svcRange(s,svc).def:p;}
+
+function quote(s){
+  const f=firmOf(s.group),c=clientOf(s.group);
+  const lines=SERVICES.filter(v=>s.sel[v.id]).map(v=>({v,h:svcHours(s,v),cost:svcCost(s,v),price:svcPrice(s,v)}));
+  const setup=lines.filter(l=>l.v.type==="setup"),recur=lines.filter(l=>l.v.type==="recur");
+  const sum=(a,k)=>a.reduce((t,l)=>t+l[k],0);
+  const setupCost=sum(setup,"cost"),setupPrice=sum(setup,"price");
+  const recurCost=sum(recur,"cost")+(recur.length?f.platform:0),recurPrice=sum(recur,"price"),recurHours=sum(recur,"h");
+  const firstYear=setupPrice+recurPrice*12;
+  return {lines,setup,recur,setupCost,setupPrice,recurCost,recurPrice,recurHours,firstYear,
+    setupMargin:setupPrice?(setupPrice-setupCost)/setupPrice:0, recurMargin:recurPrice?(recurPrice-recurCost)/recurPrice:0,
+    pctRev:(recurPrice*12)/c.fin.rev, fyPctRev:firstYear/c.fin.rev};
+}
+function mgmt(s){
+  const f=firmOf(s.group),q=quote(s),out=[];
+  out.push({l:"Monthly bank reconciliation included",ok:!!s.sel.monthrec});
+  if(q.setup.length) out.push({l:`Setup margin at least ${f.setupFloor*100}%`,ok:q.setupMargin>=f.setupFloor-1e-9,d:"Currently "+pct(q.setupMargin)});
+  out.push({l:`Monthly margin at least ${f.recurFloor*100}%`,ok:q.recur.length>0&&q.recurMargin>=f.recurFloor-1e-9,d:"Currently "+pct(q.recurMargin)+(f.platform?" (after $"+f.platform+" platform cost)":"")});
+  if(f.minMonthly) out.push({l:`Monthly fee at least ${money(f.minMonthly)}`,ok:q.recurPrice>=f.minMonthly,d:"Currently "+money(q.recurPrice)});
+  if(f.maxHours) out.push({l:`No more than ${f.maxHours} hours a month`,ok:q.recurHours<=f.maxHours,d:"Currently "+q.recurHours.toFixed(1)+" hours"});
+  out.push({l:"No audit for a client we advise (independence)",ok:!s.sel.audit});
+  out.push({l:"Recurring fees at or below 2.5% of client revenue",ok:q.pctRev<=0.025+1e-9,d:"Currently "+pct(q.pctRev)});
+  return out;
+}
+const mgmtOK=s=>mgmt(s).every(x=>x.ok);
+
+function headlineSuggest(s){
+  const c=clientOf(s.group),f=firmOf(s.group);
+  const p=c.prios.find(x=>x.id===s.prios[0]);const st=f.strengths.find(x=>x.id===s.strengths[0]);
+  if(!p) return `Clean books and real controls for ${c.name}`;
+  return `${p.t}, with ${st?st.t.charAt(0).toLowerCase()+st.t.slice(1):"a partner who knows your business"}`;
+}
+function stepDone(s,i){
+  switch(i){
+    case 0:return s.maxStep>0;
+    case 1:return s.rec.done;
+    case 2:return s.flagsDone;
+    case 3:return s.flagsDone&&clientOf(s.group).weak.every(k=>s.fixes[k]!=null);
+    case 4:return mgmtOK(s);
+    case 5:return s.prios.length===3&&s.strengths.length===2&&!!s.rivalW;
+    case 6:return false;
+  }
+}
+
+/* ===================== SLIDES ===================== */
+function slideList(s){
+  const c=clientOf(s.group),f=firmOf(s.group),rf=firmOf(rivalOf(s.group)),name=firmName(s),q=quote(s);
+  const members=s.members.map(m=>m.trim()).filter(Boolean);
+  const foot=`<div class="s-foot"><span>${esc(name)}</span><span>Proposal for ${esc(c.name)}</span></div><div class="s-band"></div>`;
+  const wait=t=>`<div class="s-wait">${esc(t)}</div>`;
+  const first=c.owner.startsWith("Dr.")?c.owner.split(" ").slice(0,2).join(" "):c.owner.split(" ")[0];
+  const out=[];
+  // 1 title
+  out.push({name:"Title",ready:members.length>=2,html:`<div class="s-title"><div class="l"><div class="s-eye" style="color:#FF8A99">Proposal · October 2026</div><div><div style="font-family:var(--display);font-size:4.6cqw;line-height:1;text-transform:uppercase;font-weight:600">${esc(name)}</div><div style="margin-top:1.4cqw;font-size:1.5cqw;opacity:.85">${esc(f.model)}</div></div><div style="font-size:1.45cqw;line-height:1.5">${members.length?members.map(esc).join("<br>"):"Team members"}</div></div><div class="r"><div class="s-eye">Internal controls + bank reconciliation</div><div class="s-h" style="font-size:4.4cqw">Proposal for ${esc(c.name)}</div><div class="s-p" style="color:var(--s-muted)">Prepared for ${esc(c.owner)}, ${esc(c.role.toLowerCase())}</div></div></div><div class="s-band" style="top:auto;bottom:0"></div>`});
+  // 2 heard
+  const ps=s.prios.map(id=>c.prios.find(p=>p.id===id)).filter(Boolean);
+  out.push({name:"What we heard",ready:ps.length===3,html:ps.length===3?`<div class="s-in"><div class="s-eye">What we heard</div><div class="s-h">${esc(first)} told us three things matter most</div><div class="s-cards" style="grid-template-columns:repeat(3,1fr)">${ps.map(p=>`<div class="s-card"><b>${esc(p.t)}</b>${p.q?`<i>"${esc(p.q)}"</i>`:`<span>A goal we will plan around.</span>`}</div>`).join("")}</div></div>${foot}`:wait("Finish Value prop to build this slide")});
+  // 3 found
+  const r=recCalc(c,s.rec.ans);
+  out.push({name:"What we found",ready:s.rec.done,html:s.rec.done?`<div class="s-in"><div class="s-eye">What we found · September 30 bank reconciliation</div><div class="s-h">Your books show ${money(r.gap)} more cash than the bank can account for</div><div class="s-cards" style="grid-template-columns:repeat(3,1fr);flex:0 0 auto"><div class="s-card"><span class="s-lab">Adjusted book balance</span><div class="s-big">${money(r.book)}</div></div><div class="s-card"><span class="s-lab">Adjusted bank balance</span><div class="s-big">${money(r.bank)}</div></div><div class="s-card" style="border-top-color:var(--s-orange)"><span class="s-lab">Unexplained gap</span><div class="s-big or">${money(r.gap)}</div></div></div><p class="s-p"><b>Follow-up:</b> ${esc(c.revealShort)}</p></div>${foot}`:wait("Finish the Bank rec to build this slide")});
+  // 4 gaps
+  out.push({name:"Control gaps",ready:s.flagsDone,html:s.flagsDone?`<div class="s-in"><div class="s-eye">Control gaps</div><div class="s-h">${c.weak.length} gaps put your cash at risk</div><table class="s-tbl">${c.weak.map(k=>`<tr><td>${esc(W[k].n)}</td><td>${esc(W[k].r)}</td></tr>`).join("")}</table></div>${foot}`:wait("Finish the Walkthrough to build this slide")});
+  // 5 plan
+  const fixReady=s.flagsDone&&c.weak.every(k=>s.fixes[k]!=null);
+  out.push({name:"Our plan",ready:fixReady,html:fixReady?`<div class="s-in"><div class="s-eye">Our recommendations</div><div class="s-h">How we close each gap</div><table class="s-tbl">${c.weak.map(k=>`<tr><td>${esc(W[k].n)}</td><td>${esc(W[k].fix[s.fixes[k]])}</td></tr>`).join("")}</table></div>${foot}`:wait("Choose your Fixes to build this slide")});
+  // 6 investment
+  const hasPrice=q.recur.length>0;
+  out.push({name:"Investment",ready:hasPrice,warn:hasPrice&&!mgmtOK(s),html:hasPrice?`<div class="s-in"><div class="s-eye">Your investment</div><div class="s-cards" style="grid-template-columns:1fr 1fr;flex:1"><div class="s-card"><span class="s-lab">One-time setup</span><table class="s-tbl">${q.setup.length?q.setup.map(l=>`<tr><td style="width:auto">${esc(l.v.n)}</td><td class="m">${money(l.price)}</td></tr>`).join(""):`<tr><td>No setup work</td><td class="m">$0</td></tr>`}<tr class="t"><td>Setup total</td><td class="m">${money(q.setupPrice)}</td></tr></table></div><div class="s-card"><span class="s-lab">Monthly service</span><table class="s-tbl">${q.recur.map(l=>`<tr><td style="width:auto">${esc(l.v.n)}</td><td class="m">${money(l.price)}</td></tr>`).join("")}<tr class="t"><td>Per month</td><td class="m">${money(q.recurPrice)}</td></tr></table></div></div><div style="display:flex;gap:3cqw;align-items:flex-end;background:var(--s-brown);color:#FFFFFF;padding:1.6cqw 2cqw;margin:0 -0cqw"><div><div class="s-lab" style="color:#D9D9D9">First-year investment</div><div class="s-big" style="color:#FF8A99">${money(q.firstYear)}</div></div><div class="s-p" style="font-size:1.4cqw">${esc(f.contract)}<br>About ${pct(q.fyPctRev)} of annual revenue in year one</div></div></div>${foot}`:wait("Build your price in Price it")});
+  // 7 why us
+  const sts=s.strengths.map(id=>f.strengths.find(x=>x.id===id)).filter(Boolean);
+  const rw=rf.weaknesses.find(x=>x.id===s.rivalW);
+  const whyReady=sts.length===2&&!!rw;
+  out.push({name:"Why us",ready:whyReady,html:whyReady?`<div class="s-in"><div class="s-eye">Why ${esc(name)}</div><div class="s-h" style="font-size:3.3cqw">${esc(s.headline||headlineSuggest(s))}</div><div class="s-cards" style="grid-template-columns:1fr 1fr 1.1fr">${sts.map(x=>`<div class="s-card"><b>${esc(x.t)}</b></div>`).join("")}<div class="s-card" style="border-top-color:var(--s-orange);background:var(--s-cream)"><span class="s-lab">Before you choose any firm, ask</span><b style="font-size:1.75cqw">"${esc(rw.q)}"</b></div></div></div>${foot}`:wait("Finish Value prop to build this slide")});
+  // 8 timeline
+  const ph=q.setup.filter(l=>PHASES[l.v.id]);
+  out.push({name:"First 90 days",ready:hasPrice,html:hasPrice?`<div class="s-in"><div class="s-eye">First 90 days</div><div class="s-h">What happens after you say yes</div><div class="gantt">${ph.map(l=>{const[a,b]=PHASES[l.v.id];return `<div class="gr"><span>${esc(l.v.n)}</span><div class="track"><div class="bar" style="left:${(a-1)/12*100}%;width:${(b-a+1)/12*100}%"></div></div></div>`}).join("")}<div class="gr"><span><b>Monthly service begins</b></span><div class="track"><div class="bar rec" style="left:${(Math.max(4,...ph.map(l=>PHASES[l.v.id][1]))<=8?4:8)/12*100}%;right:0"></div></div></div><div class="axis"><span></span><div class="ticks">${Array.from({length:12},(_,i)=>`<span>Wk ${i+1}</span>`).join("")}</div></div></div></div>${foot}`:wait("Build your price in Price it")});
+  // 9 close
+  out.push({name:"Close",ready:true,html:`<div class="s-title" style="grid-template-columns:1fr"><div class="l" style="justify-content:center;gap:2cqw;padding:6cqw"><div class="s-eye" style="color:#FF8A99">${esc(name)}</div><div style="font-family:var(--display);font-size:6cqw;line-height:1;text-transform:uppercase;font-weight:600">Let's get your books clean.</div><div style="font-size:1.7cqw;opacity:.85">Questions for us, ${esc(first)}?</div><div style="font-size:1.4cqw;opacity:.75">${members.map(esc).join(" · ")}</div></div></div><div class="s-band" style="top:auto;bottom:0"></div>`});
+  return out;
+}
+
+/* ===================== MASTHEAD / RAIL ===================== */
+function paintMast(){
+  if(view==="group"&&S.group){
+    const sl=slideList(S),n=sl.filter(x=>x.ready).length;
+    $("#mGroup").innerHTML=`<span class="mchip">Group ${S.group} · ${esc(clientOf(S.group).name)}</span>`;
+    $("#mDeck").innerHTML=`<span class="mchip deck">Deck ${n}/${sl.length} slides ready</span>`;
+  } else {$("#mGroup").innerHTML="";$("#mDeck").innerHTML="";}
+  const sy=$("#mSync"),SYM={ok:["sync-ok","Synced to class"],nogame:["sync-bad","Class code not found"],err:["sync-bad","Not synced"],bad:["sync-bad","Check class code"]};
+  sy.innerHTML=(view==="group"&&S.group&&SYM[syncState])?`<span class="mchip ${SYM[syncState][0]}">${SYM[syncState][1]}</span>`:"";
+}
+function paintRail(){
+  const r=$("#rail");
+  if(view!=="group"||!S.group||S.step<0){r.hidden=true;return;}
+  r.hidden=false;
+  $("#railIn").innerHTML=STEPS.map((st,i)=>`<button type="button" data-go="${i}" class="${i===S.step?"on":""} ${stepDone(S,i)?"done":""}" ${canGo(i)?"":"disabled"}><span class="n">${stepDone(S,i)?"✓":i+1}</span>${st.n}</button>`).join("");
+}
+function canGo(i){ if(i<=1)return true; if(i===3)return S.flagsDone; return S.maxStep>=1; }
+
+/* ===================== VIEWS ===================== */
+function render(){
+  paintMast();paintRail();
+  const app=$("#app");
+  if(view==="teacher") return renderTeacher(app);
+  if(view==="home"||!S.group) return renderHome(app);
+  if(S.step===-1) return renderSetup(app);
+  [vClient,vRec,vWalk,vFix,vPrice,vValue,vDeck][S.step](app);
+  window.scrollTo({top:0});
+}
+function head(i,title,lede){return `<div class="head"><span class="eyebrow">Step ${i+1} of 7</span><h1>${title}</h1><p class="lede">${lede}</p><span class="pace"><i></i>Suggested pace: ${STEPS[i].min} minutes</span></div>`;}
+function nextBar(i,okNext=true,label){return `<div class="next"><button class="btn alt" type="button" data-go="${i-1}" ${i===0?"hidden":""}>Back</button><button class="btn or" type="button" data-go="${i+1}" ${okNext?"":"disabled"}>${label||"Next: "+STEPS[i+1].n}</button></div>`;}
+
+function renderHome(app){
+  app.innerHTML=`<div class="head"><span class="eyebrow">Internal controls + bank reconciliation</span><h1>Win the engagement</h1><p class="lede">Five local businesses have messy books and no internal controls. Two accounting firms are bidding for each one, and your group is one of them. Study the client, reconcile their bank account, find the control gaps, price a plan your bosses will approve, and pitch it. Your pitch deck builds itself as you work.</p></div>
+  <h3 style="margin-bottom:12px">Pick your group number</h3>
+  <div class="pairs">${CLIENTS.map((c,i)=>`<div class="pair"><div class="ph"><span>Client ${i+1}</span><b>${esc(c.name)}</b><span>${esc(c.industry)} · ${esc(c.town)}</span></div><div class="gb">${[i*2+1,i*2+2].map(g=>`<button type="button" data-pick="${g}"><b>Group ${g}</b><small>${firmOf(g).defName.split(" ")[0]} model</small></button>`).join("")}</div></div>`).join("")}</div>
+  ${S.group?`<p class="note" style="margin-top:16px">This device has saved work for Group ${S.group}. <button class="btn alt" type="button" data-resume="1">Resume Group ${S.group}</button></p>`:""}`;
+}
+let pendingPick=null;
+function renderSetup(app){
+  const f=firmOf(S.group),c=clientOf(S.group),rv=rivalOf(S.group);
+  app.innerHTML=`<div class="head"><span class="eyebrow">Group ${S.group} · Client ${Math.ceil(S.group/2)}</span><h1>Set up your firm</h1><p class="lede">You are a ${f.model.toLowerCase()} bidding on <b>${esc(c.name)}</b>. Group ${rv} is your competitor for this client.</p></div>
+  <div class="grid2"><div class="panel stack"><label class="f">Class code from the board<input type="text" id="classCode" inputmode="numeric" maxlength="4" autocomplete="off" value="${esc(S.code)}" placeholder="4 digits"></label><p class="note" id="syncMsg">${syncNote()}</p><label class="f">Firm name<input type="text" id="firmName" value="${esc(S.firm)}" placeholder="${esc(f.defName)}"></label>
+  ${[0,1,2].map(i=>`<label class="f">Team member ${i+1}${i===2?" (optional)":""}<input type="text" data-mem="${i}" value="${esc(S.members[i])}" placeholder="First and last name"></label>`).join("")}</div>
+  <div class="panel stack"><h3>Your firm model</h3><p>${esc(f.blurb)}</p><p class="note">${esc(f.pricing)}</p><h3 style="margin-top:6px">Management rules</h3><ul class="clean">${f.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div></div>
+  <div class="next"><button class="btn alt" type="button" data-home="1">Change group</button><button class="btn or" type="button" data-go="0">Open the client file</button></div>`;
+}
+function finTable(c){const F=c.fin,gp=F.rev-F.cogs,ni=gp-F.payroll-F.rent-F.other,ta=F.cash+F.ar+F.inv+F.equip,tl=F.ap+F.unearned+F.loan,eq=ta-tl;
+  return `<table class="fin"><tr class="h"><td>Income statement · last 12 months</td><td></td></tr><tr><td>Revenue</td><td>${money(F.rev)}</td></tr><tr><td>${esc(F.cogsLabel||"Cost of goods sold")}</td><td>(${money(F.cogs)})</td></tr><tr class="t"><td>Gross profit</td><td>${money(gp)}</td></tr><tr><td>Wages and payroll taxes</td><td>(${money(F.payroll)})</td></tr><tr><td>Rent and occupancy</td><td>(${money(F.rent)})</td></tr><tr><td>Other operating expenses</td><td>(${money(F.other)})</td></tr><tr class="t"><td>Net income</td><td>${money(ni)}</td></tr>
+  <tr class="h"><td>Balance sheet · September 30</td><td></td></tr><tr><td>Cash (per books)</td><td>${money(F.cash)}</td></tr><tr><td>${esc(F.arLabel||"Accounts receivable")}</td><td>${money(F.ar)}</td></tr><tr><td>${esc(F.invLabel)}</td><td>${money(F.inv)}</td></tr><tr><td>Equipment, net</td><td>${money(F.equip)}</td></tr><tr class="t"><td>Total assets</td><td>${money(ta)}</td></tr><tr><td>Accounts payable</td><td>${money(F.ap)}</td></tr>${F.unearned?`<tr><td>Customer deposits (unearned revenue)</td><td>${money(F.unearned)}</td></tr>`:""}<tr><td>Bank and equipment loans</td><td>${money(F.loan)}</td></tr><tr><td>Owner's equity</td><td>${money(eq)}</td></tr><tr class="t"><td>Total liabilities and equity</td><td>${money(tl+eq)}</td></tr></table>`;}
+function vClient(app){
+  const c=clientOf(S.group),f=firmOf(S.group),rf=firmOf(rivalOf(S.group)),F=c.fin,ni=F.rev-F.cogs-F.payroll-F.rent-F.other;
+  app.innerHTML=head(0,esc(c.name),"Read the whole file before you touch a number. Every decision you make later should trace back to something in here.")+
+  `<div class="cols"><div class="stack"><div class="folder"><span class="tab">Client file</span><div class="body stack">
+   <div class="facts"><div><small>Industry</small><b>${esc(c.industry)}</b></div><div><small>Town</small><b>${esc(c.town)}</b></div><div><small>Owner</small><b>${esc(c.owner)}</b></div><div><small>Employees</small><b>${esc(c.staff)}</b></div><div><small>In business</small><b>${c.years} years</b></div></div>
+   <p>${esc(c.about)}</p>
+   <h3>Industry context</h3><ul class="clean">${c.ind.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+   <h3>Owner interview</h3>${c.interview.map(([w,q])=>`<div class="quote"><p>"${esc(q)}"</p><small>${esc(w)}</small></div>`).join("")}
+  </div></div></div>
+  <div class="stack sticky"><div class="panel"><h3 style="margin-bottom:8px">Financials</h3>${finTable(c)}<p class="note" style="margin-top:10px">Use these to judge what is reasonable to charge. A plan costing ${money(F.rev*0.025)} a year in recurring fees would equal 2.5% of revenue and ${pct(F.rev*0.025/ni)} of net income.</p></div>
+  <div class="panel rival stack"><span class="eyebrow">Competitor intel · Group ${rivalOf(S.group)}</span><h3>${esc(rf.model)}</h3><p class="note">${esc(rf.blurb)} ${esc(rf.pricing)}</p><b style="font-size:14px">Known strengths</b><ul class="clean">${rf.strengths.map(x=>`<li>${esc(x.t)}</li>`).join("")}</ul><b style="font-size:14px">Known weaknesses</b><ul class="clean">${rf.weaknesses.map(x=>`<li>${esc(x.t)}</li>`).join("")}</ul></div></div></div>`+nextBar(0);
+}
+function vRec(app){
+  const c=clientOf(S.group),r=recCalc(c,S.rec.ans),t=recTruth(c),all=c.rec.items.every((_,i)=>S.rec.ans[i]);
+  app.innerHTML=head(1,"Reconcile the bank","Before you sell anything, prove what is wrong. Sort each item from the September bank statement and the books to the side it adjusts. The ledgers update as you go. When both sides are right, whatever gap is left over is cash nobody can explain.")+
+  `<div class="cols"><div class="stack"><div class="panel stack"><div class="row" style="justify-content:space-between"><h3>September 30 items</h3><span class="tag">Statement balance ${money(c.rec.bank)} · Book balance ${money(c.rec.book)}</span></div>
+   <div class="recwrap"><table class="rec"><thead><tr><th>Item</th><th style="text-align:right">Amount</th><th>Adjusts</th></tr></thead><tbody>${c.rec.items.map((it,i)=>{const a=S.rec.ans[i]||"";const cls=S.rec.done?"right":(S.rec.showWrong&&a?(a===it[2]?"right":"wrong"):"");return `<tr class="${cls}"><td>${esc(it[0])}</td><td class="amt">${money(it[1])}</td><td><select data-rec="${i}" ${S.rec.done?"disabled":""}><option value="">Choose…</option>${Object.entries(SIDES).map(([k,v])=>`<option value="${k}" ${a===k?"selected":""}>${v}</option>`).join("")}</select></td></tr>`}).join("")}</tbody></table></div>
+   ${S.rec.done?"":`<div class="row"><button class="btn" type="button" id="recCheck" ${all?"":"disabled"}>Check my reconciliation</button><span class="note" id="recMsg">${S.rec.tries?`Attempt ${S.rec.tries}: not balanced yet. ${S.rec.showWrong?"Red rows are on the wrong side.":"Rows turn red after your second attempt."}`:"Every item must be placed before you check."}</span></div>`}
+  </div>
+  ${S.rec.done?`<div class="gap"><div><div class="eyebrow" style="color:#FF8A99">Unexplained gap</div><b class="num">${money(t.gap)}</b></div><p><b>Your follow-up found this:</b> ${esc(c.reveal)} This is your strongest sales point. It goes on your pitch deck automatically.</p></div>`:""}
+  </div><div class="stack sticky"><div class="ledger"><div class="side"><h3 style="font-size:14px">Bank side</h3><table><tr><td>Statement</td><td>${money(c.rec.bank)}</td></tr>${c.rec.items.map((it,i)=>S.rec.ans[i]&&S.rec.ans[i].startsWith("bank")?`<tr><td>${S.rec.ans[i]==="bank+"?"+":"−"} item ${i+1}</td><td>${money(it[1])}</td></tr>`:"").join("")}<tr class="adj"><td>Adjusted</td><td>${money(r.bank)}</td></tr></table></div>
+  <div class="side"><h3 style="font-size:14px">Book side</h3><table><tr><td>Books</td><td>${money(c.rec.book)}</td></tr>${c.rec.items.map((it,i)=>S.rec.ans[i]&&S.rec.ans[i].startsWith("book")?`<tr><td>${S.rec.ans[i]==="book+"?"+":"−"} item ${i+1}</td><td>${money(it[1])}</td></tr>`:"").join("")}<tr class="adj"><td>Adjusted</td><td>${money(r.book)}</td></tr></table></div></div>
+  <div class="panel"><p class="note"><b>Reminder.</b> Deposits in transit and outstanding checks are things the bank has not seen yet. Fees, interest, NSF checks, and recording errors are things the books have not caught yet.</p></div></div></div>`+nextBar(1,S.rec.done);
+}
+function vWalk(app){
+  const c=clientOf(S.group);
+  const done=S.flagsDone;
+  app.innerHTML=head(2,"Walk through their controls","You spent a morning on site. Read what you saw, then flag every control gap you have evidence for. Some things you saw are working fine, so do not flag everything. You get one submission.")+
+  `<div class="cols"><div class="panel"><h3 style="margin-bottom:10px">Field notes</h3><ol class="obs">${c.walk.map(o=>`<li><span>${esc(o)}</span></li>`).join("")}</ol></div>
+  <div class="stack sticky"><div class="panel stack"><h3>What to look for</h3><p class="note">Segregation of duties, physical custody of assets, authorization, documentation, independent checks. A strong control on a list here is evidence that gap is <b>not</b> present.</p>${done?resultSummary(c):`<p><b>${S.flags.length}</b> flagged</p><button class="btn or" type="button" id="flagSubmit" ${S.flags.length?"":"disabled"}>Submit my findings</button>`}</div></div></div>
+  <h3 style="margin:24px 0 10px">Control gap checklist</h3>
+  <div class="wk">${WKEYS.map(k=>{const sel=S.flags.includes(k),is=c.weak.includes(k);let cls=sel?"sel":"";if(done){cls=sel&&is?"res-hit":(!sel&&is?"res-miss":(sel?"res-false":""));}
+    const lab=done?(sel&&is?'<span class="tag good">Found</span>':(!sel&&is?'<span class="tag warn">Missed, added to your file</span>':(sel?'<span class="tag bad">Not a gap here</span>':""))):"";
+    return `<button type="button" class="${cls}" data-flag="${k}" ${done?"disabled":""}><span class="box">${sel?"✓":""}</span><span><b>${esc(W[k].n)}</b><small>${esc(W[k].r)}</small> ${lab}</span></button>`}).join("")}</div>`+nextBar(2,done);
+}
+function resultSummary(c){const hit=S.flags.filter(k=>c.weak.includes(k)).length,fa=S.flags.length-hit,miss=c.weak.length-hit;
+  return `<div class="tot"><span>Gaps found</span><b class="ok">${hit} of ${c.weak.length}</b><span>Missed</span><b>${miss}</b><span>False flags</span><b class="${fa?"no":""}">${fa}</b></div><p class="note">All ${c.weak.length} real gaps carry forward to your fixes and your deck.</p>`;}
+function vFix(app){
+  const c=clientOf(S.group);
+  app.innerHTML=head(3,"Choose your fixes","For each gap, pick the recommendation you will put in front of the client. The client will compare your plan against your rival's, so pick the fix that actually closes the gap.")+
+  `<div class="stack">${c.weak.map(k=>{const order=shuffleFor(k+S.group);return `<div class="fix"><div class="fh"><h3>${esc(W[k].n)}</h3><span class="tag">${esc(W[k].r)}</span></div><div class="opts">${order.map(i=>`<button type="button" class="${S.fixes[k]===i?"sel":""}" data-fix="${k}" data-i="${i}">${esc(W[k].fix[i])}</button>`).join("")}</div></div>`}).join("")}</div>`+nextBar(3,c.weak.every(k=>S.fixes[k]!=null));
+}
+function shuffleFor(seed){let h=0;for(const ch of String(seed))h=(h*31+ch.charCodeAt(0))>>>0;const a=[0,1,2];for(let i=2;i>0;i--){h=(h*1103515245+12345)>>>0;const j=h%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function vPrice(app){
+  const f=firmOf(S.group),c=clientOf(S.group);
+  const row=v=>{const on=!!S.sel[v.id],rg=svcRange(S,v),p=svcPrice(S,v),cost=svcCost(S,v),m=(p-cost)/p;
+    return `<tr class="${on?"":"off"}" id="row-${v.id}"><td><input type="checkbox" data-sel="${v.id}" ${on?"checked":""} ${v.req?"disabled":""} aria-label="Include ${esc(v.n)}"></td><td><div class="nm">${esc(v.n)} ${v.req?'<span class="tag or">Required</span>':""}</div><div class="ds">${esc(v.d)}</div></td><td class="num">${svcHours(S,v).toFixed(1)}</td><td class="num">${money(cost)}</td><td><input type="range" data-price="${v.id}" min="${rg.min}" max="${rg.max}" step="${svcStep(v)}" value="${p}" aria-label="Price for ${esc(v.n)}"></td><td class="num"><b id="p-${v.id}">${money(p)}</b></td><td class="num mg" id="m-${v.id}">${pct(m)}</td></tr>`;};
+  const table=(type,label)=>`<div class="pricewrap"><table class="svc"><thead><tr><th></th><th>${label}</th><th style="text-align:right">Hours${type==="recur"?"/mo":""}</th><th style="text-align:right">Our cost</th><th>Set price</th><th style="text-align:right">Price</th><th style="text-align:right">Margin</th></tr></thead><tbody>${SERVICES.filter(v=>v.type===type).map(row).join("")}</tbody></table></div>`;
+  app.innerHTML=head(4,"Build the price","Check the services you will offer and drag each price. Cost is what the work costs your firm in staff time. Management only approves a proposal when every rule on the right is green. The client never sees your costs or margins.")+
+  `<div class="cols"><div class="stack"><h3>One-time setup</h3>${table("setup","Service")}<h3>Monthly service</h3>${table("recur","Service")}${f.platform?`<p class="note">Your firm also pays ${money(f.platform)} a month in software platform costs for any client on monthly service. It is included in your monthly margin.</p>`:""}</div>
+  <div class="stack sticky" id="pricesum"></div></div>`+nextBar(4,true);
+  paintPriceSum();
+}
+function paintPriceSum(){
+  const el=$("#pricesum");if(!el)return;
+  const q=quote(S),c=clientOf(S.group),ni=c.fin.rev-c.fin.cogs-c.fin.payroll-c.fin.rent-c.fin.other,m=mgmt(S),ok=m.every(x=>x.ok);
+  el.innerHTML=`<div class="panel stack"><h3>What the client pays</h3><div class="tot"><span>Setup (one time)</span><b>${money(q.setupPrice)}</b><span>Monthly</span><b>${money(q.recurPrice)}</b><span class="big">First year</span><b class="big">${money(q.firstYear)}</b><span>Share of revenue</span><b>${pct(q.fyPctRev)}</b><span>Share of net income</span><b>${pct(q.firstYear/ni)}</b></div></div>
+  <div class="panel stack"><h3>Management check</h3><ul class="checks">${m.map(x=>`<li><span class="ic ${x.ok?"ok":"no"}">${x.ok?"✓":"✕"}</span><span>${esc(x.l)}${x.d?`<small>${esc(x.d)}</small>`:""}</span></li>`).join("")}</ul><div class="stamp ${ok?"ok":"no"}">${ok?"Approved by management":"Not approved yet"}</div></div>`;
+  paintMast();paintRail();
+}
+function vValue(app){
+  const c=clientOf(S.group),f=firmOf(S.group),rf=firmOf(rivalOf(S.group));
+  if(!S.headEdited) S.headline=headlineSuggest(S);
+  app.innerHTML=head(5,"Sharpen your value proposition","Both firms will promise clean books. Win on what this client actually cares about. Choose what to emphasize and what to make the client think about before signing with Group "+rivalOf(S.group)+".")+
+  `<div class="stack"><div class="panel stack"><h3>1. The three things ${esc(c.owner.split(" ")[0]==="Dr."?c.owner:c.owner.split(" ")[0])} cares about most <span class="note">(${S.prios.length}/3)</span></h3><div class="chips">${c.prios.map(p=>`<button type="button" data-prio="${p.id}" class="${S.prios.includes(p.id)?"sel":""}">${esc(p.t)}</button>`).join("")}</div></div>
+  <div class="panel stack"><h3>2. Two strengths of your firm to lead with <span class="note">(${S.strengths.length}/2)</span></h3><div class="chips">${f.strengths.map(p=>`<button type="button" data-str="${p.id}" class="${S.strengths.includes(p.id)?"sel":""}">${esc(p.t)}</button>`).join("")}</div></div>
+  <div class="panel stack"><h3>3. One rival weakness to raise</h3><p class="note">You never name Group ${rivalOf(S.group)}. Your slide gives the client a question to ask any firm, and the honest answer favors you.</p><div class="chips">${rf.weaknesses.map(p=>`<button type="button" data-rw="${p.id}" class="${S.rivalW===p.id?"sel":""}">${esc(p.t)}</button>`).join("")}</div>${S.rivalW?`<p class="note">Question on your slide: <b>"${esc(rf.weaknesses.find(x=>x.id===S.rivalW).q)}"</b></p>`:""}</div>
+  <div class="panel stack"><h3>4. Your headline</h3><p class="note">Filled in from your picks. Edit it if you can say it better.</p><input type="text" id="headline" value="${esc(S.headline)}"></div></div>`+nextBar(5,stepDone(S,5),"Next: Pitch deck");
+}
+function encode(s){const o={v:1,g:s.group,f:s.firm,m:s.members,ra:s.rec.ans,rt:s.rec.tries,rd:s.rec.done,fl:s.flags,fd:s.flagsDone,fx:s.fixes,se:s.sel,pr:s.price,pi:s.prios,st:s.strengths,rw:s.rivalW,h:s.headline,he:s.headEdited};
+  return "ENG1."+btoa(unescape(encodeURIComponent(JSON.stringify(o))));}
+function decode(code){try{code=(code||"").trim();if(!code.startsWith("ENG1."))return null;const o=JSON.parse(decodeURIComponent(escape(atob(code.slice(5)))));
+  const s=fresh();Object.assign(s,{group:o.g,firm:o.f||"",members:o.m||["","",""],rec:{ans:o.ra||{},tries:o.rt||0,done:!!o.rd,showWrong:false},flags:o.fl||[],flagsDone:!!o.fd,fixes:o.fx||{},sel:o.se||{},price:o.pr||{},prios:o.pi||[],strengths:o.st||[],rivalW:o.rw,headline:o.h||"",headEdited:!!o.he,maxStep:6});
+  if(!(s.group>=1&&s.group<=10))return null;return s;}catch(e){return null;}}
+function vDeck(app){
+  const sl=slideList(S),n=sl.filter(x=>x.ready).length,ok=mgmtOK(S);
+  app.innerHTML=head(6,"Your pitch deck",`Built from your decisions. ${n} of ${sl.length} slides are ready. Click any slide to present from it. Plan for about 90 seconds: each team member takes two or three slides.`)+
+  `<div class="row" style="margin-bottom:16px"><button class="btn or" type="button" data-present="0">Present full screen</button>${ok?'<span class="tag good">Price approved by management</span>':'<span class="tag bad">Price not approved by management. Fix it in Price it.</span>'}</div>
+  <div class="thumbs">${sl.map((x,i)=>`<div class="thumb"><div class="slide" data-present="${i}" role="button" tabindex="0" aria-label="Present slide ${i+1}">${x.html}</div><div class="cap"><span>${i+1}. ${esc(x.name)}</span>${x.ready?(x.warn?'<span class="tag warn">Check price</span>':'<span class="tag good">Ready</span>'):'<span class="tag">Waiting</span>'}</div></div>`).join("")}</div>
+  <div class="panel codebox" style="margin-top:24px"><h3>Send to the projector</h3><p class="note" id="syncMsg">${syncNote()}</p><p class="note">Backup: if your deck is not synced, copy this pitch code and send it to your teacher. It carries your whole deck.</p><textarea id="codeOut" readonly>${encode(S)}</textarea><div class="row"><button class="btn" type="button" id="copyCode">Copy pitch code</button><span class="note" id="copyMsg"></span></div></div>
+  <div class="next"><button class="btn alt" type="button" data-go="5">Back</button><span id="resetZone"><button class="btn alt" type="button" id="resetAsk">Start over on this device</button></span></div>`;
+}
+
+/* ===================== PRESENT ===================== */
+let pres=null;
+function present(s,i){document.body.classList.add("presenting");pres={slides:slideList(s),i};paintPresent();try{$("#presentRoot .present").requestFullscreen?.().catch(()=>{});}catch(e){}}
+function paintPresent(){
+  const root=$("#presentRoot");if(!pres){root.innerHTML="";return;}
+  root.innerHTML=`<div class="present" role="dialog" aria-label="Pitch deck"><div class="stage"><div class="slide" id="pslide">${pres.slides[pres.i].html}</div></div><div class="ctl"><button type="button" data-pnav="-1">Prev</button><span>${pres.i+1} / ${pres.slides.length}</span><button type="button" data-pnav="1">Next</button><button type="button" data-pclose="1">Exit</button></div></div>`;
+}
+function closePresent(){document.body.classList.remove("presenting");pres=null;paintPresent();try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}}
+
+/* ===================== TEACHER ===================== */
+function scoreOf(s,rival){
+  const c=clientOf(s.group);
+  const rec=s.rec.done?(s.rec.tries<=1?15:s.rec.tries===2?10:6):0;
+  const hit=s.flags.filter(k=>c.weak.includes(k)).length,fa=s.flags.length-hit;
+  const gaps=s.flagsDone?Math.max(0,hit*4-fa*2):0;
+  const fixRaw=c.weak.reduce((t,k)=>t+(s.fixes[k]===0?2:s.fixes[k]===1?1:0),0);
+  const fix=Math.round(fixRaw/(c.weak.length*2)*15);
+  const fails=mgmt(s).filter(x=>!x.ok).length;
+  const mg=Math.max(0,15-fails*5);
+  const vp=s.prios.filter(p=>c.truePrios.includes(p)).length*5;
+  const fy=quote(s).firstYear;let price=10;
+  if(rival){const rfy=quote(rival).firstYear; if(fy>0&&rfy>0) price=Math.round(20*Math.min(1,rfy/fy));}
+  return {rec,gaps,fix,mg,vp,price,total:rec+gaps+fix+mg+vp+price,fails,fy};
+}
+function renderTeacher(app){
+  if(!teacher.unlocked){
+    app.innerHTML=`<div class="head"><span class="eyebrow">Teacher</span><h1>Teacher view</h1><p class="lede">Run of show, answer keys, and the client decision board.</p></div><div class="panel stack" style="max-width:380px"><label class="f">Teacher PIN<input type="password" id="pin" autocomplete="off"></label><div class="row"><button class="btn" type="button" id="pinGo">Unlock</button><span class="note" id="pinMsg"></span></div></div>`;
+    return;
+  }
+  const tabs=[["live","Live class"],["run","Run of show"],["key","Answer key"],["board","Decision board"]];
+  let body="";
+  if(teacher.tab==="live"){
+    if(teacher.netOk===false){
+      body=`<div class="panel stack"><h2>Live sync is not connected</h2><p class="lede">Live sync uses the same Upstash database as Bank Rec Live (Vercel dashboard, Storage, Upstash for Redis, Connect). Until it is connected, groups copy their pitch code from the last step and send it to you, and you paste codes on the Decision board.</p></div>`;
+    } else if(!teacher.session){
+      body=`<div class="panel stack" style="max-width:620px"><h2>Start a class session</h2><p class="lede">Creates a 4-digit code for the board. Groups type it when they set up their firm, and every deck then shows up here and on the Decision board as they work. Sessions erase themselves after 4 hours.</p><div class="row"><button class="btn or" type="button" id="tStart" ${teacher.netOk?"":"disabled"}>${teacher.netOk==null?"Checking connection…":"Start session"}</button><span class="note" id="tMsg"></span></div></div>`;
+    } else {
+      const rows=Array.from({length:10},(_,i)=>{const g=i+1,p=teacher.live["g"+g];const ago=p?Math.max(0,Math.round((Date.now()-p.t)/1000)):null;
+        return `<tr><td class="m">${g}</td><td>${esc(clientOf(g).name)}</td><td>${p?esc(p.firm)+`<br><span class="note">${esc((p.members||[]).join(", "))}</span>`:'<span class="note">Not joined</span>'}</td><td>${p?(p.step<0?"Setting up":esc(STEPS[p.step]?STEPS[p.step].n:"")):""}</td><td class="m">${p?p.ready+"/"+p.of:""}</td><td>${p?(p.ok?'<span class="tag good">Approved</span>':'<span class="tag bad">Not yet</span>'):""}</td><td class="m">${p?(ago<60?ago+"s":Math.round(ago/60)+"m")+" ago":""}</td></tr>`}).join("");
+      body=`<div class="grid2" style="align-items:start"><div class="panel stack"><span class="eyebrow">Class code</span><div class="bigcode">${esc(teacher.session)}</div><p class="note">Put this on the board. Groups type it on their setup screen.</p><div class="row" id="endZone">${teacher.confirmEnd?`<span class="confirm">Erase every group's synced deck for this session? <button class="btn" type="button" id="tEndYes">Erase</button><button class="btn alt" type="button" id="tEndNo">Keep</button></span>`:`<button class="btn alt" type="button" id="tEnd">End session</button>`}</div></div>
+      <div class="panel" style="overflow-x:auto"><h3 style="margin-bottom:8px">Groups</h3><table class="tt"><tr><th>Grp</th><th>Client</th><th>Firm</th><th>Step</th><th>Deck</th><th>Price</th><th>Updated</th></tr>${rows}</table></div></div>`;
+    }
+  } else if(teacher.tab==="run"){
+    body=`<div class="grid2"><div class="panel"><h3 style="margin-bottom:10px">45 minutes of work, 20 minutes of pitches</h3><table class="tt"><tr><th>Time</th><th>What happens</th></tr>
+    <tr><td class="m">Before</td><td>Open the Live class tab and start a session. Put the 4-digit code on the board.</td></tr>
+    <tr><td class="m">0:00</td><td>Launch and Step 1, Client file (8 min). One device per group: pick the group number, type the class code, name the firm, enter members, then read the interview, financials, and competitor intel.</td></tr>
+    <tr><td class="m">0:08</td><td>Step 2, Bank rec (10 min). Sort each item to the bank or book side. The gap reveal is the hook for the pitch.</td></tr>
+    <tr><td class="m">0:18</td><td>Step 3, Walkthrough (7 min). One submission. Missed gaps are added for them so the deck stays complete.</td></tr>
+    <tr><td class="m">0:25</td><td>Step 4, Fixes (5 min).</td></tr>
+    <tr><td class="m">0:30</td><td>Step 5, Price it (10 min). The default prices fail the margin rules on purpose.</td></tr>
+    <tr><td class="m">0:40</td><td>Step 6, Value prop (4 min).</td></tr>
+    <tr><td class="m">0:44</td><td>Step 7, Pitch deck (1 min). Groups check their slides. Synced decks are already on your Decision board; any group that is not synced sends you its pitch code.</td></tr>
+    <tr><td class="m">0:45</td><td>Pitches (20 min). Client by client, odd group then even group: 90 seconds each plus one question from you as the owner. Pick a winner on the Decision board.</td></tr>
+    <tr><td class="m">1:05</td><td>Done. The rest of the period is yours for intro and debrief.</td></tr></table></div>
+    <div class="panel"><h3 style="margin-bottom:10px">Pairings</h3><table class="tt"><tr><th>Client</th><th>Summit model</th><th>Kettle model</th></tr>${CLIENTS.map((c,i)=>`<tr><td>${esc(c.name)}</td><td>Group ${i*2+1}</td><td>Group ${i*2+2}</td></tr>`).join("")}</table>
+    <h3 style="margin:18px 0 8px">Data score (100)</h3><table class="tt"><tr><td>Bank rec</td><td class="m">15</td><td>15 first try, 10 second, 6 after</td></tr><tr><td>Control gaps</td><td class="m">20</td><td>4 per real gap found, minus 2 per false flag</td></tr><tr><td>Fixes</td><td class="m">15</td><td>Best fix 2, partial 1, weak 0</td></tr><tr><td>Management rules</td><td class="m">15</td><td>Minus 5 per broken rule</td></tr><tr><td>Value prop</td><td class="m">15</td><td>5 per true client priority picked</td></tr><tr><td>Price</td><td class="m">20</td><td>Lower first-year bid gets 20; the other scales by the ratio</td></tr></table><p class="note" style="margin-top:8px">The score informs your decision. You still pick the winner after the pitch.</p></div></div>`;
+  } else if(teacher.tab==="key"){
+    body=`<div class="stack">${CLIENTS.map((c,ci)=>{const t=recTruth(c);return `<div class="panel stack"><div class="row" style="justify-content:space-between"><h2>${esc(c.name)}</h2><span class="tag">Groups ${ci*2+1} and ${ci*2+2}</span></div>
+     <div class="grid2"><div><h3 style="margin-bottom:6px">Bank reconciliation</h3><table class="tt">${c.rec.items.map(it=>`<tr><td>${esc(it[0])}</td><td class="m">${money(it[1])}</td><td class="m">${SIDES[it[2]]}</td></tr>`).join("")}<tr><td><b>Adjusted bank</b></td><td class="m">${money(t.bank)}</td><td></td></tr><tr><td><b>Adjusted books</b></td><td class="m">${money(t.book)}</td><td></td></tr><tr><td><b>Unexplained gap</b></td><td class="m"><b>${money(t.gap)}</b></td><td></td></tr></table><p class="note" style="margin-top:6px">${esc(c.reveal)}</p></div>
+     <div><h3 style="margin-bottom:6px">Control gaps and best fixes</h3><table class="tt">${c.weak.map(k=>`<tr><td><b>${esc(W[k].n)}</b><br><span class="note">${esc(W[k].fix[0])}</span></td></tr>`).join("")}</table><h3 style="margin:12px 0 6px">True priorities</h3><ul class="clean">${c.truePrios.map(id=>`<li>${esc(c.prios.find(p=>p.id===id).t)}</li>`).join("")}</ul></div></div></div>`}).join("")}</div>`;
+  } else {
+    const ci=teacher.client,c=CLIENTS[ci],g1=ci*2+1,g2=ci*2+2;
+    const codeFor=g=>teacher.codes[g]||(teacher.live["g"+g]&&teacher.live["g"+g].code)||"";
+    const s1=decode(codeFor(g1)),s2=decode(codeFor(g2));
+    const card=(g,s,r)=>{const code=codeFor(g),isLive=!teacher.codes[g]&&!!code;let inner="";
+      if(code&&!s) inner=`<p class="no">That code did not load. Ask the group to copy it again.</p>`;
+      else if(s&&s.group!==g) inner=`<p class="no">That code belongs to Group ${s.group}, not Group ${g}.</p>`;
+      else if(s){const sc=scoreOf(s,r&&r.group===rivalOf(g)?r:null),q=quote(s);
+        inner=`<div class="row" style="justify-content:space-between"><div><b style="font-family:var(--display);font-size:20px;text-transform:uppercase">${esc(firmName(s))}</b><div class="note">${esc(s.members.filter(Boolean).join(", "))}</div></div><div class="score">${sc.total}</div></div>
+        <table class="tt"><tr><td>Setup</td><td class="m">${money(q.setupPrice)}</td></tr><tr><td>Monthly</td><td class="m">${money(q.recurPrice)}</td></tr><tr><td><b>First year</b></td><td class="m"><b>${money(q.firstYear)}</b></td></tr><tr><td>Management rules</td><td class="m">${sc.fails?`<span class="no">${sc.fails} broken</span>`:'<span class="ok">All met</span>'}</td></tr></table>
+        <table class="tt"><tr><td>Bank rec</td><td class="m">${sc.rec}/15</td></tr><tr><td>Control gaps</td><td class="m">${sc.gaps}/20</td></tr><tr><td>Fixes</td><td class="m">${sc.fix}/15</td></tr><tr><td>Management</td><td class="m">${sc.mg}/15</td></tr><tr><td>Value prop</td><td class="m">${sc.vp}/15</td></tr><tr><td>Price</td><td class="m">${sc.price}/20</td></tr></table>
+        <div class="row"><button class="btn" type="button" data-tpresent="${g}">Present deck</button><button class="btn ${teacher.picked[ci]===g?"or":"alt"}" type="button" data-win="${g}">${teacher.picked[ci]===g?"Client chose this firm":"Client chooses this firm"}</button></div>`;}
+      return `<div class="panel stack"><div class="row" style="justify-content:space-between"><h3>Group ${g} · ${firmOf(g).defName.split(" ")[0]} model</h3>${teacher.picked[ci]===g?'<span class="tag or">Winner</span>':""}</div>${isLive?`<p class="note"><span class="tag good">Live</span> Synced from Group ${g}'s device.</p>`:""}<details ${isLive?"":"open"}><summary class="note">Paste a pitch code instead</summary><label class="f" style="margin-top:6px">Pitch code<textarea data-code="${g}" placeholder="Paste Group ${g}'s pitch code">${esc(teacher.codes[g]||"")}</textarea></label></details>${inner}</div>`;};
+    body=`<div class="tabs">${CLIENTS.map((x,i)=>`<button type="button" data-tclient="${i}" class="${i===ci?"on":""}">${esc(x.name.split(" ")[0])} ${teacher.picked[i]?"✓":""}</button>`).join("")}</div><p class="lede" style="margin-bottom:14px">${esc(c.name)}: present each deck, then pick the firm the client hires. Synced decks load on their own; paste a pitch code for any group that is not synced.</p><div class="vs">${card(g1,s1,s2)}${card(g2,s2,s1)}</div>`;
+  }
+  app.innerHTML=`<div class="head"><span class="eyebrow">Teacher only · not linked on the student site</span><h1>The Engagement</h1><p class="lede">Students go to <b>The Engagement</b> on the site. Each group uses one device.</p></div><div class="tabs">${tabs.map(([k,v])=>`<button type="button" data-ttab="${k}" class="${teacher.tab===k?"on":""}">${v}</button>`).join("")}</div>${body}`;
+}
+
+/* ===================== EVENTS ===================== */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button,[data-present],[data-pick]");if(!t)return;
+  const d=t.dataset;
+  if(d.pick){const g=+d.pick; if(S.group&&S.group!==g){const cc=S.code;S=fresh();S.code=cc;} S.group=g; if(S.step===0&&S.maxStep===0)S.step=-1; view="group"; save(); return render();}
+  if(d.resume){view="group";return render();}
+  if(d.home){view="home";S.step=-1;save();return render();}
+  if(d.go!=null){const i=+d.go; if(i<0){S.step=-1;}else if(i>6)return; else S.step=i; S.maxStep=Math.max(S.maxStep,S.step); save(); return render();}
+  if(t.id==="recCheck"){const c=clientOf(S.group);S.rec.tries++;const ok=c.rec.items.every((it,i)=>S.rec.ans[i]===it[2]);if(ok)S.rec.done=true;else if(S.rec.tries>=2)S.rec.showWrong=true;save();return render();}
+  if(d.flag){const k=d.flag;S.flags=S.flags.includes(k)?S.flags.filter(x=>x!==k):[...S.flags,k];save();return vWalkKeep();}
+  if(t.id==="flagSubmit"){S.flagsDone=true;save();return render();}
+  if(d.fix){S.fixes[d.fix]=+d.i;save();return keepScroll(()=>vFix($("#app")));}
+  if(d.prio){const k=d.prio;if(S.prios.includes(k))S.prios=S.prios.filter(x=>x!==k);else if(S.prios.length<3)S.prios=[...S.prios,k];save();return keepScroll(()=>vValue($("#app")));}
+  if(d.str){const k=d.str;if(S.strengths.includes(k))S.strengths=S.strengths.filter(x=>x!==k);else if(S.strengths.length<2)S.strengths=[...S.strengths,k];save();return keepScroll(()=>vValue($("#app")));}
+  if(d.rw){S.rivalW=S.rivalW===d.rw?null:d.rw;save();return keepScroll(()=>vValue($("#app")));}
+  if(d.present!=null){return present(S,+d.present);}
+  if(d.pnav){pres.i=Math.min(pres.slides.length-1,Math.max(0,pres.i+ +d.pnav));return paintPresent();}
+  if(d.pclose){return closePresent();}
+  if(t.id==="copyCode"){const ta=$("#codeOut");const msg=$("#copyMsg");try{navigator.clipboard.writeText(ta.value).then(()=>msg.textContent="Copied.",()=>{ta.select();msg.textContent="Selected. Press Ctrl+C to copy.";});}catch(err){ta.select();msg.textContent="Selected. Press Ctrl+C to copy.";}return;}
+  if(t.id==="resetAsk"){$("#resetZone").innerHTML=`<span class="confirm">Erase all work for Group ${S.group} on this device? <button class="btn" type="button" id="resetYes">Erase</button><button class="btn alt" type="button" id="resetNo">Keep</button></span>`;return;}
+  if(t.id==="resetNo"){return render();}
+  if(t.id==="resetYes"){const cc=S.code;S=fresh();S.code=cc;view="home";save();return render();}
+  if(t.id==="tStart"){return startSession();}
+  if(t.id==="tEnd"){teacher.confirmEnd=true;return render();}
+  if(t.id==="tEndNo"){teacher.confirmEnd=false;return render();}
+  if(t.id==="tEndYes"){const c=teacher.session;liveCall("remove","games/"+c).catch(()=>{});teacher.session="";teacher.live={};teacher.confirmEnd=false;saveT();return render();}
+  if(t.id==="pinGo"){const v=($("#pin").value||"").trim().toLowerCase();if(v==="husky"){teacher.unlocked=true;render();}else $("#pinMsg").textContent="That PIN is not right.";return;}
+  if(d.ttab){teacher.tab=d.ttab;return render();}
+  if(d.tclient!=null){teacher.client=+d.tclient;return render();}
+  if(d.tpresent){const g=d.tpresent,s=decode(teacher.codes[g]||(teacher.live["g"+g]&&teacher.live["g"+g].code));if(s)present(s,0);return;}
+  if(d.win){const g=+d.win;teacher.picked[teacher.client]=teacher.picked[teacher.client]===g?null:g;saveT();return keepScroll(render);}
+});
+function keepScroll(fn){const y=window.scrollY;fn();window.scrollTo({top:y});paintMast();paintRail();}
+function vWalkKeep(){keepScroll(()=>vWalk($("#app")));}
+document.addEventListener("change",e=>{
+  const t=e.target,d=t.dataset;
+  if(d.rec!=null){S.rec.ans[d.rec]=t.value||undefined;if(!t.value)delete S.rec.ans[d.rec];save();return keepScroll(()=>vRec($("#app")));}
+  if(d.sel){S.sel[d.sel]=t.checked;save();$("#row-"+d.sel).classList.toggle("off",!t.checked);return paintPriceSum();}
+});
+document.addEventListener("input",e=>{
+  const t=e.target,d=t.dataset;
+  if(t.id==="firmName"){S.firm=t.value;return save();}
+  if(t.id==="classCode"){S.code=t.value.replace(/\D/g,"").slice(0,4);t.value=S.code;save();const sm=$("#syncMsg");if(sm)sm.innerHTML=syncNote();return;}
+  if(d.mem!=null){S.members[+d.mem]=t.value;return save();}
+  if(t.id==="headline"){S.headline=t.value;S.headEdited=true;return save();}
+  if(d.price){const v=SERVICES.find(x=>x.id===d.price),p=+t.value;S.price[v.id]=p;const cost=svcCost(S,v);$("#p-"+v.id).textContent=money(p);$("#m-"+v.id).textContent=pct((p-cost)/p);save();return paintPriceSum();}
+  if(d.code){teacher.codes[d.code]=t.value;saveT();clearTimeout(window.__ct);window.__ct=setTimeout(()=>{const ae=document.activeElement&&document.activeElement.dataset.code;render();if(ae){const el=document.querySelector(`[data-code="${ae}"]`);if(el){el.focus();el.selectionStart=el.selectionEnd=el.value.length;}}},400);}
+});
+document.addEventListener("keydown",e=>{
+  if(pres){if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();pres.i=Math.min(pres.slides.length-1,pres.i+1);paintPresent();}
+    else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();pres.i=Math.max(0,pres.i-1);paintPresent();}
+    else if(e.key==="Escape")closePresent();return;}
+  if(e.key==="Enter"&&e.target.matches&&e.target.matches(".slide[data-present]"))present(S,+e.target.dataset.present);
+  if(e.key==="Enter"&&e.target.id==="pin")$("#pinGo").click();
+});
+async function startSession(){
+  const msg=$("#tMsg");
+  for(let i=0;i<6;i++){
+    const code=String(1000+Math.floor(Math.random()*9000));
+    try{const r=await liveCall("set","games/"+code,{kind:"engagement",t:Date.now()});
+      if(r.ok){teacher.session=code;teacher.live={};saveT();render();return;}
+      if(r.status!==409){if(msg)msg.textContent="Could not start a session ("+(r.j.error||r.status)+").";return;}
+    }catch(e){if(msg)msg.textContent="Could not reach the server.";return;}
+  }
+  if(msg)msg.textContent="Could not find a free code. Try again.";
+}
+let lastLive="";
+async function pollLive(){
+  if(teacher.session&&!document.hidden){
+    try{const r=await liveCall("get","games/"+teacher.session+"/players");
+      if(r.ok){const v=r.j.v||{},s=JSON.stringify(v);
+        if(s!==lastLive){lastLive=s;teacher.live=v;
+          const typing=document.activeElement&&document.activeElement.tagName==="TEXTAREA";
+          if(view==="teacher"&&!pres&&!typing&&(teacher.tab==="live"||teacher.tab==="board"))keepScroll(render);}}
+    }catch(e){}
+  }
+  setTimeout(pollLive,3000);
+}
+async function initTeacher(){
+  try{const r=await liveCall("ping");teacher.netOk=!!(r.ok&&r.j.ok);}catch(e){teacher.netOk=false;}
+  if(teacher.netOk&&teacher.session){
+    try{const r=await liveCall("get","games/"+teacher.session);if(r.ok&&r.j.v==null){teacher.session="";saveT();}}catch(e){}
+  }
+  render();pollLive();
+}
+render();
+if(ROLE==="teacher")initTeacher();else if(S.code&&S.group)queueSync();
+</script>
+<!-- Text size controls: scale the page content, remembered across pages -->
+<style id="tsz-css">
+#tsz{position:fixed;left:14px;bottom:14px;z-index:9999;display:flex;align-items:center;gap:2px;background:#111;color:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.3);font:600 15px "Barlow",system-ui,sans-serif}
+#tsz button{background:transparent;border:0;color:#fff;font:inherit;cursor:pointer;border-radius:999px;min-width:40px;height:36px;padding:0 10px}
+#tsz button:hover{background:rgba(255,255,255,.15)}
+#tsz button:focus-visible{outline:3px solid #C1102F;outline-offset:1px}
+#tsz button:disabled{opacity:.35;cursor:default}
+#tsz .big{font-size:20px}
+#tsz .pct{min-width:58px;font-variant-numeric:tabular-nums}
+@media print{#tsz{display:none}}
+</style>
+<div id="tsz" role="group" aria-label="Text size">
+  <button type="button" data-d="-1" aria-label="Smaller text" title="Smaller text (-)">A−</button>
+  <button type="button" data-d="0" class="pct" aria-label="Reset text size" title="Reset text size (0)">100%</button>
+  <button type="button" data-d="1" class="big" aria-label="Bigger text" title="Bigger text (+)">A+</button>
+</div>
+<script>
+(function(){
+  var STEPS=[0.8,0.9,1,1.1,1.25,1.4,1.6,1.8,2],KEY="d214-text-size",box=document.getElementById("tsz");
+  var target=document.querySelector("main")||document.body;
+  var i=2;try{var v=parseFloat(localStorage.getItem(KEY));var j=STEPS.indexOf(v);if(j>=0)i=j}catch(e){}
+  function apply(){
+    var z=STEPS[i];target.style.zoom=z;
+    box.style.zoom=target===document.body?1/z:1;
+    box.children[1].textContent=Math.round(z*100)+"%";
+    box.children[0].disabled=i===0;box.children[2].disabled=i===STEPS.length-1;
+    try{localStorage.setItem(KEY,z)}catch(e){}
+  }
+  function step(d){i=d===0?2:Math.max(0,Math.min(STEPS.length-1,i+d));apply()}
+  box.addEventListener("click",function(e){var b=e.target.closest("button");if(b){step(+b.dataset.d);b.blur()}});
+  document.addEventListener("keydown",function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;var t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT")return;
+    if(e.key==="+"||e.key==="=")step(1);else if(e.key==="-"||e.key==="_")step(-1);else if(e.key==="0")step(0);
+  });
+  apply();
+})();
+</script>
+
+</body>
+</html>
